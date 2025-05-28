@@ -3,10 +3,9 @@
     public class SpecializationService
     {
         public int SpecializationId { get; set; }
-        public int ServiceId { get; set; }
+        public Specialization Specialization { get; set; } = null!;
 
-        // Navigation Properties
-        public Specialization? Specialization { get; set; }
-        public Service? Service { get; set; }
+        public int ServiceId { get; set; }
+        public Service Service { get; set; } = null!;
     }
 }

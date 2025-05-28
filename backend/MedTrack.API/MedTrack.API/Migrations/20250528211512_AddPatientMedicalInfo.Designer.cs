@@ -3,6 +3,7 @@ using System;
 using MedTrack.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedTrack.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528211512_AddPatientMedicalInfo")]
+    partial class AddPatientMedicalInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,16 +126,9 @@ namespace MedTrack.API.Migrations
                     b.Property<string>("OtherText")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PatientUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("PatientId", "DiseaseId");
 
                     b.HasIndex("ChronicDiseaseDiseaseId");
-
-                    b.HasIndex("DiseaseId");
-
-                    b.HasIndex("PatientUserId");
 
                     b.ToTable("PatientChronicDiseases");
                 });
@@ -151,16 +147,9 @@ namespace MedTrack.API.Migrations
                     b.Property<string>("OtherText")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PatientUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("PatientId", "HistoryId");
 
                     b.HasIndex("FamilyHistoryHistoryId");
-
-                    b.HasIndex("HistoryId");
-
-                    b.HasIndex("PatientUserId");
 
                     b.ToTable("PatientFamilyHistories");
                 });
@@ -305,54 +294,34 @@ namespace MedTrack.API.Migrations
 
             modelBuilder.Entity("MedTrack.API.Models.PatientChronicDisease", b =>
                 {
-                    b.HasOne("MedTrack.API.Models.ChronicDisease", null)
+                    b.HasOne("MedTrack.API.Models.ChronicDisease", "ChronicDisease")
                         .WithMany("PatientLinks")
                         .HasForeignKey("ChronicDiseaseDiseaseId");
 
-                    b.HasOne("MedTrack.API.Models.ChronicDisease", "Disease")
-                        .WithMany()
-                        .HasForeignKey("DiseaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MedTrack.API.Models.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("ChronicDiseases")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedTrack.API.Models.Patient", null)
-                        .WithMany("ChronicDiseases")
-                        .HasForeignKey("PatientUserId");
-
-                    b.Navigation("Disease");
+                    b.Navigation("ChronicDisease");
 
                     b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.PatientFamilyHistory", b =>
                 {
-                    b.HasOne("MedTrack.API.Models.FamilyHistory", null)
+                    b.HasOne("MedTrack.API.Models.FamilyHistory", "FamilyHistory")
                         .WithMany("PatientLinks")
                         .HasForeignKey("FamilyHistoryHistoryId");
 
-                    b.HasOne("MedTrack.API.Models.FamilyHistory", "History")
-                        .WithMany()
-                        .HasForeignKey("HistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MedTrack.API.Models.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("FamilyHistories")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedTrack.API.Models.Patient", null)
-                        .WithMany("FamilyHistories")
-                        .HasForeignKey("PatientUserId");
-
-                    b.Navigation("History");
+                    b.Navigation("FamilyHistory");
 
                     b.Navigation("Patient");
                 });
