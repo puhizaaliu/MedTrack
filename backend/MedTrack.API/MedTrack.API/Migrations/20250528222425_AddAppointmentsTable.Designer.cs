@@ -3,6 +3,7 @@ using System;
 using MedTrack.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedTrack.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528222425_AddAppointmentsTable")]
+    partial class AddAppointmentsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,33 +101,6 @@ namespace MedTrack.API.Migrations
                     b.HasKey("HistoryId");
 
                     b.ToTable("FamilyHistories");
-                });
-
-            modelBuilder.Entity("MedTrack.API.Models.Invoice", b =>
-                {
-                    b.Property<int>("InvoiceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("PaymentStatus")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("InvoiceId");
-
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
-
-                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.MedicalInfo", b =>
@@ -369,17 +345,6 @@ namespace MedTrack.API.Migrations
                     b.Navigation("Specialization");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MedTrack.API.Models.Invoice", b =>
-                {
-                    b.HasOne("MedTrack.API.Models.Appointment", "Appointment")
-                        .WithOne()
-                        .HasForeignKey("MedTrack.API.Models.Invoice", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.MedicalInfo", b =>

@@ -18,6 +18,9 @@ namespace MedTrack.API.Data
         public DbSet<PatientChronicDisease> PatientChronicDiseases { get; set; }
         public DbSet<FamilyHistory> FamilyHistories { get; set; }
         public DbSet<PatientFamilyHistory> PatientFamilyHistories { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -97,6 +100,23 @@ namespace MedTrack.API.Data
                 .WithMany(s => s.SpecializationServices)
                 .HasForeignKey(ss => ss.ServiceId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //APPOINTMENT STATUS
+            modelBuilder.Entity<Appointment>()
+                .Property(a => a.Status)
+                .HasConversion<string>();
+
+            //INVOICE
+            modelBuilder.Entity<Invoice>()
+                .HasOne(i => i.Appointment)
+                .WithOne()
+                .HasForeignKey<Invoice>(i => i.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.Method)
+                .HasConversion<string>(); // Enum stored as string
+
 
         }
     }
