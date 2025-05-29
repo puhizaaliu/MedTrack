@@ -1,5 +1,10 @@
 using MedTrack.API.Data;
 using Microsoft.EntityFrameworkCore;
+using MedTrack.API.Config;
+using MongoDB.Driver;
+using Microsoft.Extensions.Options;
+using MongoServerVersion = MongoDB.Driver.ServerVersion;
+using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +21,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
+
+// Konfigurimi i MongoDBSettings nga appsettings.json
+builder.Services.Configure<MongoDBSettings>(
+    builder.Configuration.GetSection("MongoDBSettings"));
+
+// Shto MongoClient si singleton
+builder.Services.AddSingleton<IMongoClient>(s =>
+{
+    var settings = s.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
+
 
 var app = builder.Build();
 
