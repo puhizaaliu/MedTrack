@@ -1,4 +1,4 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +6,10 @@ namespace MedTrack.API.Services.Interfaces
 {
     public interface IPatientService
     {
-        Task<IEnumerable<Patient>> GetAllPatientsAsync();
-        Task<Patient?> GetPatientByIdAsync(int id);
-        Task AddPatientAsync(Patient patient);
-        Task UpdatePatientAsync(Patient patient);
+        Task<IEnumerable<PatientDTO>> GetAllPatientsAsync();
+        Task<PatientDTO?> GetPatientByIdAsync(int id);
+        Task AddPatientAsync(int userId); // pacienti lidhet me user ekzistues
+        Task UpdatePatientAsync(int id);  
         Task DeletePatientAsync(int id);
     }
 }
