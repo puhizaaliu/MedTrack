@@ -1,4 +1,6 @@
-﻿using MedTrack.API.Models;
+﻿using AutoMapper;
+using MedTrack.API.DTOs;
+using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
@@ -9,30 +11,44 @@ namespace MedTrack.API.Services.Implementations
     public class DoctorService : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IMapper _mapper;
 
-        public DoctorService(IDoctorRepository doctorRepository)
+        public DoctorService(IDoctorRepository doctorRepository, IMapper mapper)
         {
             _doctorRepository = doctorRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync()
+        public async Task<IEnumerable<DoctorDTO>> GetAllDoctorsAsync()
         {
-            return await _doctorRepository.GetAllDoctorsAsync();
+            var doctors = await _doctorRepository.GetAllDoctorsAsync();
+            return _mapper.Map<IEnumerable<DoctorDTO>>(doctors);
         }
 
-        public async Task<Doctor?> GetDoctorByIdAsync(int id)
+        public async Task<DoctorDTO?> GetDoctorByIdAsync(int id)
         {
-            return await _doctorRepository.GetDoctorByIdAsync(id);
+            var doctor = await _doctorRepository.GetDoctorByIdAsync(id);
+            return doctor == null ? null : _mapper.Map<DoctorDTO>(doctor);
         }
 
-        public async Task AddDoctorAsync(Doctor doctor)
+        // Krijon doctor për një user ekzistues (p.sh. userId është pacient që bëhet doktor)
+        public async Task AddDoctorAsync(int userId, int specializationId)
         {
+            var doctor = new Doctor
+            {
+                UserId = userId,
+                SpecializationId = specializationId
+            };
             await _doctorRepository.AddDoctorAsync(doctor);
         }
 
-        public async Task UpdateDoctorAsync(Doctor doctor)
+        public async Task UpdateDoctorAsync(int id, UpdateDoctorDTO doctorDto)
         {
-            await _doctorRepository.UpdateDoctorAsync(doctor);
+            var existingDoctor = await _doctorRepository.GetDoctorByIdAsync(id);
+            if (existingDoctor == null) throw new Exception("Doctor not found");
+
+            _mapper.Map(doctorDto, existingDoctor);
+            await _doctorRepository.UpdateDoctorAsync(existingDoctor);
         }
 
         public async Task DeleteDoctorAsync(int id)
@@ -40,9 +56,10 @@ namespace MedTrack.API.Services.Implementations
             await _doctorRepository.DeleteDoctorAsync(id);
         }
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationIdAsync(int specializationId)
+        public async Task<IEnumerable<DoctorDTO>> GetDoctorsBySpecializationIdAsync(int specializationId)
         {
-            return await _doctorRepository.GetDoctorsBySpecializationIdAsync(specializationId);
+            var doctors = await _doctorRepository.GetDoctorsBySpecializationIdAsync(specializationId);
+            return _mapper.Map<IEnumerable<DoctorDTO>>(doctors);
         }
     }
 }
