@@ -1,6 +1,6 @@
 ﻿namespace MedTrack.API.DTOs
 {
-    public class MedicalInfoDto
+    public class MedicalInfoDTO
     {
         public string Allergies { get; set; } = string.Empty;
         public string Medications { get; set; } = string.Empty;
