@@ -1,4 +1,4 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +6,10 @@ namespace MedTrack.API.Services.Interfaces
 {
     public interface IServiceService
     {
-        Task<IEnumerable<Service>> GetAllServicesAsync();
-        Task<Service?> GetServiceByIdAsync(int id);
-        Task AddServiceAsync(Service service);
-        Task UpdateServiceAsync(Service service);
+        Task<IEnumerable<ServiceDTO>> GetAllServicesAsync();
+        Task<ServiceDTO?> GetServiceByIdAsync(int id);
+        Task AddServiceAsync(ServiceDTO serviceDto);
+        Task UpdateServiceAsync(int id, ServiceDTO serviceDto);
         Task DeleteServiceAsync(int id);
     }
 }
