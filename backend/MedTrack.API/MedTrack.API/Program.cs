@@ -33,6 +33,9 @@ builder.Services.AddScoped<IFamilyHistoryService, FamilyHistoryService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Add services to the container.
 builder.Services.AddControllers();
 
