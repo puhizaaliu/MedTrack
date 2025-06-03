@@ -1,4 +1,4 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,14 +6,14 @@ namespace MedTrack.API.Services.Interfaces
 {
     public interface IInvoiceService
     {
-        Task<IEnumerable<Invoice>> GetAllInvoicesAsync();
-        Task<Invoice?> GetInvoiceByIdAsync(int id);
-        Task AddInvoiceAsync(Invoice invoice);
-        Task UpdateInvoiceAsync(Invoice invoice);
+        Task<IEnumerable<InvoiceDTO>> GetAllInvoicesAsync();
+        Task<InvoiceDTO?> GetInvoiceByIdAsync(int id);
+        Task AddInvoiceAsync(CreateInvoiceDTO invoiceDto);
+        Task UpdateInvoiceAsync(int id, UpdateInvoiceDTO invoiceDto);
         Task DeleteInvoiceAsync(int id);
 
-        Task<IEnumerable<Invoice>> GetInvoicesByPatientIdAsync(int patientId);
-        Task<IEnumerable<Invoice>> GetPaidInvoicesAsync();
-        Task<IEnumerable<Invoice>> GetUnpaidInvoicesAsync();
+        Task<IEnumerable<InvoiceDTO>> GetInvoicesByPatientIdAsync(int patientId);
+        Task<IEnumerable<InvoiceDTO>> GetPaidInvoicesAsync();
+        Task<IEnumerable<InvoiceDTO>> GetUnpaidInvoicesAsync();
     }
 }
