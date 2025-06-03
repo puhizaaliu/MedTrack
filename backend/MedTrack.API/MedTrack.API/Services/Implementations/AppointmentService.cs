@@ -1,4 +1,6 @@
-﻿using MedTrack.API.Models;
+﻿using AutoMapper;
+using MedTrack.API.DTOs;
+using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
@@ -9,30 +11,40 @@ namespace MedTrack.API.Services.Implementations
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IMapper _mapper;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper)
         {
             _appointmentRepository = appointmentRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
+        public async Task<IEnumerable<AppointmentDTO>> GetAllAppointmentsAsync()
         {
-            return await _appointmentRepository.GetAllAppointmentsAsync();
+            var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
+            return _mapper.Map<IEnumerable<AppointmentDTO>>(appointments);
         }
 
-        public async Task<Appointment?> GetAppointmentByIdAsync(int id)
+        public async Task<AppointmentDTO?> GetAppointmentByIdAsync(int id)
         {
-            return await _appointmentRepository.GetAppointmentByIdAsync(id);
+            var appointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
+            return appointment == null ? null : _mapper.Map<AppointmentDTO>(appointment);
         }
 
-        public async Task AddAppointmentAsync(Appointment appointment)
+        public async Task AddAppointmentAsync(CreateAppointmentDTO appointmentDto)
         {
+            var appointment = _mapper.Map<Appointment>(appointmentDto);
+            appointment.Status = AppointmentStatus.Kerkese; // default kur krijohet
             await _appointmentRepository.AddAppointmentAsync(appointment);
         }
 
-        public async Task UpdateAppointmentAsync(Appointment appointment)
+        public async Task UpdateAppointmentAsync(int id, UpdateAppointmentDTO appointmentDto)
         {
-            await _appointmentRepository.UpdateAppointmentAsync(appointment);
+            var existingAppointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
+            if (existingAppointment == null) throw new Exception("Appointment not found");
+
+            _mapper.Map(appointmentDto, existingAppointment);
+            await _appointmentRepository.UpdateAppointmentAsync(existingAppointment);
         }
 
         public async Task DeleteAppointmentAsync(int id)
@@ -40,19 +52,22 @@ namespace MedTrack.API.Services.Implementations
             await _appointmentRepository.DeleteAppointmentAsync(id);
         }
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId)
+        public async Task<IEnumerable<AppointmentDTO>> GetAppointmentsByDoctorIdAsync(int doctorId)
         {
-            return await _appointmentRepository.GetAppointmentsByDoctorIdAsync(doctorId);
+            var appointments = await _appointmentRepository.GetAppointmentsByDoctorIdAsync(doctorId);
+            return _mapper.Map<IEnumerable<AppointmentDTO>>(appointments);
         }
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId)
+        public async Task<IEnumerable<AppointmentDTO>> GetAppointmentsByPatientIdAsync(int patientId)
         {
-            return await _appointmentRepository.GetAppointmentsByPatientIdAsync(patientId);
+            var appointments = await _appointmentRepository.GetAppointmentsByPatientIdAsync(patientId);
+            return _mapper.Map<IEnumerable<AppointmentDTO>>(appointments);
         }
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status)
+        public async Task<IEnumerable<AppointmentDTO>> GetAppointmentsByStatusAsync(AppointmentStatus status)
         {
-            return await _appointmentRepository.GetAppointmentsByStatusAsync(status);
+            var appointments = await _appointmentRepository.GetAppointmentsByStatusAsync(status);
+            return _mapper.Map<IEnumerable<AppointmentDTO>>(appointments);
         }
     }
 }

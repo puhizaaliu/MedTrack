@@ -1,4 +1,5 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
+using MedTrack.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,14 +7,14 @@ namespace MedTrack.API.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<Appointment>> GetAllAppointmentsAsync();
-        Task<Appointment?> GetAppointmentByIdAsync(int id);
-        Task AddAppointmentAsync(Appointment appointment);
-        Task UpdateAppointmentAsync(Appointment appointment);
+        Task<IEnumerable<AppointmentDTO>> GetAllAppointmentsAsync();
+        Task<AppointmentDTO?> GetAppointmentByIdAsync(int id);
+        Task AddAppointmentAsync(CreateAppointmentDTO appointmentDto);
+        Task UpdateAppointmentAsync(int id, UpdateAppointmentDTO appointmentDto);
         Task DeleteAppointmentAsync(int id);
 
-        Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId);
-        Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId);
-        Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status);
+        Task<IEnumerable<AppointmentDTO>> GetAppointmentsByDoctorIdAsync(int doctorId);
+        Task<IEnumerable<AppointmentDTO>> GetAppointmentsByPatientIdAsync(int patientId);
+        Task<IEnumerable<AppointmentDTO>> GetAppointmentsByStatusAsync(AppointmentStatus status);
     }
 }
