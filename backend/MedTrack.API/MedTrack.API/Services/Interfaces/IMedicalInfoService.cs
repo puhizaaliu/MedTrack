@@ -1,13 +1,13 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Services.Interfaces
 {
     public interface IMedicalInfoService
     {
-        Task<MedicalInfo?> GetMedicalInfoByPatientIdAsync(int patientId);
-        Task AddMedicalInfoAsync(MedicalInfo medicalInfo);
-        Task UpdateMedicalInfoAsync(MedicalInfo medicalInfo);
+        Task<MedicalInfoDTO?> GetMedicalInfoByPatientIdAsync(int patientId);
+        Task AddMedicalInfoAsync(CreateMedicalInfoDTO medicalInfoDto);
+        Task UpdateMedicalInfoAsync(int id, UpdateMedicalInfoDTO medicalInfoDto);
         Task DeleteMedicalInfoAsync(int id);
     }
 }
