@@ -2,7 +2,7 @@
 
 namespace MedTrack.API.DTOs
 {
-    public class UserDto
+    public class UserDTO
     {
         public int UserId { get; set; }
         public string Name { get; set; } = string.Empty;

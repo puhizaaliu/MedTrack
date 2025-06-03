@@ -1,6 +1,6 @@
 ﻿namespace MedTrack.API.DTOs
 {
-    public class DoctorDto
+    public class DoctorDTO
     {
         public int UserId { get; set; }
 
