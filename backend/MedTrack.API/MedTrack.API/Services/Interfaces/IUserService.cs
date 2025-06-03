@@ -1,4 +1,5 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs;
+using MedTrack.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,11 +7,11 @@ namespace MedTrack.API.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User?> GetUserByEmailAsync(string email);
-        Task AddUserAsync(User user);
-        Task UpdateUserAsync(User user);
+        Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task<UserDTO?> GetUserByIdAsync(int id);
+        Task<UserDTO?> GetUserByEmailAsync(string email);
+        Task AddUserAsync(CreateUserDTO userDto);
+        Task UpdateUserAsync(int id, UpdateUserDTO userDto);
         Task DeleteUserAsync(int id);
     }
 }

@@ -1,4 +1,6 @@
-﻿using MedTrack.API.Models;
+﻿using AutoMapper;
+using MedTrack.API.DTOs;
+using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
@@ -9,35 +11,46 @@ namespace MedTrack.API.Services.Implementations
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllUsersAsync();
+            var users = await _userRepository.GetAllUsersAsync();
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<UserDTO?> GetUserByIdAsync(int id)
         {
-            return await _userRepository.GetUserByIdAsync(id);
+            var user = await _userRepository.GetUserByIdAsync(id);
+            return user == null ? null : _mapper.Map<UserDTO>(user);
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<UserDTO?> GetUserByEmailAsync(string email)
         {
-            return await _userRepository.GetUserByEmailAsync(email);
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            return user == null ? null : _mapper.Map<UserDTO>(user);
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task AddUserAsync(CreateUserDTO userDto)
         {
+            var user = _mapper.Map<User>(userDto);
             await _userRepository.AddUserAsync(user);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(int id, UpdateUserDTO userDto)
         {
-            await _userRepository.UpdateUserAsync(user);
+            var existingUser = await _userRepository.GetUserByIdAsync(id);
+            if (existingUser == null) throw new Exception("User not found");
+
+            // Përditëso entitetin ekzistues me të dhënat nga DTO
+            _mapper.Map(userDto, existingUser);
+            await _userRepository.UpdateUserAsync(existingUser);
         }
 
         public async Task DeleteUserAsync(int id)
