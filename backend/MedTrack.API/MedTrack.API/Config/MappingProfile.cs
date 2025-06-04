@@ -62,12 +62,19 @@ namespace MedTrack.API.Config
             CreateMap<CreateAppointmentDTO, Appointment>();
             CreateMap<UpdateAppointmentDTO, Appointment>();
 
-            // Invoice
             CreateMap<Invoice, InvoiceDTO>()
-                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Appointment.Patient.User.Name))
-                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Appointment.Doctor.User.Name));
-            CreateMap<CreateInvoiceDTO, Invoice>();
-            CreateMap<UpdateInvoiceDTO, Invoice>();
+             .ForMember(dest => dest.PatientName,
+                        opt => opt.MapFrom(src => src.Appointment.Patient.User.Name))
+             .ForMember(dest => dest.PatientSurname,
+                        opt => opt.MapFrom(src => src.Appointment.Patient.User.Surname))
+             .ForMember(dest => dest.DoctorName,
+                        opt => opt.MapFrom(src => src.Appointment.Doctor.User.Name))
+             .ForMember(dest => dest.DoctorSurname,
+                        opt => opt.MapFrom(src => src.Appointment.Doctor.User.Surname))
+             .ForMember(dest => dest.ServiceName,
+                        opt => opt.MapFrom(src => src.Appointment.Service.Name))
+             .ForMember(dest => dest.ServiceId,
+                        opt => opt.MapFrom(src => src.Appointment.Service.ServiceId));
 
             // Service
             CreateMap<Service, ServiceDTO>().ReverseMap();

@@ -3,8 +3,8 @@ using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MedTrack.API.Repositories.Implementations
 {
@@ -20,8 +20,18 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Invoice>> GetAllInvoicesAsync()
         {
             return await _context.Invoices
+                // 1) Ngarkojmë takimin e faturës
                 .Include(i => i.Appointment)
-                .ThenInclude(a => a.Patient)
+                    // 2) Në brendësi të takimit, ngarkojmë pacientin (Patient → User)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                // 3) Po njësoj, ngarkojmë mjekun (Doctor → User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.User)
+                // 4) Dhe ngarkojmë edhe shërbimin (Service)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Service)
                 .ToListAsync();
         }
 
@@ -29,13 +39,19 @@ namespace MedTrack.API.Repositories.Implementations
         {
             return await _context.Invoices
                 .Include(i => i.Appointment)
-                .ThenInclude(a => a.Patient)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Service)
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
         }
 
         public async Task AddInvoiceAsync(Invoice invoice)
         {
-            await _context.Invoices.AddAsync(invoice);
+            _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync();
         }
 
@@ -59,6 +75,13 @@ namespace MedTrack.API.Repositories.Implementations
         {
             return await _context.Invoices
                 .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Service)
                 .Where(i => i.Appointment.PatientId == patientId)
                 .ToListAsync();
         }
@@ -66,6 +89,14 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Invoice>> GetPaidInvoicesAsync()
         {
             return await _context.Invoices
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Service)
                 .Where(i => i.PaymentStatus == true)
                 .ToListAsync();
         }
@@ -73,6 +104,14 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Invoice>> GetUnpaidInvoicesAsync()
         {
             return await _context.Invoices
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Doctor)
+                        .ThenInclude(d => d.User)
+                .Include(i => i.Appointment)
+                    .ThenInclude(a => a.Service)
                 .Where(i => i.PaymentStatus == false)
                 .ToListAsync();
         }

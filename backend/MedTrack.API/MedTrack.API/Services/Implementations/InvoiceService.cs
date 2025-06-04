@@ -28,23 +28,36 @@ namespace MedTrack.API.Services.Implementations
         public async Task<InvoiceDTO?> GetInvoiceByIdAsync(int id)
         {
             var invoice = await _invoiceRepository.GetInvoiceByIdAsync(id);
-            return invoice == null ? null : _mapper.Map<InvoiceDTO>(invoice);
+            if (invoice == null) return null;
+            return _mapper.Map<InvoiceDTO>(invoice);
         }
 
-        public async Task AddInvoiceAsync(CreateInvoiceDTO invoiceDto)
+        public async Task AddInvoiceAsync(CreateInvoiceDTO createDto)
         {
-            var invoice = _mapper.Map<Invoice>(invoiceDto);
-            invoice.PaymentStatus = false; // default e pa paguar
+            var invoice = _mapper.Map<Invoice>(createDto);
+
+            // Nëse e merrni PaymentStatus prej DTO
+            // invoice.PaymentStatus = createDto.PaymentStatus;
+
+            // Ose nëse doni ta vendosni gjithmonë si “paguar”:
+            //          invoice.PaymentStatus = true;
+
             await _invoiceRepository.AddInvoiceAsync(invoice);
         }
 
-        public async Task UpdateInvoiceAsync(int id, UpdateInvoiceDTO invoiceDto)
+        public async Task UpdateInvoiceAsync(int id, UpdateInvoiceDTO updateDto)
         {
-            var existingInvoice = await _invoiceRepository.GetInvoiceByIdAsync(id);
-            if (existingInvoice == null) throw new Exception("Invoice not found");
+            var existing = await _invoiceRepository.GetInvoiceByIdAsync(id);
+            if (existing == null)
+                throw new KeyNotFoundException($"Invoice with ID {id} not found.");
 
-            _mapper.Map(invoiceDto, existingInvoice);
-            await _invoiceRepository.UpdateInvoiceAsync(existingInvoice);
+            // Përditëso fushat sipas UpdateInvoiceDTO
+            existing.Method = updateDto.Method;
+            existing.PaymentStatus = updateDto.PaymentStatus;
+            // Nëse doni të ndryshoni edhe amount:
+            // existing.Amount = updateDto.Amount;
+
+            await _invoiceRepository.UpdateInvoiceAsync(existing);
         }
 
         public async Task DeleteInvoiceAsync(int id)
