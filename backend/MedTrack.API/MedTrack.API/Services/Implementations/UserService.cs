@@ -5,6 +5,8 @@ using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BCrypt.Net;
+
 
 namespace MedTrack.API.Services.Implementations
 {
@@ -40,6 +42,10 @@ namespace MedTrack.API.Services.Implementations
         public async Task AddUserAsync(CreateUserDTO userDto)
         {
             var user = _mapper.Map<User>(userDto);
+
+            // Krijo hash-in e fjalëkalimit
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
             await _userRepository.AddUserAsync(user);
         }
 
