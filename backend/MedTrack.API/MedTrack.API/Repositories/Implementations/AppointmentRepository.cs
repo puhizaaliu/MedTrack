@@ -20,8 +20,11 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
         {
             return await _context.Appointments
-                .Include(a => a.Doctor)
                 .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)      // Që Patient.User.Name/Surname të mos jenë null
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)      // Që Doctor.User.Name/Surname të mos jenë null
+                .Include(a => a.Service)            // Që Service.Name të mos jetë null
                 .ToListAsync();
         }
 
@@ -29,7 +32,10 @@ namespace MedTrack.API.Repositories.Implementations
         {
             return await _context.Appointments
                 .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
                 .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                .Include(a => a.Service)
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
         }
 
@@ -58,6 +64,15 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId)
         {
             return await _context.Appointments
+                // 1) Include Patient → Patient.User për emrin dhe mbiemrin
+                .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                // 2) Include Doctor  → Doctor.User për emrin dhe mbiemrin
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                // 3) Include Service → Service.Name
+                .Include(a => a.Service)
+                // 4) Filtro sipas doctorId
                 .Where(a => a.DoctorId == doctorId)
                 .ToListAsync();
         }
@@ -65,6 +80,15 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId)
         {
             return await _context.Appointments
+                // 1) Include Patient → Patient.User
+                .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                // 2) Include Doctor  → Doctor.User
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                // 3) Include Service → Service.Name
+                .Include(a => a.Service)
+                // 4) Filtro sipas patientId
                 .Where(a => a.PatientId == patientId)
                 .ToListAsync();
         }
@@ -72,8 +96,18 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status)
         {
             return await _context.Appointments
+                // 1) Include Patient → Patient.User
+                .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                // 2) Include Doctor  → Doctor.User
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                // 3) Include Service → Service.Name
+                .Include(a => a.Service)
+                // 4) Filtro sipas statusit
                 .Where(a => a.Status == status)
                 .ToListAsync();
         }
+
     }
 }
