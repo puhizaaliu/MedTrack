@@ -19,13 +19,72 @@ namespace MedTrack.API.Repositories.Implementations
 
         public async Task<IEnumerable<Patient>> GetAllPatientsAsync()
         {
-            // Mund të përfshijë edhe info të tjera të lidhura, nëse ka (p.sh. MedicalInfos)
-            return await _context.Patients.ToListAsync();
+            // 1) Nxjerrim të gjithë pacientët me User +MedicalInfo
+            var patients = await _context.Patients
+                .Include(p => p.User)
+                .Include(p => p.MedicalInfo)
+                .ToListAsync();
+
+            // 2) Nxjerrim të gjitha lidhjet PatientFamilyHistory nga DB
+            var allPfhs = await _context.PatientFamilyHistories
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 3) Nxjerrim të gjitha rreshtat FamilyHistory në një dictionary për lookup
+            var allHistories = await _context.FamilyHistories
+                .AsNoTracking()
+                .ToDictionaryAsync(fh => fh.HistoryId);
+
+            // 4) Për secilin pacient, ndërtojmë listën e PFH + History
+            foreach (var p in patients)
+            {
+                // Gjejmë të gjitha rreshtat ku PatientId = p.UserId
+                var listPfhs = allPfhs
+                    .Where(pfh => pfh.PatientId == p.UserId)
+                    .ToList();
+                // Për secilin PFH, vendosim çfarë “History” i takon
+                foreach (var pfh in listPfhs)
+                {
+                    if (allHistories.TryGetValue(pfh.HistoryId, out var fh))
+                    {
+                        pfh.History = fh;
+                    }
+                }
+                // Caktojmë koleksionin në vetë entitetin Patient
+                p.FamilyHistories = listPfhs;
+            }
+
+            return patients;
         }
 
-        public async Task<Patient?> GetPatientByIdAsync(int id)
+
+        public async Task<Patient?> GetPatientByIdAsync(int userId)
         {
-            return await _context.Patients.FindAsync(id);
+            // 1) Nxjerrim vetëm një pacient me User + MedicalInfo
+            var patient = await _context.Patients
+                .Include(p => p.User)
+                .Include(p => p.MedicalInfo)
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+                return null;
+
+            // 2) Nxjerrim rreshtat PFH vetëm për atë pacient
+            var pfhs = await _context.PatientFamilyHistories
+                .Where(pfh => pfh.PatientId == userId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 3) Për secilin PFH, ngarkojmë entitetin FamilyHistory
+            foreach (var pfh in pfhs)
+            {
+                pfh.History = await _context.FamilyHistories
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(fh => fh.HistoryId == pfh.HistoryId);
+            }
+
+            patient.FamilyHistories = pfhs;
+            return patient;
         }
 
         public async Task AddPatientAsync(Patient patient)

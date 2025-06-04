@@ -22,6 +22,7 @@ builder.Services.AddScoped<IFamilyHistoryRepository, FamilyHistoryRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISpecializationRepository, SpecializationRepository>();
 builder.Services.AddScoped<ISpecializationServiceRepository, SpecializationServiceRepository>();
+builder.Services.AddScoped<IPatientFamilyHistoryRepository, PatientFamilyHistoryRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -34,6 +35,7 @@ builder.Services.AddScoped<IFamilyHistoryService, FamilyHistoryService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 builder.Services.AddScoped<ISpecializationServiceService, SpecializationServiceService>();
+builder.Services.AddScoped<IPatientFamilyHistoryService, PatientFamilyHistoryService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));

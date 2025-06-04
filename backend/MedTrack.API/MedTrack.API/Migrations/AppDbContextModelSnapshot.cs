@@ -52,7 +52,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.ChronicDisease", b =>
@@ -67,7 +67,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("DiseaseId");
 
-                    b.ToTable("ChronicDiseases");
+                    b.ToTable("ChronicDiseases", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Doctor", b =>
@@ -82,7 +82,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.FamilyHistory", b =>
@@ -97,7 +97,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("HistoryId");
 
-                    b.ToTable("FamilyHistories");
+                    b.ToTable("FamilyHistories", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Invoice", b =>
@@ -124,7 +124,7 @@ namespace MedTrack.API.Migrations
                     b.HasIndex("AppointmentId")
                         .IsUnique();
 
-                    b.ToTable("Invoices");
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.MedicalInfo", b =>
@@ -159,7 +159,7 @@ namespace MedTrack.API.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("MedicalInfos");
+                    b.ToTable("MedicalInfos", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Patient", b =>
@@ -169,7 +169,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.PatientChronicDisease", b =>
@@ -197,7 +197,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("PatientUserId");
 
-                    b.ToTable("PatientChronicDiseases");
+                    b.ToTable("PatientChronicDiseases", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.PatientFamilyHistory", b =>
@@ -225,7 +225,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("PatientUserId");
 
-                    b.ToTable("PatientFamilyHistories");
+                    b.ToTable("PatientFamilyHistories", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Service", b =>
@@ -240,7 +240,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("ServiceId");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Specialization", b =>
@@ -255,7 +255,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("SpecializationId");
 
-                    b.ToTable("Specializations");
+                    b.ToTable("Specializations", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.SpecializationService", b =>
@@ -270,7 +270,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("SpecializationServices");
+                    b.ToTable("SpecializationServices", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.User", b =>
@@ -322,7 +322,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Appointment", b =>

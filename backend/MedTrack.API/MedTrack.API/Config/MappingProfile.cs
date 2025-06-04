@@ -23,6 +23,7 @@ namespace MedTrack.API.Config
             CreateMap<UpdateDoctorDTO, Doctor>();
 
             // Patient
+            // Patient
             CreateMap<Patient, PatientDTO>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.User.Surname))
@@ -30,8 +31,16 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.User.DateOfBirth))
-                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender));
-            // medical info dhe family history (si liste) mapohen direkt 
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender))
+                .ForMember(dest => dest.MedicalInfo, opt => opt.MapFrom(src => src.MedicalInfo))
+                .ForMember(dest => dest.FamilyHistory, opt => opt.MapFrom(src =>
+                    src.FamilyHistories
+                        .Where(fh => fh.History != null)
+                        .Select(fh => new FamilyHistoryDTO
+                        {
+                            HistoryId = fh.History.HistoryId,
+                            ConditionName = fh.History.ConditionName
+                        })));
 
             // MedicalInfo
             CreateMap<MedicalInfo, MedicalInfoDTO>().ReverseMap();
@@ -66,9 +75,15 @@ namespace MedTrack.API.Config
             // Specialization
             CreateMap<Specialization, SpecializationDTO>().ReverseMap();
 
-            // Për mapping e SpecializationService
+            // SpecializationService
             CreateMap<SpecializationService, SpecializationServiceDTO>()
                 .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name));
+            
+            // Patient Family History
+            CreateMap<CreatePatientFamilyHistoryDTO, PatientFamilyHistory>();
+            CreateMap<PatientFamilyHistory, PatientFamilyHistoryDTO>()
+                .ForMember(dest => dest.ConditionName, opt => opt.MapFrom(src => src.History.ConditionName));
+
 
         }
     }
