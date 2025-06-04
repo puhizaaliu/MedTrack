@@ -21,6 +21,7 @@ namespace MedTrack.API.Repositories.Implementations
         {
             
             return await _context.Doctors
+                .Include(d => d.User)
                 .Include(d => d.Specialization)
                 .ToListAsync();
         }
@@ -28,6 +29,7 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<Doctor?> GetDoctorByIdAsync(int id)
         {
             return await _context.Doctors
+                .Include(d => d.User)
                 .Include(d => d.Specialization)
                 .FirstOrDefaultAsync(d => d.UserId == id);
         }
@@ -57,6 +59,8 @@ namespace MedTrack.API.Repositories.Implementations
         public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationIdAsync(int specializationId)
         {
             return await _context.Doctors
+                .Include(d => d.User)
+                .Include(d => d.Specialization)
                 .Where(d => d.SpecializationId == specializationId)
                 .ToListAsync();
         }

@@ -65,6 +65,11 @@ namespace MedTrack.API.Config
 
             // Specialization
             CreateMap<Specialization, SpecializationDTO>().ReverseMap();
+
+            // Për mapping e SpecializationService
+            CreateMap<SpecializationService, SpecializationServiceDTO>()
+                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name));
+
         }
     }
 }
