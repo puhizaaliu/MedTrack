@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MedTrack.API.DTOs;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace MedTrack.API.Controllers
 {
@@ -27,6 +28,10 @@ namespace MedTrack.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
+            // Validate that id is a valid MongoDB ObjectId
+            if (!ObjectId.TryParse(id, out _))
+                return BadRequest("Invalid id format; must be a 24-character hex string.");
+
             var reportDto = await _service.GetByIdAsync(id);
             if (reportDto == null)
                 return NotFound();
@@ -40,8 +45,6 @@ namespace MedTrack.API.Controllers
                 return BadRequest(ModelState);
 
             var newId = await _service.CreateAsync(dto);
-
-            // Kthejmë 201 Created me header "Location" që tregon GET /api/MedicalReports/{newId}
             return CreatedAtAction(nameof(GetById), new { id = newId }, null);
         }
 
@@ -54,11 +57,11 @@ namespace MedTrack.API.Controllers
             try
             {
                 await _service.UpdateAsync(id, dto);
-                return NoContent(); // 204
+                return NoContent();
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();  // Nëse raporti me të dhënë nuk ekziston
+                return NotFound();
             }
         }
 
@@ -66,7 +69,7 @@ namespace MedTrack.API.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             await _service.DeleteAsync(id);
-            return NoContent(); // 204
+            return NoContent();
         }
     }
 }
