@@ -23,6 +23,7 @@ builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISpecializationRepository, SpecializationRepository>();
 builder.Services.AddScoped<ISpecializationServiceRepository, SpecializationServiceRepository>();
 builder.Services.AddScoped<IPatientFamilyHistoryRepository, PatientFamilyHistoryRepository>();
+builder.Services.AddScoped<IMedicalReportRepository, MedicalReportRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
