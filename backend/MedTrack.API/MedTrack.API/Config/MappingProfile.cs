@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MedTrack.API.DTOs;
 using MedTrack.API.Models;
+using MedTrack.API.MongoModels;
 
 namespace MedTrack.API.Config
 {
@@ -22,7 +23,6 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(src => src.Specialization.Name));
             CreateMap<UpdateDoctorDTO, Doctor>();
 
-            // Patient
             // Patient
             CreateMap<Patient, PatientDTO>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
@@ -91,6 +91,14 @@ namespace MedTrack.API.Config
             CreateMap<PatientFamilyHistory, PatientFamilyHistoryDTO>()
                 .ForMember(dest => dest.ConditionName, opt => opt.MapFrom(src => src.History.ConditionName));
 
+            // Medical Report
+            CreateMap<MedicalReport, MedicalReportDTO>();
+            CreateMap<CreateMedicalReportDTO, MedicalReport>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<UpdateMedicalReportDto, MedicalReport>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
         }
     }
