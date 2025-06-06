@@ -2,7 +2,7 @@
 
 namespace MedTrack.API.DTOs
 {
-    public class NotificationDto
+    public class NotificationDTO
     {
         public string Id { get; set; } = null!;            
         public int UserId { get; set; }                   

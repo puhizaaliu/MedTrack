@@ -4,7 +4,7 @@ using System;
 
 namespace MedTrack.API.DTOs
 {
-    public class UpdateNotificationDto
+    public class UpdateNotificationDTO
     {
         public string? Type { get; set; }                   
         public string? Message { get; set; }                
