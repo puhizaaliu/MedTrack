@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedTrack.API.MongoModels;
+using System;
 
 namespace MedTrack.API.DTOs
 {
@@ -6,7 +7,7 @@ namespace MedTrack.API.DTOs
     {
         public string Id { get; set; } = null!;            
         public int UserId { get; set; }                   
-        public string Type { get; set; } = null!;          
+        public NotificationType Type { get; set; }         
         public string Message { get; set; } = null!;      
         public int? AppointmentId { get; set; }           
         public string? MedicalReportId { get; set; }       

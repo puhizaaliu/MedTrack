@@ -100,6 +100,28 @@ namespace MedTrack.API.Config
             CreateMap<UpdateMedicalReportDto, MedicalReport>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+            // Notification
+            CreateMap<NotificationDocument, NotificationDTO>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
+
+            CreateMap<CreateNotificationDTO,NotificationDocument>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.IsRead, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ReadAt, opt => opt.Ignore());
+            CreateMap<UpdateNotificationDTO, NotificationDocument>()
+              // Type: if DTO.Type has a value use it, otherwise keep whatever was in dest.Type
+              .ForMember(dest => dest.Type, opt =>
+                opt.MapFrom((src, dest) => src.Type.HasValue
+                  ? src.Type.Value
+                  : dest.Type))
+
+              // ReadAt: if DTO.ReadAt has a value use it, otherwise keep dest.ReadAt
+              .ForMember(dest => dest.ReadAt, opt =>
+                opt.MapFrom((src, dest) => src.ReadAt.HasValue
+                  ? src.ReadAt.Value
+                  : dest.ReadAt));
+
         }
     }
 }

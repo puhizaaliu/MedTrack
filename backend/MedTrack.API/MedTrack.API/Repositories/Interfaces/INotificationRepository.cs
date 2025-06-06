@@ -6,12 +6,12 @@ namespace MedTrack.API.Repositories.Interfaces
 {
     public interface INotificationRepository
     {
-        Task<IEnumerable<Notification>> GetAllAsync();
-        Task<Notification?> GetByIdAsync(string id);
-        Task CreateAsync(Notification notification);
-        Task UpdateAsync(string id, Notification notification);
+        Task<IEnumerable<NotificationDocument>> GetAllAsync();
+        Task<NotificationDocument?> GetByIdAsync(string id);
+        Task CreateAsync(NotificationDocument notification);
+        Task UpdateAsync(string id, NotificationDocument notification);
         Task DeleteAsync(string id);
-        Task<IEnumerable<Notification>> GetByUserIdAsync(int userId);
+        Task<IEnumerable<NotificationDocument>> GetByUserIdAsync(int userId);
     }
 }
 

@@ -44,7 +44,7 @@ namespace MedTrack.API.Services.Implementations
 
         public async Task<string> CreateAsync(CreateNotificationDTO dto)
         {
-            var entity = _mapper.Map<Notification>(dto);
+            var entity = _mapper.Map<NotificationDocument>(dto);
             entity.CreatedAt = DateTime.UtcNow;
             entity.IsRead = false;
             await _repository.CreateAsync(entity);

@@ -15,7 +15,7 @@ namespace MedTrack.API.MongoModels
         General                 
     }
 
-    public class Notification
+    public class NotificationDocument
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
