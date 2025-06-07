@@ -10,6 +10,9 @@ using MongoDB.Driver;
 using System.Text.Json.Serialization;
 using MongoServerVersion = MongoDB.Driver.ServerVersion;
 using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 // Repositories
@@ -45,7 +48,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Add services to the container.
+// Controllers & JSON options
 builder.Services.AddControllers();
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
@@ -53,32 +56,59 @@ builder.Services.AddControllers()
           new JsonStringEnumConverter()));
 
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Shto konfigurimin për DbContext (MySQL)
+// Konfigurimi për DbContext (MySQL)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-// Konfigurimi i MongoDBSettings nga appsettings.json
+// Konfigurimi i MongoDBSettings
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDBSettings"));
 
-// Shto MongoClient si singleton
+//MongoClient
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
     var settings = s.GetRequiredService<IOptions<MongoDBSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
 
+//JWT 
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
+builder.Services
+  .AddAuthentication(options =>
+  {
+      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+  })
+  .AddJwtBearer(options =>
+  {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+          ValidateIssuer = true,
+          ValidIssuer = jwtSettings["Issuer"],
+          ValidateAudience = true,
+          ValidAudience = jwtSettings["Audience"],
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(key),
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.FromSeconds(30)
+      };
+  });
+
+builder.Services.AddAuthorization();
+
+// build app
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -87,6 +117,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
