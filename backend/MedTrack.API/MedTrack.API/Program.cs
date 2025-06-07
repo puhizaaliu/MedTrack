@@ -45,6 +45,7 @@ builder.Services.AddScoped<IPatientFamilyHistoryService, PatientFamilyHistorySer
 builder.Services.AddScoped<IMedicalReportService, MedicalReportService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 // AutoMapper

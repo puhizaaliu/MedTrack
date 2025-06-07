@@ -20,6 +20,7 @@ namespace MedTrack.API.Data
         public DbSet<PatientFamilyHistory> PatientFamilyHistories { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
