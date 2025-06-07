@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using MedTrack.API.DTOs;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BCrypt.Net;
+using MedTrack.API.DTOs.User;
 
 
 namespace MedTrack.API.Services.Implementations

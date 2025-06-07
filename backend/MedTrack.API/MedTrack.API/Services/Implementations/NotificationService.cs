@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MedTrack.API.DTOs;
+using MedTrack.API.DTOs.Notification;
 using MedTrack.API.MongoModels;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;

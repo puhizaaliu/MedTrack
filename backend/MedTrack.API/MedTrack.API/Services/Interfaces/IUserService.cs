@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;

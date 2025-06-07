@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.Appointments;
 using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

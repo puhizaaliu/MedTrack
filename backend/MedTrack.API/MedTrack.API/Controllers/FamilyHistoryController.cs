@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.FamilyHistory;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

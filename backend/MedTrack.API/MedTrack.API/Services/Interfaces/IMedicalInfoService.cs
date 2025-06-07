@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.MedicalInfo;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Services.Interfaces

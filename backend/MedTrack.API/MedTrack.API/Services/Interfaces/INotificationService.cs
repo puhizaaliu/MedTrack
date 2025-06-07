@@ -1,5 +1,4 @@
-﻿
-using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.Notification;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.Invoice;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;

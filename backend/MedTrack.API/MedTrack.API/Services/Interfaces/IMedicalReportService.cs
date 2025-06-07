@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MedTrack.API.DTOs;
+using MedTrack.API.DTOs.MedicalReport;
 
 namespace MedTrack.API.Services.Interfaces
 {

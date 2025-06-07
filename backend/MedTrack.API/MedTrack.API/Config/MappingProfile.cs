@@ -1,5 +1,17 @@
 ﻿using AutoMapper;
-using MedTrack.API.DTOs;
+using MedTrack.API.DTOs.Appointments;
+using MedTrack.API.DTOs.Doctor;
+using MedTrack.API.DTOs.FamilyHistory;
+using MedTrack.API.DTOs.Invoice;
+using MedTrack.API.DTOs.MedicalInfo;
+using MedTrack.API.DTOs.MedicalReport;
+using MedTrack.API.DTOs.Notification;
+using MedTrack.API.DTOs.Patient;
+using MedTrack.API.DTOs.PatientFamilyHistory;
+using MedTrack.API.DTOs.Service;
+using MedTrack.API.DTOs.Specialization;
+using MedTrack.API.DTOs.SpecialzationService;
+using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using MedTrack.API.MongoModels;
 

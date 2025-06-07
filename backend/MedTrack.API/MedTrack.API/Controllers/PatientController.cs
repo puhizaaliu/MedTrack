@@ -1,6 +1,7 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.Patient;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
@@ -18,20 +19,16 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Patient
         [HttpGet]
-        public async Task<IActionResult> GetAllPatients()
+        public async Task<ActionResult<IEnumerable<PatientDTO>>> GetAllPatients()
         {
-            // Ky endpoint tash do të kthejë pacientët me të gjitha të dhënat:
-            // Name, Surname, Phone, Email, Address, DateOfBirth, Gender
-            // MedicalInfo dhe FamilyHistory të mbushura nga mapping profile
             var patients = await _patientService.GetAllPatientsAsync();
             return Ok(patients);
         }
 
         // GET: api/Patient/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPatientById(int id)
+        public async Task<ActionResult<PatientDTO>> GetPatientById(int id)
         {
-            // Edhe ky endpoint e kthen pacientin me MedicalInfo dhe FamilyHistory
             var patient = await _patientService.GetPatientByIdAsync(id);
             if (patient == null)
                 return NotFound();
@@ -43,7 +40,6 @@ namespace MedTrack.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPatient([FromQuery] int userId)
         {
-            // Krijon një rresht të ri te tabela 'patients' për user-in ekzistues
             await _patientService.AddPatientAsync(userId);
             return StatusCode(201); // 201 Created
         }
@@ -52,7 +48,6 @@ namespace MedTrack.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePatient(int id)
         {
-            // Tabela 'patients' s'ka shume fusha – kjo metodë mbetet bosh zakonisht
             await _patientService.UpdatePatientAsync(id);
             return NoContent(); // 204 No Content
         }

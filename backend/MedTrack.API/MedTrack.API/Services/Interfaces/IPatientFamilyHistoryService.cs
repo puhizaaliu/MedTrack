@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs;
+﻿using MedTrack.API.DTOs.PatientFamilyHistory;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

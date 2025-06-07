@@ -1,4 +1,6 @@
-﻿using MedTrack.API.DTOs; 
+﻿using MedTrack.API.DTOs.FamilyHistory;
+using MedTrack.API.DTOs.Patient;
+using MedTrack.API.DTOs.MedicalInfo;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;

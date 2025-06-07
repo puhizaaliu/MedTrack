@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MedTrack.API.DTOs;
+using MedTrack.API.DTOs.Notification;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
