@@ -10,7 +10,7 @@ using MedTrack.API.DTOs.Patient;
 using MedTrack.API.DTOs.PatientFamilyHistory;
 using MedTrack.API.DTOs.Service;
 using MedTrack.API.DTOs.Specialization;
-using MedTrack.API.DTOs.SpecialzationService;
+using MedTrack.API.DTOs.SpecializationService;
 using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using MedTrack.API.MongoModels;

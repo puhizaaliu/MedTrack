@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MedTrack.API.DTOs.SpecialzationService;
+using MedTrack.API.DTOs.SpecializationService;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;

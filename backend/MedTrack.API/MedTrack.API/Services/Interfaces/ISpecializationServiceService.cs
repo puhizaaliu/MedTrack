@@ -1,4 +1,4 @@
-﻿using MedTrack.API.DTOs.SpecialzationService;
+﻿using MedTrack.API.DTOs.SpecializationService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
