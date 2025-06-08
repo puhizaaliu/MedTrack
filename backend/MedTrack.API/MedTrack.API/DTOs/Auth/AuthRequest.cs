@@ -2,6 +2,7 @@
 
 namespace MedTrack.API.Dtos.Auth
 {
+    //login request
     public class AuthRequest
     {
         [Required]
