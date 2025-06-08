@@ -1,5 +1,8 @@
-﻿using MedTrack.API.DTOs.User;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.User;
 using MedTrack.API.Services.Interfaces;
+using MedTrack.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,6 +10,8 @@ namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+    [AuthorizeRoles(UserRole.Admin)]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

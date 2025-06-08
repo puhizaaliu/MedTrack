@@ -1,5 +1,8 @@
-﻿using MedTrack.API.DTOs.Invoice;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.Invoice;
+using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +12,7 @@ namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class InvoiceController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
@@ -20,6 +24,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Invoice
         [HttpGet]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
         public async Task<ActionResult<IEnumerable<InvoiceDTO>>> GetAll()
         {
             var invoices = await _invoiceService.GetAllInvoicesAsync();
@@ -28,6 +33,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Invoice/5
         [HttpGet("{id}")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin, UserRole.Patient)]
         public async Task<ActionResult<InvoiceDTO>> GetById(int id)
         {
             var invoice = await _invoiceService.GetInvoiceByIdAsync(id);
@@ -38,6 +44,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Invoice/patient/5
         [HttpGet("patient/{patientId}")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin, UserRole.Patient)]
         public async Task<ActionResult<IEnumerable<InvoiceDTO>>> GetByPatient(int patientId)
         {
             var invoices = await _invoiceService.GetInvoicesByPatientIdAsync(patientId);
@@ -46,6 +53,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Invoice/paid
         [HttpGet("paid")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
         public async Task<ActionResult<IEnumerable<InvoiceDTO>>> GetPaid()
         {
             var paidInvoices = await _invoiceService.GetPaidInvoicesAsync();
@@ -54,6 +62,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Invoice/unpaid
         [HttpGet("unpaid")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
         public async Task<ActionResult<IEnumerable<InvoiceDTO>>> GetUnpaid()
         {
             var unpaidInvoices = await _invoiceService.GetUnpaidInvoicesAsync();
@@ -62,6 +71,7 @@ namespace MedTrack.API.Controllers
 
         // POST: api/Invoice
         [HttpPost]
+        [AuthorizeRoles(UserRole.Receptionist)]
         public async Task<ActionResult<InvoiceDTO>> Create([FromBody] CreateInvoiceDTO createDto)
         {
             if (!ModelState.IsValid)
@@ -74,6 +84,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Invoice/5
         [HttpPut("{id}")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
         public async Task<ActionResult> Update(int id, [FromBody] UpdateInvoiceDTO updateDto)
         {
             if (!ModelState.IsValid)
@@ -93,6 +104,7 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/Invoice/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<ActionResult> Delete(int id)
         {
             await _invoiceService.DeleteInvoiceAsync(id);

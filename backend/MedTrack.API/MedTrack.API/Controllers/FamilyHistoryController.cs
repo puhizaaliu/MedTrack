@@ -1,5 +1,8 @@
-﻿using MedTrack.API.DTOs.FamilyHistory;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.FamilyHistory;
+using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,6 +10,8 @@ namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+    [AuthorizeRoles(UserRole.Admin, UserRole.Doctor)]
     public class FamilyHistoryController : ControllerBase
     {
         private readonly IFamilyHistoryService _familyHistoryService;

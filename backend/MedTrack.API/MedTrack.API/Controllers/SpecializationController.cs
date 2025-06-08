@@ -1,6 +1,10 @@
-﻿using MedTrack.API.DTOs.Specialization;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.Specialization;
+using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
@@ -18,6 +22,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Specialization
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllSpecializations()
         {
             var specializations = await _specializationService.GetAllSpecializationsAsync();
@@ -26,6 +31,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Specialization/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSpecializationById(int id)
         {
             var specialization = await _specializationService.GetSpecializationByIdAsync(id);
@@ -37,6 +43,8 @@ namespace MedTrack.API.Controllers
 
         // POST: api/Specialization
         [HttpPost]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> CreateSpecialization([FromBody] SpecializationDTO specializationDto)
         {
             await _specializationService.AddSpecializationAsync(specializationDto);
@@ -45,6 +53,8 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Specialization/{id}
         [HttpPut("{id}")]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> UpdateSpecialization(int id, [FromBody] SpecializationDTO specializationDto)
         {
             try
@@ -60,6 +70,8 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/Specialization/{id}
         [HttpDelete("{id}")]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteSpecialization(int id)
         {
             await _specializationService.DeleteSpecializationAsync(id);

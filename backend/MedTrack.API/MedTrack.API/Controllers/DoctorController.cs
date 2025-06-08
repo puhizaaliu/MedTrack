@@ -1,6 +1,10 @@
-﻿using MedTrack.API.DTOs.Doctor;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.Doctor;
+using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
@@ -18,6 +22,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Doctor
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllDoctors()
         {
             var doctors = await _doctorService.GetAllDoctorsAsync();
@@ -26,6 +31,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Doctor/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             var doctor = await _doctorService.GetDoctorByIdAsync(id);
@@ -37,6 +43,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Doctor/by-specialization/{specializationId}
         [HttpGet("by-specialization/{specializationId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDoctorsBySpecializationId(int specializationId)
         {
             var doctors = await _doctorService.GetDoctorsBySpecializationIdAsync(specializationId);
@@ -45,6 +52,8 @@ namespace MedTrack.API.Controllers
 
         // POST: api/Doctor
         [HttpPost]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> AddDoctor([FromQuery] int userId, [FromQuery] int specializationId)
         {
             await _doctorService.AddDoctorAsync(userId, specializationId);
@@ -53,6 +62,8 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Doctor/{id}
         [HttpPut("{id}")]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDTO updateDoctorDto)
         {
             try
@@ -68,6 +79,8 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/Doctor/{id}
         [HttpDelete("{id}")]
+        [Authorize]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteDoctor(int id)
         {
             await _doctorService.DeleteDoctorAsync(id);

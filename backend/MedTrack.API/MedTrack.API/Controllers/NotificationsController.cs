@@ -3,11 +3,18 @@ using System.Threading.Tasks;
 using MedTrack.API.DTOs.Notification;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.MedicalReport;
+using MedTrack.API.Models;
+using Microsoft.AspNetCore.Authorization;
+using MongoDB.Bson;
 
 namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+    [AuthorizeRoles(UserRole.Admin)]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _service;
@@ -17,6 +24,7 @@ namespace MedTrack.API.Controllers
             _service = service;
         }
 
+        // GET: api/Notifications
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -24,7 +32,7 @@ namespace MedTrack.API.Controllers
             return Ok(notifications);
         }
 
-
+        // GET: api/Notifications/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -34,6 +42,7 @@ namespace MedTrack.API.Controllers
             return Ok(dto);
         }
 
+        // GET: api/Notifications/user/{userId}
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(int userId)
         {
@@ -41,6 +50,7 @@ namespace MedTrack.API.Controllers
             return Ok(list);
         }
 
+        // POST: api/Notifications
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateNotificationDTO dto)
         {
@@ -51,6 +61,7 @@ namespace MedTrack.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = newId }, null);
         }
 
+        // PUT: api/Notifications/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateNotificationDTO dto)
         {
@@ -68,6 +79,7 @@ namespace MedTrack.API.Controllers
             }
         }
 
+        // DELETE: api/Notifications/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

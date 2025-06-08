@@ -1,6 +1,8 @@
-﻿using MedTrack.API.DTOs.Appointments;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.Appointments;
 using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -21,6 +24,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment
         [HttpGet]
+        [AuthorizeRoles(UserRole.Patient)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetAll()
         {
             var list = await _appointmentService.GetAllAppointmentsAsync();
@@ -29,6 +33,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/5
         [HttpGet("{id}")]
+        [AuthorizeRoles(UserRole.Patient)]
         public async Task<ActionResult<AppointmentDTO>> GetById(int id)
         {
             var dto = await _appointmentService.GetAppointmentByIdAsync(id);
@@ -39,6 +44,7 @@ namespace MedTrack.API.Controllers
 
         // POST: api/Appointment
         [HttpPost]
+        [AuthorizeRoles(UserRole.Patient)]
         public async Task<ActionResult> Create([FromBody] CreateAppointmentDTO createDto)
         {
             if (!ModelState.IsValid)
@@ -50,6 +56,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Appointment/5
         [HttpPut("{id}")]
+        [AuthorizeRoles(UserRole.Receptionist)]
         public async Task<ActionResult> Update(int id, [FromBody] UpdateAppointmentDTO updateDto)
         {
             if (!ModelState.IsValid)
@@ -67,6 +74,7 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/Appointment/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<ActionResult> Delete(int id)
         {
             await _appointmentService.DeleteAppointmentAsync(id);
@@ -75,6 +83,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/doctor/3
         [HttpGet("doctor/{doctorId}")]
+        [AuthorizeRoles(UserRole.Doctor)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByDoctor(int doctorId)
         {
             var list = await _appointmentService.GetAppointmentsByDoctorIdAsync(doctorId);
@@ -83,6 +92,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/patient/5
         [HttpGet("patient/{patientId}")]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByPatient(int patientId)
         {
             var list = await _appointmentService.GetAppointmentsByPatientIdAsync(patientId);
@@ -91,6 +101,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/status/Kerkese
         [HttpGet("status/{status}")]
+        [AuthorizeRoles(UserRole.Receptionist)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByStatus(string status)
         {
             if (!Enum.TryParse<AppointmentStatus>(status, true, out var parsed))

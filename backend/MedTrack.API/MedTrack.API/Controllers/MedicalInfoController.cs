@@ -1,12 +1,17 @@
-﻿using MedTrack.API.DTOs.MedicalInfo;
+﻿using MedTrack.API.Attributes;
+using MedTrack.API.DTOs.MedicalInfo;
+using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MedicalInfoController : ControllerBase
     {
         private readonly IMedicalInfoService _medicalInfoService;
@@ -18,6 +23,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/MedicalInfo/{patientId}
         [HttpGet("{patientId}")]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Doctor, UserRole.Admin)]
         public async Task<IActionResult> GetMedicalInfoByPatientId(int patientId)
         {
             var medicalInfo = await _medicalInfoService.GetMedicalInfoByPatientIdAsync(patientId);
@@ -29,6 +35,7 @@ namespace MedTrack.API.Controllers
 
         // POST: api/MedicalInfo
         [HttpPost]
+        [AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]
         public async Task<IActionResult> AddMedicalInfo([FromBody] CreateMedicalInfoDTO createMedicalInfoDto)
         {
             await _medicalInfoService.AddMedicalInfoAsync(createMedicalInfoDto);
@@ -37,6 +44,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/MedicalInfo/{patientId}
         [HttpPut("{patientId}")]
+        [AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]
         public async Task<IActionResult> UpdateMedicalInfo(int patientId, [FromBody] UpdateMedicalInfoDTO updateMedicalInfoDto)
         {
             try
@@ -52,6 +60,7 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/MedicalInfo/{patientId}
         [HttpDelete("{patientId}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteMedicalInfo(int patientId)
         {
             await _medicalInfoService.DeleteMedicalInfoAsync(patientId);

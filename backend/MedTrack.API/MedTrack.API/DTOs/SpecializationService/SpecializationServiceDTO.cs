@@ -1,4 +1,4 @@
-﻿namespace MedTrack.API.DTOs.SpecialzationService
+﻿namespace MedTrack.API.DTOs.SpecializationService
 {
     public class SpecializationServiceDTO
     {
