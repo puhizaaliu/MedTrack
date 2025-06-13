@@ -20,18 +20,6 @@ export default function ReceptionistLayout() {
             <Link to="/reception/appointments" className="hover:text-emerald-600">
               Appointments
             </Link>
-            <Link to="/reception/quick-booking" className="hover:text-emerald-600">
-              Quick Booking
-            </Link>
-            <Link to="/reception/process" className="hover:text-emerald-600">
-              Process
-            </Link>
-            <Link to="/reception/complete-invoice" className="hover:text-emerald-600">
-              Complete & Invoice
-            </Link>
-            <Link to="/reception/profile" className="hover:text-emerald-600">
-              Profile
-            </Link>
           </nav>
         </div>
       </header>
