@@ -26,6 +26,7 @@ import AdminLayout from './layouts/AdminLayout'
 import AdminDashboard from './pages/admin/Dashboard'
 import UserManagement from './pages/admin/Users'  
 import UserDetails from './pages/admin/UserDetails'
+import SpecializationsAndServices from './pages/admin/SpecializationsAndServices'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
         <Route path="dashboard" element={<AdminDashboard />} />  
         <Route path="users" element={<UserManagement />} />  
         <Route path="userdetail" element={<UserDetails />} /> 
+        <Route path="specializationsandservices" element={<SpecializationsAndServices />} /> 
       </Route>
     </Routes>
   )
