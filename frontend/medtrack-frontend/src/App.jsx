@@ -6,15 +6,17 @@ import Login from './pages/public/Login'
 import Register from './pages/public/Register'
 
 import PatientLayout from './layouts/PatientLayout'
-import PatientDashboard from './pages/patient/Dashboard';
-import PatientAppointments from './pages/patient/Appointments';
-import BookAppointment from './pages/patient/BookAppointment';
+import PatientDashboard from './pages/patient/Dashboard'
+import PatientAppointments from './pages/patient/Appointments'
+import BookAppointment from './pages/patient/BookAppointment'
 import Reports from './pages/patient/Reports'
 
 import ReceptionistLayout from './layouts/RecepsionistLayout'
 import Calendar from './pages/receptionist/Calendar'  
 import AppointmentRequests from './pages/receptionist/AppointmentRequests'  
-import ReceptionistAppointments from './pages/receptionist/Appointments';
+import ReceptionistAppointments from './pages/receptionist/Appointments'
+
+import DoctorLayout from './layouts/DoctorLayout' 
 
 function App() {
   return (
@@ -36,6 +38,10 @@ function App() {
         <Route path="appointmentrequests" element={<AppointmentRequests />} />
         <Route path="appointments" element={<ReceptionistAppointments />} />
       </Route>
+      <Route path="/doctor" element={<DoctorLayout />}>
+        {/* i shtojme routes */}
+      </Route>
+
     </Routes>
   )
 }
