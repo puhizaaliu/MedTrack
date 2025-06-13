@@ -18,10 +18,10 @@ export default function AdminLayout() {
             <Link to="/admin/users" className="hover:text-green-600">
               User Management
             </Link>
-            <Link to="/admin/specializations" className="hover:text-green-600">
+            <Link to="/admin/specializationsandservices" className="hover:text-green-600">
               Specializations & Services
             </Link>
-            <Link to="/admin/appointments" className="hover:text-green-600">
+            <Link to="/admin/appointmentsoverview" className="hover:text-green-600">
               Appointments
             </Link>
             <Link to="/login" className="text-red-500 hover:text-red-700">

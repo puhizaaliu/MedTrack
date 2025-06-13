@@ -27,6 +27,7 @@ import AdminDashboard from './pages/admin/Dashboard'
 import UserManagement from './pages/admin/Users'  
 import UserDetails from './pages/admin/UserDetails'
 import SpecializationsAndServices from './pages/admin/SpecializationsAndServices'
+import AppointmentsOverview from './pages/admin/AppointmentsOverview' 
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
         <Route path="users" element={<UserManagement />} />  
         <Route path="userdetail" element={<UserDetails />} /> 
         <Route path="specializationsandservices" element={<SpecializationsAndServices />} /> 
+        <Route path="appointmentsoverview" element={<AppointmentsOverview />} /> 
       </Route>
     </Routes>
   )
