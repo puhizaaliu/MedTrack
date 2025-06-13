@@ -7,9 +7,15 @@ import Register from './pages/public/Register'
 
 import PatientLayout from './layouts/PatientLayout'
 import PatientDashboard from './pages/patient/Dashboard';
-import Appointments from './pages/patient/Appointments';
+import PatientAppointments from './pages/patient/Appointments';
 import BookAppointment from './pages/patient/BookAppointment';
-import Reports from './pages/patient/Reports';
+import Reports from './pages/patient/Reports'
+
+import ReceptionistLayout from './layouts/RecepsionistLayout'
+import Calendar from './pages/receptionist/Calendar'  
+import AppointmentRequests from './pages/receptionist/AppointmentRequests'  
+import ReceptionistAppointments from './pages/receptionist/Appointments';
+
 function App() {
   return (
     <Routes>
@@ -21,9 +27,14 @@ function App() {
       </Route>
       <Route path="/patient" element={<PatientLayout />}>
         <Route path="dashboard" element={<PatientDashboard />} />
-        <Route path="appointments" element={<Appointments />} />
+        <Route path="appointments" element={<PatientAppointments />} />
         <Route path="bookappointment" element={<BookAppointment />} />
         <Route path="reports" element={<Reports />} />
+      </Route>
+      <Route path="/recepsionist" element={<ReceptionistLayout />}>
+        <Route path="calendar" element={<Calendar />} />
+        <Route path="appointmentrequests" element={<AppointmentRequests />} />
+        <Route path="appointments" element={<ReceptionistAppointments />} />
       </Route>
     </Routes>
   )
