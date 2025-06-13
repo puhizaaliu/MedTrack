@@ -12,12 +12,13 @@ import BookAppointment from './pages/patient/BookAppointment'
 import Reports from './pages/patient/Reports'
 
 import ReceptionistLayout from './layouts/RecepsionistLayout'
-import Calendar from './pages/receptionist/Calendar'  
+import RecepsionistCalendar from './pages/receptionist/Calendar'  
 import AppointmentRequests from './pages/receptionist/AppointmentRequests'  
 import ReceptionistAppointments from './pages/receptionist/Appointments'
 
 import DoctorLayout from './layouts/DoctorLayout' 
 import DoctorDashboard from './pages/doctor/Dashboard'
+import DoctorCalendar from '.pages/doctor/Calendar'
 
 function App() {
   return (
@@ -35,13 +36,13 @@ function App() {
         <Route path="reports" element={<Reports />} />
       </Route>
       <Route path="/recepsionist" element={<ReceptionistLayout />}>
-        <Route path="calendar" element={<Calendar />} />
+        <Route path="calendar" element={<RecepsionistCalendar />} />
         <Route path="appointmentrequests" element={<AppointmentRequests />} />
         <Route path="appointments" element={<ReceptionistAppointments />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route path="dashboard" element={<DoctorDashboard />} />
-        
+        <Route path="calendar" element={<DoctorCalendar />} />
       </Route>
 
     </Routes>
