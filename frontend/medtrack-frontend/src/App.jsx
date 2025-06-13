@@ -17,6 +17,7 @@ import AppointmentRequests from './pages/receptionist/AppointmentRequests'
 import ReceptionistAppointments from './pages/receptionist/Appointments'
 
 import DoctorLayout from './layouts/DoctorLayout' 
+import DoctorDashboard from './pages/doctor/Dashboard'
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
         <Route path="appointments" element={<ReceptionistAppointments />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
-        {/* i shtojme routes */}
+        <Route path="dashboard" element={<DoctorDashboard />} />
+        
       </Route>
 
     </Routes>
