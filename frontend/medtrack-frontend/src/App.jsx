@@ -20,6 +20,7 @@ import DoctorLayout from './layouts/DoctorLayout'
 import DoctorDashboard from './pages/doctor/Dashboard'
 import DoctorCalendar from '.pages/doctor/Calendar'
 import AppointmentInProgress from './pages/doctor/AppointmentInProgress'  
+import ReportForm from './pages/doctor/ReportForm'  
 
 function App() {
   return (
@@ -44,7 +45,8 @@ function App() {
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route path="dashboard" element={<DoctorDashboard />} />
         <Route path="calendar" element={<DoctorCalendar />} />
-         <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
+        <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
+        <Route path="reportform" element={<ReportForm />} />
       </Route>
 
     </Routes>
