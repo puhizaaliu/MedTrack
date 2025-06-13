@@ -18,7 +18,7 @@ import ReceptionistAppointments from './pages/receptionist/Appointments'
 
 import DoctorLayout from './layouts/DoctorLayout' 
 import DoctorDashboard from './pages/doctor/Dashboard'
-import DoctorCalendar from '.pages/doctor/Calendar'
+import DoctorCalendar from './pages/doctor/Calendar'
 import AppointmentInProgress from './pages/doctor/AppointmentInProgress'  
 import ReportForm from './pages/doctor/ReportForm'  
 
