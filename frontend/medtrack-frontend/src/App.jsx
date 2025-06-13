@@ -5,6 +5,11 @@ import About from './pages/public/About'
 import Login from './pages/public/Login'
 import Register from './pages/public/Register'
 
+import PatientLayout from './layouts/PatientLayout'
+import PatientDashboard from './pages/patient/Dashboard';
+import Appointments from './pages/patient/Appointments';
+import BookAppointment from './pages/patient/BookAppointment';
+import Reports from './pages/patient/Reports';
 function App() {
   return (
     <Routes>
@@ -15,8 +20,9 @@ function App() {
         <Route path="/register" element={<Register />} />
       </Route>
       <Route path="/patient" element={<PatientLayout />}>
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={<PatientDashboard />} />
         <Route path="appointments" element={<Appointments />} />
+        <Route path="bookappointment" element={<BookAppointment />} />
         <Route path="reports" element={<Reports />} />
       </Route>
     </Routes>

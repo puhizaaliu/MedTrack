@@ -4,7 +4,8 @@ import { Tab } from "@headlessui/react";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-//si shembuj se tani e lidhi me databaze
+
+// Vetëm dy statuset për pacientin
 const appointmentData = {
   Kerkese: [
     { id: 1, service: "Cardiology", doctor: "Dr. Arber Mehmeti", date: "-", status: "Kerkese" },
@@ -12,12 +13,6 @@ const appointmentData = {
   Konfirmuar: [
     { id: 2, service: "Dermatology", doctor: "Dr. Fjolla Berisha", date: "2025-06-20 10:00", status: "Konfirmuar" },
   ],
-  NeProces: [],
-  Kryer: [
-    { id: 3, service: "Neurology", doctor: "Dr. Valon Krasniqi", date: "2025-05-30 13:00", status: "Kryer" },
-  ],
-  Paguar: [],
-  NukKaArdhur: []
 };
 
 export default function Appointments() {
