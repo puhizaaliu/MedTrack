@@ -23,6 +23,7 @@ import AppointmentInProgress from './pages/doctor/AppointmentInProgress'
 import ReportForm from './pages/doctor/ReportForm'  
 
 import AdminLayout from './layouts/AdminLayout'
+import AdminDashboard from './pages/admin/Dashboard'  
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
         <Route path="reportform" element={<ReportForm />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
-        {/* i shtojme routes */}
+        <Route path="dashboard" element={<AdminDashboard />} />  
       </Route>
     </Routes>
   )
