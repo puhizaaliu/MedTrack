@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { getReports } from "../../api/reports";
-import ReportList from "../../shared/ReportList";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getReports } from '../../api/reports';
+import ReportList from '../../shared/ReportList';
 
-export default function Reports() {
-  const { user } = useAuth();
+export default function MyReports() {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,11 +11,12 @@ export default function Reports() {
 
   useEffect(() => {
     setLoading(true);
-    getReports(user.id)
+    // Fetch reports relevant to this doctor (server filters by role/user context)
+    getReports()
       .then(data => setReports(data))
       .catch(err => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false));
-  }, [user.id]);
+  }, []);
 
   if (loading) {
     return <p className="text-center py-6">Loading reports...</p>;
@@ -28,10 +27,10 @@ export default function Reports() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold text-gray-800">Medical Reports</h1>
+      <h1 className="text-2xl font-bold text-gray-800">My Issued Reports</h1>
       <ReportList
         reports={reports}
-        onViewReport={id => navigate(`/patient/reports/${id}`)}
+        onViewReport={id => navigate(`/doctor/reports/${id}`)}
       />
     </div>
   );

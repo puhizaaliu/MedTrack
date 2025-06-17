@@ -10,7 +10,8 @@ import PatientDashboard from './pages/patient/Dashboard'
 import PatientAppointments from './pages/patient/Appointments'
 import BookAppointment from './pages/patient/BookAppointment'
 import Reports from './pages/patient/Reports'
-
+import ReportDetails from './pages/patient/ReportDetails' 
+ 
 import ReceptionistLayout from './layouts/RecepsionistLayout'
 import RecepsionistCalendar from './pages/receptionist/Calendar'  
 import AppointmentRequests from './pages/receptionist/AppointmentRequests'  
@@ -20,7 +21,8 @@ import DoctorLayout from './layouts/DoctorLayout'
 import DoctorDashboard from './pages/doctor/Dashboard'
 import DoctorCalendar from './pages/doctor/Calendar'
 import AppointmentInProgress from './pages/doctor/AppointmentInProgress'  
-import ReportForm from './pages/doctor/ReportForm'  
+import ReportForm from './pages/doctor/ReportForm' 
+import MyReports from './pages/doctor/MyReports' 
 
 import AdminLayout from './layouts/AdminLayout'
 import AdminDashboard from './pages/admin/Dashboard'
@@ -28,7 +30,8 @@ import UserManagement from './pages/admin/Users'
 import UserDetails from './pages/admin/UserDetails'
 import SpecializationsAndServices from './pages/admin/SpecializationsAndServices'
 import AppointmentsOverview from './pages/admin/AppointmentsOverview' 
-
+import ReportsOverview from './pages/admin/ReportsOverview' 
+import AdminReportDetails from './pages/admin/ReportDetails'
 function App() {
   return (
     <Routes>
@@ -43,6 +46,8 @@ function App() {
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="bookappointment" element={<BookAppointment />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="patient/reports/:id" element={<ReportDetails />} />
+
       </Route>
       <Route path="/recepsionist" element={<ReceptionistLayout />}>
         <Route path="calendar" element={<RecepsionistCalendar />} />
@@ -53,14 +58,18 @@ function App() {
         <Route path="dashboard" element={<DoctorDashboard />} />
         <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
-        <Route path="reportform" element={<ReportForm />} />
+       <Route path="doctor/reports" element={<MyReports />} />
+        <Route path="doctor/reports/:id" element={<ReportForm />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />  
         <Route path="users" element={<UserManagement />} />  
         <Route path="userdetail" element={<UserDetails />} /> 
         <Route path="specializationsandservices" element={<SpecializationsAndServices />} /> 
-        <Route path="appointmentsoverview" element={<AppointmentsOverview />} /> 
+        <Route path="appointmentsoverview" element={<AppointmentsOverview />} />
+        <Route path="admin/reports" element={<ReportsOverview />} />
+        <Route path="admin/reports/:id" element={<AdminReportDetails />} />
+ 
       </Route>
     </Routes>
   )
