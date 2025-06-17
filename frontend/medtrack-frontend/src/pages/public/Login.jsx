@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';                        // ← use our context
-import { login as loginApi } from '../api/auth';                   // ← API helper
+import { useAuth } from '../../hooks/useAuth';                        // ← use our context
+import { login as loginApi } from '../../api/auth';                   // ← API helper
 
 export default function Login() {
   const { login } = useAuth();                                     // ← context login()

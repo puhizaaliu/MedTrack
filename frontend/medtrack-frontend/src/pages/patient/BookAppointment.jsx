@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// src/pages/patient/BookAppointment.jsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { createAppointment } from "../../api/appointments";
@@ -8,11 +9,16 @@ export default function BookAppointment() {
   const navigate = useNavigate();
 
   const [service, setService] = useState("");
-  const [doctor, setDoctor] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [error, setError] = useState(null);
+  const [doctor, setDoctor]   = useState("");
+  const [date, setDate]       = useState("");
+  const [time, setTime]       = useState("");
+  const [error, setError]     = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // don’t render form until user is loaded
+  if (!user?.userId) {
+    return <p className="text-center py-6">Loading user...</p>;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +26,7 @@ export default function BookAppointment() {
     setSubmitting(true);
     try {
       await createAppointment({
-        patientId: user.id,
+        patientId: user.userId,
         serviceId: service,
         doctorId: doctor,
         date,

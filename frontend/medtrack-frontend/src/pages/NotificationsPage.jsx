@@ -1,14 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { useNotifications } from '../../contexts/NotificationsContext';
-import NotificationList from '../../shared/NotificationList';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../contexts/NotificationsContext';
+import NotificationList from '../shared/NotificationList';
 
 export default function NotificationsPage() {
   const { user } = useAuth();
-  const base     = user.role;                        // 'patient'|'doctor'|'receptionist'|'admin'
-  const navigate = useNavigate();
   const { notifications, markAsRead } = useNotifications();
+  const navigate = useNavigate();
+
+  // guard: wait for auth
+  if (!user) {
+    return <p className="text-center py-6">Loading user...</p>;
+  }
+
+  const base = user.role; // now safe to read
 
   const handleView = id => {
     const n = notifications.find(x => x.id === id);

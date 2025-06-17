@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUser } from '../api/users';                         // ← API helper
+import { createUser } from '../../api/users';                         // ← API helper
 
 export default function Register() {
   const [form, setForm] = useState({

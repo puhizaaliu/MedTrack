@@ -21,12 +21,19 @@ export default function Appointments() {
   const [statusFilter, setStatusFilter] = useState("Pending");
 
   useEffect(() => {
+    // don’t try to fetch until we know the user ID
+    if (!user?.userId) return;
+
     setLoading(true);
-    getAppointments(user.id, statusFilter)
+    getAppointments(user.userId, statusFilter)
       .then((data) => setAppointments(data))
       .finally(() => setLoading(false));
-  }, [user.id, statusFilter]);
+  }, [user?.userId, statusFilter]);
 
+  // still waiting on auth
+  if (!user) {
+    return <p className="text-center py-6">Loading user...</p>;
+  }
   if (loading) {
     return <p className="text-center py-6">Loading appointments...</p>;
   }
@@ -36,7 +43,7 @@ export default function Appointments() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">My Appointments</h1>
         <button
-          onClick={() => navigate('/patient/appointments/new')}
+          onClick={() => navigate("/patient/appointments/new")}
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
         >
           Book Appointment

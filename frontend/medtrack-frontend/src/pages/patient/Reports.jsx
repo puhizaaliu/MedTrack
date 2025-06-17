@@ -7,21 +7,31 @@ import ReportList from "../../shared/ReportList";
 export default function Reports() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [reports, setReports]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
 
   useEffect(() => {
+    // don’t fetch until we know the user ID
+    if (!user?.userId) return;
+
     setLoading(true);
-    getReports(user.id)
+    getReports(user.userId)
       .then(data => setReports(data))
       .catch(err => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false));
-  }, [user.id]);
+  }, [user?.userId]);
+
+  // still waiting on auth
+  if (!user) {
+    return <p className="text-center py-6">Loading user...</p>;
+  }
 
   if (loading) {
     return <p className="text-center py-6">Loading reports...</p>;
   }
+
   if (error) {
     return <p className="text-red-600 text-center py-6">{error}</p>;
   }
