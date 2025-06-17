@@ -1,20 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { createAppointment } from "../../api/appointments";
 
 export default function BookAppointment() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [service, setService] = useState("");
   const [doctor, setDoctor] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // ma vone e lidhi me databaze
-    console.log({ service, doctor, date, time });
+    setError(null);
+    setSubmitting(true);
+    try {
+      await createAppointment({
+        patientId: user.id,
+        serviceId: service,
+        doctorId: doctor,
+        date,
+        time
+      });
+      navigate("/patient/appointments");
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="max-w-xl mx-auto bg-white shadow-md rounded p-6">
       <h1 className="text-2xl font-semibold mb-6 text-center">Book Appointment</h1>
+      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Service</label>
@@ -25,6 +48,7 @@ export default function BookAppointment() {
             required
           >
             <option value="">Select service</option>
+            {/* TODO: replace static options with dynamic list from API */}
             <option value="General Checkup">General Checkup</option>
             <option value="Dermatology">Dermatology</option>
             <option value="Cardiology">Cardiology</option>
@@ -40,8 +64,9 @@ export default function BookAppointment() {
             required
           >
             <option value="">Select doctor</option>
-            <option value="Dr. Smith">Dr. Smith</option>
-            <option value="Dr. Jane">Dr. Jane</option>
+            {/* TODO: replace static options with dynamic list from API */}
+            <option value="1">Dr. Smith</option>
+            <option value="2">Dr. Jane</option>
           </select>
         </div>
 
@@ -69,9 +94,10 @@ export default function BookAppointment() {
 
         <button
           type="submit"
-          className="w-full bg-[#46F072] hover:bg-[#3cd366] text-white font-semibold py-2 px-4 rounded"
+          disabled={submitting}
+          className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded disabled:opacity-50"
         >
-          Submit Request
+          {submitting ? "Submitting..." : "Submit Request"}
         </button>
       </form>
     </div>

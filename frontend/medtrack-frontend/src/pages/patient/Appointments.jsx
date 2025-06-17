@@ -1,81 +1,68 @@
-import React, { useState } from "react";
-import { Tab } from "@headlessui/react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AppointmentList from "../../shared/AppointmentList";
+import { getAppointments } from "../../api/appointments";
+import { useAuth } from "../../hooks/useAuth";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-// Vetëm dy statuset për pacientin
-const appointmentData = {
-  Kerkese: [
-    { id: 1, service: "Cardiology", doctor: "Dr. Arber Mehmeti", date: "-", status: "Kerkese" },
-  ],
-  Konfirmuar: [
-    { id: 2, service: "Dermatology", doctor: "Dr. Fjolla Berisha", date: "2025-06-20 10:00", status: "Konfirmuar" },
-  ],
-};
+const STATUSES = [
+  "Pending",
+  "Confirmed",
+  "In-Process",
+  "Completed",
+  "Paid",
+  "No-Show",
+];
 
 export default function Appointments() {
-  const categories = Object.keys(appointmentData);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("Pending");
+
+  useEffect(() => {
+    setLoading(true);
+    getAppointments(user.id, statusFilter)
+      .then((data) => setAppointments(data))
+      .finally(() => setLoading(false));
+  }, [user.id, statusFilter]);
+
+  if (loading) {
+    return <p className="text-center py-6">Loading appointments...</p>;
+  }
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-12 px-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
+      <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">My Appointments</h1>
-        <a
-          href="/patient/appointments/new"
-          className="bg-[#46F072] hover:bg-[#38c95f] text-white px-4 py-2 rounded-md font-medium"
+        <button
+          onClick={() => navigate('/patient/appointments/new')}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
         >
           Book Appointment
-        </a>
+        </button>
       </div>
 
-      <Tab.Group>
-        <Tab.List className="flex space-x-2 border-b">
-          {categories.map((status) => (
-            <Tab
-              key={status}
-              className={({ selected }) =>
-                classNames(
-                  "py-2 px-4 text-sm font-medium",
-                  selected ? "border-b-2 border-[#46F072] text-[#46F072]" : "text-gray-600 hover:text-[#46F072]"
-                )
-              }
-            >
-              {status}
-            </Tab>
-          ))}
-        </Tab.List>
-        <Tab.Panels className="mt-6">
-          {categories.map((status) => (
-            <Tab.Panel key={status} className="space-y-4">
-              {appointmentData[status].length === 0 ? (
-                <p className="text-gray-500">No appointments in this category.</p>
-              ) : (
-                <ul className="space-y-3">
-                  {appointmentData[status].map((appt) => (
-                    <li
-                      key={appt.id}
-                      className="bg-white shadow p-4 rounded-lg border border-gray-200"
-                    >
-                      <div className="flex justify-between">
-                        <div>
-                          <h3 className="font-semibold text-gray-800">{appt.service}</h3>
-                          <p className="text-sm text-gray-500">Doctor: {appt.doctor}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-gray-500">Date: {appt.date}</p>
-                          <p className="text-sm font-semibold text-[#46F072]">{appt.status}</p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Tab.Panel>
-          ))}
-        </Tab.Panels>
-      </Tab.Group>
+      <div className="flex flex-wrap gap-3">
+        {STATUSES.map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              statusFilter === s
+                ? "bg-green-500 text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <AppointmentList
+        appointments={appointments}
+        onViewDetails={(id) => navigate(`/patient/appointments/${id}`)}
+      />
     </div>
   );
 }

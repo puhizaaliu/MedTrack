@@ -1,34 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getAppointmentRequests, approveRequest, rejectRequest } from "../../api/appointments";
 
 export default function AppointmentRequests() {
-    //si shembuj se tani i zv me tdhana prej databazes
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      patientName: "Arta Berisha",
-      service: "Konsultë kardiologjike",
-      preferredDate: "2025-06-15",
-      status: "Pending"
-    },
-    {
-      id: 2,
-      patientName: "Valon Krasniqi",
-      service: "Kontrollë ortopedike",
-      preferredDate: "2025-06-17",
-      status: "Pending"
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getAppointmentRequests()
+      .then(data => setRequests(data))
+      .catch(err => setError(err.response?.data?.message || err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleApprove = async (id) => {
+    try {
+      await approveRequest(id);
+      setRequests(reqs => reqs.filter(r => r.appointmentId !== id));
+    } catch (err) {
+      console.error("Error approving request:", err);
     }
-  ]);
-
-  const handleApprove = (id) => {
-    console.log("Approve request", id);
   };
 
-  const handleReject = (id) => {
-    console.log("Reject request", id);
+  const handleReject = async (id) => {
+    try {
+      await rejectRequest(id);
+      setRequests(reqs => reqs.filter(r => r.appointmentId !== id));
+    } catch (err) {
+      console.error("Error rejecting request:", err);
+    }
   };
+
+  if (loading) return <p className="text-center py-6">Loading appointment requests...</p>;
+  if (error) return <p className="text-red-600 text-center py-6">{error}</p>;
 
   return (
-    <div className="bg-white rounded shadow p-6">
+    <div className="bg-white rounded shadow p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-semibold mb-4">Kërkesat për Termine</h1>
       <table className="min-w-full table-auto border border-gray-300">
         <thead>
@@ -41,20 +49,20 @@ export default function AppointmentRequests() {
         </thead>
         <tbody>
           {requests.map((req) => (
-            <tr key={req.id} className="border-t">
+            <tr key={req.appointmentId} className="border-t">
               <td className="px-4 py-2 border">{req.patientName}</td>
-              <td className="px-4 py-2 border">{req.service}</td>
+              <td className="px-4 py-2 border">{req.serviceName}</td>
               <td className="px-4 py-2 border">{req.preferredDate}</td>
               <td className="px-4 py-2 border space-x-2">
                 <button
                   className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                  onClick={() => handleApprove(req.id)}
+                  onClick={() => handleApprove(req.appointmentId)}
                 >
                   Approve
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                  onClick={() => handleReject(req.id)}
+                  onClick={() => handleReject(req.appointmentId)}
                 >
                   Reject
                 </button>

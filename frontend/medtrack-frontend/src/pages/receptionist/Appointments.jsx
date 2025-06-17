@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAppointments } from "../../api/appointments";
+import { useAuth } from "../../hooks/useAuth";
 
-const appointmentStatuses = [
+const STATUSES = [
   "Pending",
   "Confirmed",
   "In-Process",
@@ -9,49 +12,43 @@ const appointmentStatuses = [
   "No-Show",
 ];
 
-const dummyAppointments = [
-  {
-    id: 1,
-    patient: "John Doe",
-    doctor: "Dr. Smith",
-    date: "2025-06-20",
-    time: "14:00",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    patient: "Jane Smith",
-    doctor: "Dr. Johnson",
-    date: "2025-06-21",
-    time: "10:30",
-    status: "Confirmed",
-  },
-  // Add more dummy data as needed
-];
+export default function ReceptionistAppointments() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("Pending");
 
-export default function Appointments() {
-  const [selectedStatus, setSelectedStatus] = useState("Pending");
+  useEffect(() => {
+    setLoading(true);
+    // Fetch all appointments filtered by status
+    getAppointments(null, statusFilter)
+      .then(data => setAppointments(data))
+      .finally(() => setLoading(false));
+  }, [statusFilter]);
 
-  const filteredAppointments = dummyAppointments.filter(
-    (appt) => appt.status === selectedStatus
-  );
+  if (loading) {
+    return <p className="text-center py-6">Loading appointments...</p>;
+  }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Appointments</h1>
+    <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">All Appointments</h1>
+      </div>
 
       <div className="flex flex-wrap gap-3">
-        {appointmentStatuses.map((status) => (
+        {STATUSES.map(s => (
           <button
-            key={status}
-            className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
-              selectedStatus === status
-                ? "bg-[#46F072] text-white border-transparent"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              statusFilter === s
+                ? "bg-green-500 text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
             }`}
-            onClick={() => setSelectedStatus(status)}
           >
-            {status}
+            {s}
           </button>
         ))}
       </div>
@@ -60,33 +57,37 @@ export default function Appointments() {
         <table className="min-w-full bg-white shadow-md rounded-lg">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Patient
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Doctor
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Time
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                Status
-              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Patient</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Doctor</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Date & Time</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Service</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+              <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600"></th>
             </tr>
           </thead>
           <tbody>
-            {filteredAppointments.map((appt) => (
-              <tr key={appt.id} className="border-b">
-                <td className="px-6 py-4 text-sm text-gray-800">{appt.patient}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{appt.doctor}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{appt.date}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{appt.time}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{appt.status}</td>
-              </tr>
-            ))}
+            {appointments.map(a => {
+              const dateTime = new Date(`${a.date}T${a.time}`);
+              const formattedDate = dateTime.toLocaleDateString();
+              const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              return (
+                <tr key={a.appointmentId} className="border-b hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-800">{a.patientName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{a.doctorName} {a.doctorSurname}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{formattedDate} {formattedTime}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{a.serviceName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800 capitalize">{a.status}</td>
+                  <td className="px-6 py-4 text-sm text-right">
+                    <button
+                      onClick={() => navigate(`/receptionist/appointments/${a.appointmentId}`)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

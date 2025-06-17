@@ -1,89 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAppointments } from "../../api/appointments";
+import AppointmentList from "../../shared/AppointmentList";
 
-const AppointmentsOverview = () => {
-  const [filter, setFilter] = useState("all");
+const STATUSES = [
+  "all",
+  "Pending",
+  "Confirmed",
+  "In-Process",
+  "Completed",
+  "Paid",
+  "No-Show",
+];
 
-  const appointments = [
-    {
-      id: 1,
-      patient: "Jane Smith",
-      doctor: "Dr. John Doe",
-      date: "2025-06-14",
-      time: "10:00",
-      status: "Confirmed",
-    },
-    {
-      id: 2,
-      patient: "Alex Green",
-      doctor: "Dr. Sarah Lee",
-      date: "2025-06-15",
-      time: "14:30",
-      status: "Pending",
-    },
-    // more sample data...
-  ];
+export default function AppointmentsOverview() {
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredAppointments =
-    filter === "all"
-      ? appointments
-      : appointments.filter((a) => a.status === filter);
+  useEffect(() => {
+    setLoading(true);
+    const status = statusFilter === "all" ? null : statusFilter;
+    getAppointments(null, status)
+      .then(data => setAppointments(data))
+      .catch(err => console.error("Error loading appointments:", err))
+      .finally(() => setLoading(false));
+  }, [statusFilter]);
+
+  if (loading) {
+    return <p className="text-center py-6">Loading appointments...</p>;
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-semibold text-gray-800">Appointments Overview</h1>
 
-      <div className="flex gap-4">
-        {[
-          "all",
-          "Pending",
-          "Confirmed",
-          "In-Process",
-          "Completed",
-          "Paid",
-          "No-Show",
-        ].map((status) => (
+      <div className="flex flex-wrap gap-3">
+        {STATUSES.map((s) => (
           <button
-            key={status}
-            onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded ${
-              filter === status
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              statusFilter === s
                 ? "bg-green-500 text-white"
-                : "bg-gray-100 text-gray-800"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
             }`}
           >
-            {status === "all" ? "All" : status}
+            {s === "all" ? "All" : s}
           </button>
         ))}
       </div>
 
-      <table className="w-full table-auto border-collapse bg-white shadow rounded">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-4 py-2 text-left">Patient</th>
-            <th className="px-4 py-2 text-left">Doctor</th>
-            <th className="px-4 py-2 text-left">Date</th>
-            <th className="px-4 py-2 text-left">Time</th>
-            <th className="px-4 py-2 text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAppointments.map((appt) => (
-            <tr key={appt.id} className="border-t">
-              <td className="px-4 py-2">{appt.patient}</td>
-              <td className="px-4 py-2">{appt.doctor}</td>
-              <td className="px-4 py-2">{appt.date}</td>
-              <td className="px-4 py-2">{appt.time}</td>
-              <td className="px-4 py-2">
-                <span className="inline-block px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
-                  {appt.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <AppointmentList
+        appointments={appointments}
+        onViewDetails={(id) => navigate(`/admin/appointments/${id}`)}
+      />
     </div>
   );
-};
-
-export default AppointmentsOverview;
+}
