@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
+import NotificationsPage from './pages/NotificationsPage';
+
 import PublicLayout from './layouts/PublicLayout'
 import Home from './pages/public/Home'
 import About from './pages/public/About'
@@ -56,6 +58,7 @@ function App() {
         <Route path="reports" element={<Reports />} />
         <Route path="reports/:id" element={<ReportDetails />} />
         <Route path="profile" element={<MyProfile />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
       <Route path="/recepsionist" element={<ReceptionistLayout />}>
@@ -66,6 +69,7 @@ function App() {
         <Route path="patients/:id" element={<ReceptionistPatientDetails />} />
         <Route path="doctors" element={<Doctors />} />
         <Route path="doctors/:if" element={<DoctorDetails />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
       <Route path="/doctor" element={<DoctorLayout />}>
@@ -75,7 +79,8 @@ function App() {
         <Route path="reports" element={<MyReports />} />
         <Route path="reports/:id" element={<ReportForm />} />
         <Route path="patients" element={<PatientsList />} />
-         <Route path="patients/:id" element={<PatientDetails />} />
+        <Route path="patients/:id" element={<PatientDetails />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
       <Route path="/admin" element={<AdminLayout />}>
@@ -86,6 +91,7 @@ function App() {
         <Route path="appointmentsoverview" element={<AppointmentsOverview />} />
         <Route path="reports" element={<ReportsOverview />} />
         <Route path="reports/:id" element={<AdminReportDetails />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
     </Routes>

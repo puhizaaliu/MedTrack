@@ -13,6 +13,8 @@ using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MedTrack.API.Hubs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 // Repositories
@@ -108,6 +110,18 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// Register SignalR - per notifications
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+  options.AddDefaultPolicy(policy =>
+    policy
+      .WithOrigins("http://localhost:5173")  // your Vite dev URL
+      .AllowAnyHeader()
+      .AllowAnyMethod()
+      .AllowCredentials()
+  )
+);
+
 // build app
 var app = builder.Build();
 
@@ -124,5 +138,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
