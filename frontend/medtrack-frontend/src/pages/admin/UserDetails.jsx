@@ -1,78 +1,99 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { getUserById }    from '../../api/users';
+import { getPatientById } from '../../api/patients';
+import { getDoctorById }  from '../../api/doctors';
 
-export default function UserDetails({ user }) {
-  if (!user) {
-    return <p>No user data available.</p>;
-  }
+export default function UserDetails() {
+  const { id } = useParams();
+  const [user, setUser]       = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getUserById(id)
+      .then(u => {
+        setUser(u);
+        if (u.role === 'Patient') {
+          return getPatientById(id).then(setProfile);
+        }
+        if (u.role === 'Doctor') {
+          return getDoctorById(id).then(setProfile);
+        }
+        // No extra profile for Admin/Receptionist
+        return Promise.resolve();
+      })
+      .catch(e => {
+        setError(e.response?.data?.message || e.message);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p className="text-center py-6">Loading user…</p>;
+  if (error)   return <p className="text-red-600 text-center py-6">{error}</p>;
+  if (!user)   return <p className="text-center py-6">User not found.</p>;
 
   return (
-    <div className="bg-white rounded shadow p-6 space-y-4">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        User Details
-      </h2>
+    <div className="max-w-4xl mx-auto py-8 px-4 space-y-6">
+      <Link
+        to="/admin/users"
+        className="text-blue-600 hover:underline"
+      >
+        ← Back to Users
+      </Link>
 
-      {/* Basic Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <p><strong>Name:</strong> {user.name} {user.surname}</p>
+      <h1 className="text-2xl font-bold">
+        {user.name} {user.surname}
+      </h1>
+
+      <div className="bg-white p-6 rounded shadow space-y-2">
         <p><strong>Parent Name:</strong> {user.parentName}</p>
         <p><strong>Gender:</strong> {user.gender}</p>
-        <p><strong>Date of Birth:</strong> {user.dateOfBirth}</p>
-        <p><strong>Personal Number:</strong> {user.personalNumber}</p>
+        <p>
+          <strong>Date of Birth:</strong>{' '}
+          {new Date(user.dateOfBirth).toLocaleDateString()}
+        </p>
         <p><strong>Address:</strong> {user.address}</p>
         <p><strong>Phone:</strong> {user.phone}</p>
         <p><strong>Email:</strong> {user.email}</p>
         <p><strong>Role:</strong> {user.role}</p>
       </div>
 
-      {/* Role-specific Info */}
-      {user.role === "Doctor" && user.doctor && (
-        <div className="pt-6 border-t">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Doctor Info</h3>
-          <p><strong>Specialization:</strong> {user.doctor.specialization?.name || "Not assigned"}</p>
+      {user.role === 'Patient' && profile && (
+        <div className="bg-white p-6 rounded shadow space-y-4">
+          <h2 className="text-xl font-semibold">Medical Info</h2>
+          <p><strong>Allergies:</strong> {profile.medicalInfo?.allergies}</p>
+          <p><strong>Medications:</strong> {profile.medicalInfo?.medications}</p>
+          <p>
+            <strong>Smoking:</strong>{' '}
+            {profile.medicalInfo?.smoking ? 'Yes' : 'No'}
+          </p>
+          <p><strong>Alcohol:</strong> {profile.medicalInfo?.alcohol}</p>
+          <p>
+            <strong>Physical Activity:</strong>{' '}
+            {profile.medicalInfo?.physicalActivity}
+          </p>
+
+          {profile.familyHistory?.length > 0 && (
+            <>
+              <h2 className="text-xl font-semibold">Family History</h2>
+              <ul className="list-disc list-inside">
+                {profile.familyHistory.map(fh => (
+                  <li key={fh.historyId}>{fh.conditionName}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
 
-      {user.role === "Patient" && user.patient && (
-        <div className="space-y-8">
-      {/* Section 1: Medical Information */}
-      <section className="bg-white rounded shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-[#46F072]">Medical Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-          <p><strong>Height:</strong> {/* Height */}</p>
-          <p><strong>Weight:</strong> {/* Weight */}</p>
-          <p><strong>Blood Type:</strong> {/* Blood Type */}</p>
-          <p><strong>Allergies:</strong> {/* Allergies */}</p>
-          <p><strong>Medications:</strong> {/* Medications */}</p>
+      {user.role === 'Doctor' && profile && (
+        <div className="bg-white p-6 rounded shadow space-y-2">
+          <h2 className="text-xl font-semibold">Doctor Info</h2>
+          <p><strong>Specialization:</strong> {profile.specializationName}</p> :contentReference[oaicite:0]{index=0}
         </div>
-      </section>
-
-      {/* Section 2: Family History */}
-      <section className="bg-white rounded shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-[#46F072]">Family History</h2>
-        <div className="space-y-2 text-gray-700">
-          {/* Loop through family history items */}
-          <div className="border-b pb-2">
-            <p><strong>Disease:</strong> {/* Disease */}</p>
-            <p><strong>Relation:</strong> {/* Relation */}</p>
-            <p><strong>Description:</strong> {/* Description */}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: Medical Reports */}
-      <section className="bg-white rounded shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-[#46F072]">Medical Reports</h2>
-        <div className="space-y-4">
-          {/* Loop through reports */}
-          <div className="border-b pb-2 text-gray-700">
-            <p><strong>Date:</strong> {/* Date */}</p>
-            <p><strong>Diagnosis:</strong> {/* Diagnosis */}</p>
-            <p><strong>Treatment Plan:</strong> {/* Treatment */}</p>
-            <button className="text-sm text-blue-600 hover:underline">View Full Report</button>
-          </div>
-        </div>
-      </section>
-    </div>
       )}
     </div>
   );
