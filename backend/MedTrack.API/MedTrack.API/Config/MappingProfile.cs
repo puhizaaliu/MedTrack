@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MedTrack.API.DTOs.Appointments;
+using MedTrack.API.DTOs.ChronicDisease;
 using MedTrack.API.DTOs.Doctor;
 using MedTrack.API.DTOs.FamilyHistory;
 using MedTrack.API.DTOs.Invoice;
@@ -7,6 +8,7 @@ using MedTrack.API.DTOs.MedicalInfo;
 using MedTrack.API.DTOs.MedicalReport;
 using MedTrack.API.DTOs.Notification;
 using MedTrack.API.DTOs.Patient;
+using MedTrack.API.DTOs.PatientChronicDisease;
 using MedTrack.API.DTOs.PatientFamilyHistory;
 using MedTrack.API.DTOs.Service;
 using MedTrack.API.DTOs.Specialization;
@@ -111,6 +113,18 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<UpdateMedicalReportDto, MedicalReport>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            //Chronic Disease
+            CreateMap<ChronicDisease, ChronicDiseaseDTO>();
+            CreateMap<CreateChronicDiseaseDTO, ChronicDisease>();
+            CreateMap<UpdateChronicDiseaseDTO, ChronicDisease>();
+
+            CreateMap<PatientChronicDisease, PatientChronicDiseaseDTO>()
+                .ForMember(dest => dest.Disease,
+                           opt => opt.MapFrom(src => src.Disease));
+            CreateMap<CreatePatientChronicDiseaseDTO, PatientChronicDisease>();
+            CreateMap<UpdatePatientChronicDiseaseDTO, PatientChronicDisease>();
+
 
             // Notification
             CreateMap<NotificationDocument, NotificationDTO>()
