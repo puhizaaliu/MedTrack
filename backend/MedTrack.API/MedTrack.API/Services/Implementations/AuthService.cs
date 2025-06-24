@@ -90,10 +90,21 @@ namespace MedTrack.API.Services.Implementations
 
         public async Task<AuthResponse> RefreshAsync(RefreshTokenRequest dto)
         {
-            var principal = _tokenService.GetPrincipalFromExpiredToken(dto.Token);
-            var userId = int.Parse(principal!.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+            var principal = _tokenService.GetPrincipalFromExpiredToken(dto.AccessToken);
+            if (principal == null)
+                throw new InvalidOperationException("Invalid access token. No claims principal could be parsed.");
 
-            var savedToken = await _db.RefreshTokens.SingleOrDefaultAsync(rt => rt.Token == dto.Token && rt.UserId == userId);
+            // Try to find user id in both common claim types
+            var subClaim = principal.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                        ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(subClaim))
+                throw new InvalidOperationException("Access token does not contain user id ('sub' or 'nameidentifier') claim.");
+
+            var userId = int.Parse(subClaim);
+
+            var savedToken = await _db.RefreshTokens.SingleOrDefaultAsync(rt => rt.Token == dto.RefreshToken && rt.UserId == userId);
+
             if (savedToken == null || savedToken.Expires <= DateTime.UtcNow || savedToken.Revoked != null)
                 throw new InvalidOperationException("Invalid refresh token.");
 
@@ -118,9 +129,10 @@ namespace MedTrack.API.Services.Implementations
             };
         }
 
+
         public async Task LogoutAsync(RefreshTokenRequest dto)
         {
-            var savedToken = await _db.RefreshTokens.SingleOrDefaultAsync(rt => rt.Token == dto.Token);
+            var savedToken = await _db.RefreshTokens.SingleOrDefaultAsync(rt => rt.Token == dto.RefreshToken);
             if (savedToken != null)
             {
                 savedToken.Revoked = DateTime.UtcNow;

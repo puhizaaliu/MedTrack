@@ -1,23 +1,32 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { login as apiLogin, refreshToken as apiRefresh } from '../api/auth';
-import api from '../api/client';
 
 const AuthContext = createContext();
 
+/**
+ * Exposes:
+ *  - user: null | { userId, role, name, … }
+ *  - login(credentials): Promise<{ accessToken, refreshToken, user }>
+ *  - logout()
+ *  - loading: boolean (true while we’re restoring session on page-load)
+ */
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, try to restore session using refresh token
+  // On mount, try to restore session with refresh token
   useEffect(() => {
-    async function restore() {
-      const token = localStorage.getItem('refreshToken');
-      if (token) {
+    (async function restore() {
+      const rt = localStorage.getItem('refreshToken');
+      if (rt) {
         try {
-          const { accessToken, refreshToken, user } = await apiRefresh(token);
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          setUser(user);
+          // your refresh endpoint returns { accessToken, refreshToken, user }
+          const data = await apiRefresh(rt);
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+          localStorage.setItem('role',data.user.role);
+          localStorage.setItem('userId',data.user.userId);
+          setUser(data.user);
         } catch {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
@@ -25,16 +34,18 @@ export function AuthProvider({ children }) {
         }
       }
       setLoading(false);
-    }
-    restore();
+    })();
   }, []);
+      
 
-  const login = async (credentials) => {
-    const { accessToken, refreshToken, user } = await apiLogin(credentials);
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    setUser(user);
-    return user;
+  const login = async credentials => {
+    const data = await apiLogin(credentials);
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('refreshToken', data.refreshToken);
+    localStorage.setItem('role',data.user.role);
+    localStorage.setItem('userId',data.user.userId)
+    setUser(data.user);
+    return data;
   };
 
   const logout = () => {

@@ -15,6 +15,7 @@ namespace MedTrack.API.MongoModels
         General                 
     }
 
+    [BsonIgnoreExtraElements]
     public class NotificationDocument
     {
         [BsonId]

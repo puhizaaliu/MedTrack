@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';                        // ← use our context
-import { login as loginApi } from '../../api/auth';                   // ← API helper
+//import { login as loginApi } from '../../api/auth';                   // ← API helper
 
 export default function Login() {
   const { login } = useAuth();                                     // ← context login()
@@ -17,10 +17,12 @@ export default function Login() {
     setError('');
     try {
       // call the shared API, context will store tokens + user
-      const { user } = await login({ email, password });          
-      
+      const user = await login({ email, password });        
+      console.log('After login:');
+      console.log('accessToken:', localStorage.getItem('accessToken'));
+      console.log('refreshToken:', localStorage.getItem('refreshToken'));
       // redirect based on role
-      switch (user.role) {
+      switch (user.user.role) {
         case 'Patient':
           navigate('/patient/dashboard', { replace: true });
           break;

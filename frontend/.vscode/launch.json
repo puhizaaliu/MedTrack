@@ -1,0 +1,18 @@
+// .vscode/launch.json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Vite in Chrome",
+      "type": "chrome",              // or "chrome" if you have the legacy extension
+      "request": "launch",
+      "url": "https://localhost:5173",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "vite://src/*": "${workspaceFolder}/src/*",
+        "webpack:///src/*": "${workspaceFolder}/src/*",
+        "https://localhost:5173/src/*": "${workspaceFolder}/src/*"
+      }
+    }
+  ]
+}

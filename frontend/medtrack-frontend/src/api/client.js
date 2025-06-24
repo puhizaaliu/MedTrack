@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,   
 });
 
 // Request interceptor: attach access token if available
@@ -32,11 +33,11 @@ api.interceptors.response.use(
       if (refreshToken) {
         try {
           // Call refresh endpoint
-          const { data } = await axios.post(
-            `${import.meta.env.VITE_API_URL}/auth/refresh`,
-            { refreshToken }
-          );
-
+          // const { data } = await axios.post(
+          //   `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          //   { refreshToken }
+          // );
+           const { data } = await api.post('/auth/refresh', { refreshToken });
           // Store new tokens
           localStorage.setItem('accessToken', data.accessToken);
           if (data.refreshToken) {

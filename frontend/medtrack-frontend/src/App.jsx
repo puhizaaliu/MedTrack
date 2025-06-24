@@ -1,5 +1,7 @@
-import { Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom'
 import NotificationsPage from './pages/NotificationsPage';
+import RequireAuth from './shared/RequireAuth';
 
 import PublicLayout from './layouts/PublicLayout'
 import Home from './pages/public/Home'
@@ -51,7 +53,7 @@ function App() {
         <Route path="/register" element={<Register />} />
       </Route>
 
-      <Route path="/patient" element={<PatientLayout />}>
+      <Route path="/patient"  element={<RequireAuth allowedRoles={['Patient']}> <PatientLayout /> </RequireAuth>}>
         <Route path="dashboard" element={<PatientDashboard />} />
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="bookappointment" element={<BookAppointment />} />
@@ -61,7 +63,7 @@ function App() {
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
-      <Route path="/recepsionist" element={<ReceptionistLayout />}>
+      <Route path="/receptionist" element={<RequireAuth allowedRoles={['Receptionist']}> <ReceptionistLayout /> </RequireAuth>}>
         <Route path="calendar" element={<RecepsionistCalendar />} />
         <Route path="appointmentrequests" element={<AppointmentRequests />} />
         <Route path="appointments" element={<ReceptionistAppointments />} />
@@ -72,7 +74,7 @@ function App() {
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
-      <Route path="/doctor" element={<DoctorLayout />}>
+      <Route path="/doctor" element={<RequireAuth allowedRoles={['Doctor']}> <DoctorLayout /> </RequireAuth>}>
         <Route path="dashboard" element={<DoctorDashboard />} />
         <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
@@ -83,7 +85,7 @@ function App() {
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<RequireAuth allowedRoles={['Admin']}>  <AdminLayout /> </RequireAuth>}>
         <Route path="dashboard" element={<AdminDashboard />} />  
         <Route path="users" element={<UserManagement />} />  
         <Route path="users/:id" element={<UserDetails />} /> 
@@ -94,6 +96,8 @@ function App() {
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 
+       {/* catch-all: redirect unknown paths to home or 404 */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

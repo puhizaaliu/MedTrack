@@ -1,11 +1,28 @@
 import api from './client';
 
-// — Login (returns { accessToken, refreshToken, user })
-export function login(credentials) {
-  return api.post('/auth/login', credentials).then(res => res.data);
+// Login: map AuthResponse → { accessToken, refreshToken, user }
+export async function login(credentials) {
+  const { data } = await api.post('/api/auth/login', credentials);
+  return {
+    accessToken:  data.accessToken,
+    refreshToken: data.refreshToken,
+    user: {
+      userId: data.userId,
+      role:   data.role,
+      // note: AuthResponse doesn’t include name/surname; add if you need them server-side
+    }
+  };
 }
 
-// — Refresh accessToken
-export function refreshToken(token) {
-  return api.post('/auth/refresh', { refreshToken: token }).then(res => res.data);
+// Refresh: POST { token: ... } and remap
+export async function refreshToken(accessToken, refreshToken) {
+  const { data } = await api.post('/api/auth/refresh', { accessToken, refreshToken }); // property is "token"
+  return {
+    accessToken:  data.accessToken,
+    refreshToken: data.refreshToken,
+    user: {
+      userId: data.userId,
+      role:   data.role
+    }
+  };
 }

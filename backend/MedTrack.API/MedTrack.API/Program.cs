@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MedTrack.API.Hubs;
-
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 // Repositories
@@ -63,27 +63,58 @@ builder.Services.AddControllers()
 
 // Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // (Optional) if you haven’t already, register your Swagger doc here:
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MedTrack API", Version = "v1" });
 
-// Konfigurimi për DbContext (MySQL)
+    // Add JWT Bearer Authorization to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Description = "Enter your JWT token like: Bearer eyJhbGciOiJI…"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+// DbContext (MySQL)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-// Konfigurimi i MongoDBSettings
+// MongoDB settings
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDBSettings"));
 
-//MongoClient
+// MongoClient
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
     var settings = s.GetRequiredService<IOptions<MongoDBSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
 
-//JWT 
+// JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
@@ -110,27 +141,31 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// Register SignalR - per notifications
+// SignalR for notifications
 builder.Services.AddSignalR();
-builder.Services.AddCors(options =>
-  options.AddDefaultPolicy(policy =>
-    policy
-      .WithOrigins("http://localhost:5173")  // your Vite dev URL
-      .AllowAnyHeader()
-      .AllowAnyMethod()
-      .AllowCredentials()
-  )
-);
 
-// build app
+// CORS policy to allow your Vite dev server and SignalR
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .WithOrigins("https://localhost:5173") // Your frontend URL/port
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 var app = builder.Build();
 
-//HTTP request pipeline
+// HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//CORS must come before anything that handles requests
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
@@ -139,7 +174,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors();
+// Map SignalR hub
 app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
