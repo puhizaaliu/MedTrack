@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAppointments } from '../../api/appointments';
+import { getAppointmentsByDoctor } from '../../api/appointments';
 import Calendar from '../../shared/Calendar';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -11,16 +11,24 @@ export default function DoctorCalendar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // fetch only confirmed appointments for this doctor
-    getAppointments(null, 'Confirmed', user.userId)
+    setLoading(true);
+
+    // 1) Merr të gjitha terminet për doktorin
+    getAppointmentsByDoctor(user.userId)
       .then(data => {
-        setEvents(data.map(a => ({
-          id: a.id,
+        //console.log(data); - me vertetu qe po vijne appointments
+        // 2) Filtron vetëm të konfirmuarat
+        const confirmed = data.filter(app => app.status === 'Confirmed');
+
+        // 3) Map-on në formatin që Calendar pret
+        setEvents(confirmed.map(a => ({
+          id:    a.id,
           title: a.patientName,
           start: a.date,
           end:   a.date
         })));
       })
+      .catch(err => console.error('Error loading doctor appointments', err))
       .finally(() => setLoading(false));
   }, [user.userId]);
 

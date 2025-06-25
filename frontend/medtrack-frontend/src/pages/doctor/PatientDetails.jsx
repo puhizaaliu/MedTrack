@@ -18,7 +18,7 @@ export default function PatientDetails() {
   }, [id]);
 
   if (loading) return <p className="text-center py-6">Loading patient...</p>;
-  if (error) return <p className="text-red-600 text-center py-6">{error}</p>;
+  if (error)   return <p className="text-red-600 text-center py-6">{error}</p>;
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 space-y-6">
@@ -50,8 +50,8 @@ export default function PatientDetails() {
           <div className="space-y-2 text-gray-700">
             <p><strong>Allergies:</strong> {patient.medicalInfo.allergies}</p>
             <p><strong>Medications:</strong> {patient.medicalInfo.medications}</p>
-            <p><strong>Smoking:</strong> {patient.medicalInfo.smoking}</p>
-            <p><strong>Alcohol:</strong> {patient.medicalInfo.alcohol}</p>
+            <p><strong>Smoking:</strong> {patient.medicalInfo.smoking ? 'Yes' : 'No'}</p>
+            <p><strong>Alcohol:</strong> {patient.medicalInfo.alcohol ? 'Yes' : 'No'}</p>
             <p><strong>Physical Activity:</strong> {patient.medicalInfo.physicalActivity}</p>
           </div>
         </section>
@@ -59,7 +59,7 @@ export default function PatientDetails() {
 
       <section className="bg-white shadow rounded-lg p-6">
         <h2 className="text-xl font-medium mb-4">Family History</h2>
-        {patient.familyHistory && patient.familyHistory.length > 0 ? (
+        {patient.familyHistory.length > 0 ? (
           <ul className="list-disc list-inside text-gray-700">
             {patient.familyHistory.map(h => (
               <li key={h.historyId}>{h.conditionName}</li>
@@ -67,6 +67,23 @@ export default function PatientDetails() {
           </ul>
         ) : (
           <p className="text-gray-600">No family history recorded.</p>
+        )}
+      </section>
+
+      {/* New Chronic Diseases section */}
+      <section className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-medium mb-4">Chronic Diseases</h2>
+        {patient.chronicDiseases.length > 0 ? (
+          <ul className="list-disc list-inside text-gray-700">
+            {patient.chronicDiseases.map(cd => (
+              <li key={cd.diseaseId}>
+                {cd.disease?.diseaseName}
+                {cd.otherText && ` — ${cd.otherText}`}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600">No chronic diseases recorded.</p>
         )}
       </section>
     </div>

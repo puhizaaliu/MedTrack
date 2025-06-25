@@ -24,7 +24,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Patient
         [HttpGet]
-        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin, UserRole.Doctor)]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetAllPatients()
         {
             var patients = await _patientService.GetAllPatientsAsync();

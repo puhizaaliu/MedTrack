@@ -15,8 +15,8 @@ export default function DoctorLayout() {
           <nav className="flex space-x-6">
             <Link to="/doctor/dashboard" className="hover:text-[#46F072]">Dashboard</Link>
             <Link to="/doctor/calendar"  className="hover:text-[#46F072]">Calendar</Link>
-            <Link to="/doctor/inprocess" className="hover:text-[#46F072]">In-Process</Link>
-            <Link to="/doctor/reportform" className="hover:text-[#46F072]">Report Form</Link>
+            <Link to="/doctor/appointmentinprogress" className="hover:text-[#46F072]">In-Process</Link>
+            {/* <Link to="/doctor/reports" className="hover:text-[#46F072]">Report Form</Link> */}
             <Link to="/doctor/notifications" className="relative hover:text-[#46F072]">
               Notifications
               {unreadCount > 0 && (

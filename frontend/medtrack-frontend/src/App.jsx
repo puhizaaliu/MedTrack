@@ -31,6 +31,7 @@ import DoctorDashboard from './pages/doctor/Dashboard'
 import DoctorCalendar from './pages/doctor/Calendar'
 import AppointmentInProgress from './pages/doctor/AppointmentInProgress'  
 import ReportForm from './pages/doctor/ReportForm' 
+import DoctorReportDetails from './pages/doctor/ReportDetails' 
 import MyReports from './pages/doctor/MyReports' 
 import PatientsList from './pages/doctor/PatientsList'
 import PatientDetails from './pages/doctor/PatientDetails'  
@@ -79,7 +80,8 @@ function App() {
         <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
         <Route path="reports" element={<MyReports />} />
-        <Route path="reports/:id" element={<ReportForm />} />
+        <Route path="newreport/:id" element={<ReportForm />} />
+        <Route path="reports/:id" element={<DoctorReportDetails />} />
         <Route path="patients" element={<PatientsList />} />
         <Route path="patients/:id" element={<PatientDetails />} />
         <Route path="notifications" element={<NotificationsPage />} />

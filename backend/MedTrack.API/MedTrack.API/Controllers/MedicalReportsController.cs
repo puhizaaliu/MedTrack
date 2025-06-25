@@ -25,7 +25,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/MedicalReports
         [HttpGet]
-        [AuthorizeRoles(UserRole.Patient)]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Doctor)]
         public async Task<IActionResult> GetAll()
         {
             var reports = await _service.GetAllAsync();

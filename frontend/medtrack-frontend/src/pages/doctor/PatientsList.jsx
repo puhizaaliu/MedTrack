@@ -6,25 +6,25 @@ import { getAllPatients } from '../../api/patients';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function PatientsList() {
-  const { user } = useAuth();            // doctor info
+  const { user } = useAuth();
   const navigate = useNavigate();
+
   const [patients, setPatients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    
-    // fetch all users and let the server prune by role/context:
+    setError(null);
+
     getAllPatients()
       .then(data => {
-        // Map PatientDTO → shape UserList expects
         const list = data.map(p => ({
-          userId: p.userId,
-          name:    p.name,
-          surname: p.surname,
-          email:   p.email,
-          role:    'Patient'
+          userId:  p.userId,
+          name:     p.name,
+          surname:  p.surname,
+          email:    p.email,
+          role:     'Patient'
         }));
         setPatients(list);
       })
