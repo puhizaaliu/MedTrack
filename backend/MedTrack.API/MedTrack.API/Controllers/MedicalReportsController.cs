@@ -1,11 +1,12 @@
 ﻿using MedTrack.API.Attributes;
 using MedTrack.API.DTOs.MedicalReport;
-using MedTrack.API.Services.Interfaces;
 using MedTrack.API.Models;
+using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
@@ -36,14 +37,40 @@ namespace MedTrack.API.Controllers
         [AuthorizeRoles(UserRole.Patient, UserRole.Doctor, UserRole.Admin)]
         public async Task<IActionResult> GetById(string id)
         {
-            // Validate that id is a valid MongoDB ObjectId
+            // 1) Validate that id is a proper Mongo ObjectId
             if (!ObjectId.TryParse(id, out _))
                 return BadRequest("Invalid id format; must be a 24-character hex string.");
 
-            var reportDto = await _service.GetByIdAsync(id);
-            if (reportDto == null)
+            // 2) Fetch the detailed DTO (report + appointment + patient + doctor)
+            var detailDto = await _service.GetByIdAsync(id);
+            if (detailDto == null)
                 return NotFound();
-            return Ok(reportDto);
+
+            // 3) Extract current user's ID from their JWT claim
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (idClaim == null || !int.TryParse(idClaim, out var currentUserId))
+                return Unauthorized("Invalid user credentials.");
+
+            // 4) Enforce ownership if not Admin
+            if (!User.IsInRole(UserRole.Admin.ToString()))
+            {
+                // Patients only see their own reports
+                if (User.IsInRole(UserRole.Patient.ToString())
+                    && detailDto.Patient.UserId != currentUserId)
+                {
+                    return Forbid();
+                }
+
+                // Doctors only see reports they authored
+                if (User.IsInRole(UserRole.Doctor.ToString())
+                    && detailDto.Doctor.UserId != currentUserId)
+                {
+                    return Forbid();
+                }
+            }
+
+            // 5) Return full detail
+            return Ok(detailDto);
         }
 
         // POST: api/MedicalReports

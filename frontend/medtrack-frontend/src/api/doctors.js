@@ -24,3 +24,8 @@ export function updateDoctor(id, payload) {
 export function deleteDoctor(id) {
   return api.delete(`/doctors/${id}`).then(res => res.data);
 }
+
+// Get doctor by the service he provides
+export function getDoctorsByService(serviceId) {
+  return api.get(`/api/Doctor/by-service/${serviceId}`).then(res => res.data);
+}

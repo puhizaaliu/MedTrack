@@ -5,13 +5,22 @@ import { getAppointments } from "../../api/appointments";
 import { useAuth } from "../../hooks/useAuth";
 
 const STATUSES = [
-  "Pending",
-  "Confirmed",
-  "In-Process",
-  "Completed",
-  "Paid",
-  "No-Show",
+  "Kerkese",
+  "Konfirmuar",
+  "NeProces",
+  "Kryer",
+  "Paguar",
+  "NukKaArdhur"
 ];
+
+const STATUS_LABELS = {
+  Kerkese: "Pending",
+  Konfirmuar: "Confirmed",
+  NeProces: "In-Process",
+  Kryer: "Completed",
+  Paguar: "Paid",
+  NukKaArdhur: "No-Show"
+};
 
 export default function Appointments() {
   const { user } = useAuth();
@@ -21,15 +30,11 @@ export default function Appointments() {
   const [statusFilter, setStatusFilter] = useState("Pending");
 
   useEffect(() => {
-    // don’t try to fetch until we know the user ID
-    if (!user?.userId) return;
-
     setLoading(true);
-    getAppointments(user.userId, statusFilter)
+    getAppointments(statusFilter)
       .then((data) => setAppointments(data))
       .finally(() => setLoading(false));
-  }, [user?.userId, statusFilter]);
-
+  }, [statusFilter]);
   // still waiting on auth
   if (!user) {
     return <p className="text-center py-6">Loading user...</p>;
@@ -43,7 +48,7 @@ export default function Appointments() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">My Appointments</h1>
         <button
-          onClick={() => navigate("/patient/appointments/new")}
+          onClick={() => navigate("/patient/bookappointment")}
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
         >
           Book Appointment
@@ -61,7 +66,7 @@ export default function Appointments() {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
             }`}
           >
-            {s}
+            {STATUS_LABELS[s] /* Shfaq përkthimin në UI */}
           </button>
         ))}
       </div>

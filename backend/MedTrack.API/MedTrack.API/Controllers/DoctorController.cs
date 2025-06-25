@@ -86,5 +86,14 @@ namespace MedTrack.API.Controllers
             await _doctorService.DeleteDoctorAsync(id);
             return NoContent(); // 204 No Content
         }
+
+        [HttpGet("by-service/{serviceId}")]
+        public async Task<ActionResult<List<DoctorDTO>>> GetDoctorsByService(int serviceId)
+        {
+            var doctors = await _doctorService.GetDoctorsByServiceAsync(serviceId);
+            return Ok(doctors);
+        }
+
+
     }
 }

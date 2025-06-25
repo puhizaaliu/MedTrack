@@ -12,5 +12,6 @@ namespace MedTrack.API.Services.Interfaces
         Task UpdateDoctorAsync(int id, UpdateDoctorDTO doctorDto);
         Task DeleteDoctorAsync(int id);
         Task<IEnumerable<DoctorDTO>> GetDoctorsBySpecializationIdAsync(int specializationId);
+        Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId);
     }
 }

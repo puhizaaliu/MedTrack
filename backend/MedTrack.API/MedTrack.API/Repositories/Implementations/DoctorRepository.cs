@@ -1,10 +1,11 @@
 ﻿using MedTrack.API.Data;
+using MedTrack.API.DTOs.Doctor;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MedTrack.API.Repositories.Implementations
 {
@@ -64,5 +65,27 @@ namespace MedTrack.API.Repositories.Implementations
                 .Where(d => d.SpecializationId == specializationId)
                 .ToListAsync();
         }
+
+        public async Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId)
+        {
+            var specializationsWithService = await _context.SpecializationServices
+                .Where(ss => ss.ServiceId == serviceId)
+                .Select(ss => ss.SpecializationId)
+                .ToListAsync();
+
+            var doctors = await _context.Doctors
+                .Include(d => d.User)
+                .Where(d => specializationsWithService.Contains(d.SpecializationId))
+                .Select(d => new DoctorDTO
+                {
+                    UserId = d.UserId,
+                    Name = d.User.Name,
+                    Surname = d.User.Surname
+                })
+                .ToListAsync();
+
+            return doctors;
+        }
+
     }
 }

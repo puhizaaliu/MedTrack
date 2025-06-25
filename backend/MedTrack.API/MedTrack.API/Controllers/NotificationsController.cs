@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MedTrack.API.DTOs.Notification;
-using MedTrack.API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using MedTrack.API.Attributes;
+﻿using MedTrack.API.Attributes;
 using MedTrack.API.DTOs.MedicalReport;
+using MedTrack.API.DTOs.Notification;
 using MedTrack.API.Models;
+using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MedTrack.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    [AuthorizeRoles(UserRole.Admin)]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _service;
@@ -25,6 +25,7 @@ namespace MedTrack.API.Controllers
         }
 
         // GET: api/Notifications
+        [AuthorizeRoles(UserRole.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -46,9 +47,21 @@ namespace MedTrack.API.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(int userId)
         {
+            // 1. Grab the claim
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (idClaim == null)
+                return Unauthorized("Missing user-id claim");
+            // 2. Parse it
+            if (!int.TryParse(idClaim.Value, out var currentId))
+                return BadRequest("Invalid user-id claim format");
+            // 3. Only allow if Admin or requesting your own notifications
+            if (!User.IsInRole(UserRole.Admin.ToString()) && currentId != userId)
+                return Forbid();
+            // 4. Fetch and return
             var list = await _service.GetByUserIdAsync(userId);
             return Ok(list);
         }
+
 
         // POST: api/Notifications
         [HttpPost]

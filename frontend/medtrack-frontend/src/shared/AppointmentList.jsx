@@ -6,6 +6,40 @@ import React from 'react';
  *  - appointments: Array of { appointmentId, date, time, doctorName, doctorSurname, serviceName, status }
  *  - onViewDetails: function(id) => void
  */
+const STATUS_LABELS = {
+  Kerkese: "Pending",
+  Konfirmuar: "Confirmed",
+  NeProces: "In-Process",
+  Kryer: "Completed",
+  Paguar: "Paid",
+  NukKaArdhur: "No-Show"
+};
+
+// Funksion për të shfaqur datën vetëm nëse është valide
+function formatDateTime(date, time) {
+  if (
+    !date ||
+    date === "0001-01-01T00:00:00" ||
+    date.startsWith("1/1/1") ||
+    date === "1/1/1" ||
+    date === "0001-01-01"
+  ) {
+    return "-";
+  }
+  // Nëse ke edhe time, bashko; përndryshe shfaq vetëm datën
+  try {
+    if (time && time !== "00:00:00") {
+      const dateTime = new Date(`${date}T${time}`);
+      return dateTime.toLocaleString();
+    } else {
+      const onlyDate = new Date(date);
+      return onlyDate.toLocaleDateString();
+    }
+  } catch {
+    return "-";
+  }
+}
+
 export default function AppointmentList({ appointments, onViewDetails }) {
   if (!appointments || appointments.length === 0) {
     return <p className="text-gray-600">No appointments found.</p>;
@@ -24,29 +58,26 @@ export default function AppointmentList({ appointments, onViewDetails }) {
           </tr>
         </thead>
         <tbody>
-          {appointments.map((a) => {
-            // Construct JS Date from DateOnly + TimeOnly strings
-            const dateTime = new Date(`${a.date}T${a.time}`);
-            const formatted = dateTime.toLocaleString();
-            return (
-              <tr key={a.appointmentId} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2 align-middle">{formatted}</td>
-                <td className="px-4 py-2 align-middle">
-                  {a.doctorName} {a.doctorSurname}
-                </td>
-                <td className="px-4 py-2 align-middle">{a.serviceName}</td>
-                <td className="px-4 py-2 align-middle capitalize">{a.status}</td>
-                <td className="px-4 py-2 align-middle text-right">
+          {appointments.map((a) => (
+            <tr key={a.appointmentId} className="border-b hover:bg-gray-50">
+              <td className="px-4 py-2 align-middle">{formatDateTime(a.date, a.time)}</td>
+              <td className="px-4 py-2 align-middle">
+                {a.doctorName} {a.doctorSurname}
+              </td>
+              <td className="px-4 py-2 align-middle">{a.serviceName}</td>
+              <td className="px-4 py-2 align-middle capitalize">{STATUS_LABELS[a.status] || a.status}</td>
+              <td className="px-4 py-2 align-middle text-right">
+                {a.status === "Paguar" && (
                   <button
                     onClick={() => onViewDetails(a.appointmentId)}
                     className="text-blue-600 hover:underline"
                   >
                     View
                   </button>
-                </td>
-              </tr>
-            );
-          })}
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

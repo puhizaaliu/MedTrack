@@ -1,6 +1,9 @@
-﻿using MedTrack.API.DTOs.FamilyHistory;
-using MedTrack.API.DTOs.Patient;
+﻿using MedTrack.API.DTOs.ChronicDisease;
+using MedTrack.API.DTOs.FamilyHistory;
 using MedTrack.API.DTOs.MedicalInfo;
+using MedTrack.API.DTOs.Patient;
+using MedTrack.API.DTOs.PatientChronicDisease;
+using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
@@ -31,6 +34,7 @@ namespace MedTrack.API.Services.Implementations
                     UserId = p.UserId,
                     Name = p.User.Name,
                     Surname = p.User.Surname,
+                    ParentName = p.User.ParentName,
                     Phone = p.User.Phone,
                     Email = p.User.Email,
                     Address = p.User.Address,
@@ -54,7 +58,22 @@ namespace MedTrack.API.Services.Implementations
                             ConditionName = fh.History.ConditionName
                         })
                         .ToList() 
-                        ?? new List<FamilyHistoryDTO>()
+                        ?? new List<FamilyHistoryDTO>(),
+                    ChronicDiseases = p.ChronicDiseases?
+                        .Where(cd => cd.Disease != null)
+                        .Select(cd => new PatientChronicDiseaseDTO
+                        {
+                            PatientId = cd.PatientId,
+                            DiseaseId = cd.Disease.DiseaseId,
+                            OtherText = cd.OtherText,
+                            Disease = new ChronicDiseaseDTO
+                            {
+                                DiseaseId = cd.Disease.DiseaseId,
+                                DiseaseName = cd.Disease.DiseaseName
+                            }
+                        })
+                        .ToList()
+                        ?? new List<PatientChronicDiseaseDTO>()
                 };
 
                 patientDtos.Add(patientDto);
@@ -73,6 +92,7 @@ namespace MedTrack.API.Services.Implementations
                 UserId = patient.UserId,
                 Name = patient.User.Name,
                 Surname = patient.User.Surname,
+                ParentName = patient.User.ParentName,
                 Phone = patient.User.Phone,
                 Email = patient.User.Email,
                 Address = patient.User.Address,
@@ -96,7 +116,22 @@ namespace MedTrack.API.Services.Implementations
                         ConditionName = fh.History.ConditionName
                     })
                     .ToList() 
-                    ?? new List<FamilyHistoryDTO>()
+                    ?? new List<FamilyHistoryDTO>(),
+                ChronicDiseases = patient.ChronicDiseases?
+                    .Where(cd => cd.Disease != null)
+                    .Select(cd => new PatientChronicDiseaseDTO
+                    {
+                        PatientId = cd.PatientId,
+                        DiseaseId = cd.Disease.DiseaseId,
+                        OtherText = cd.OtherText,
+                        Disease = new ChronicDiseaseDTO
+                        {
+                            DiseaseId = cd.Disease.DiseaseId,
+                            DiseaseName = cd.Disease.DiseaseName
+                        }
+                    })
+                    .ToList()
+                    ?? new List<PatientChronicDiseaseDTO>()
             };
 
             return patientDto;
@@ -118,6 +153,29 @@ namespace MedTrack.API.Services.Implementations
         {
             return;
         }
+        public async Task UpdateUserFieldsAsync(int patientId, UpdateUserDTO dto)
+        {
+            // Build a minimal Patient that carries only the User update:
+            var updated = new Patient
+            {
+                UserId = patientId,
+                User = new User
+                {
+                    Name = dto.Name,
+                    Surname = dto.Surname,
+                    ParentName = dto.ParentName,
+                    Phone = dto.Phone,
+                    Email = dto.Email,
+                    Address = dto.Address,
+                    DateOfBirth = dto.DateOfBirth,
+                    Gender = Enum.TryParse<Gender>(dto.Gender, true, out var g) ? g : Gender.O
+                }
+            };
+
+            // Let the repository load the existing Patient+User, patch only those fields, and Save:
+            await _patientRepository.UpdatePatientAsync(updated);
+        }
+
 
         public async Task DeletePatientAsync(int id)
         {

@@ -1,4 +1,5 @@
-﻿using MedTrack.API.Models;
+﻿using MedTrack.API.DTOs.Doctor;
+using MedTrack.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,5 +13,7 @@ namespace MedTrack.API.Repositories.Interfaces
         Task UpdateDoctorAsync(Doctor doctor);
         Task DeleteDoctorAsync(int id);
         Task<IEnumerable<Doctor>> GetDoctorsBySpecializationIdAsync(int specializationId);
+        Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId);
+
     }
 }

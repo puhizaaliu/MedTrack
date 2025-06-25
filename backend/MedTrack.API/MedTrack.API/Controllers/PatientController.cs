@@ -1,5 +1,6 @@
 ﻿using MedTrack.API.Attributes;
 using MedTrack.API.DTOs.Patient;
+using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using MedTrack.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -32,15 +33,26 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Patient/{id}
         [HttpGet("{id}")]
-        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
+        [Authorize] 
         public async Task<ActionResult<PatientDTO>> GetPatientById(int id)
         {
+            var userRole = User.FindFirst("role")?.Value;
+            var userId = User.FindFirst("sub")?.Value; 
+
+            // Lejo vetëm:
+            if (userRole == UserRole.Patient.ToString() && userId != id.ToString())
+            {
+                // Pacientët mund të marrin vetëm të dhënat e tyre
+                return Forbid();
+            }
+            // (admin/receptionist mund të marrin këdo)
             var patient = await _patientService.GetPatientByIdAsync(id);
             if (patient == null)
                 return NotFound();
 
             return Ok(patient);
         }
+
 
         // POST: api/Patient?userId=1
         [HttpPost]
@@ -53,11 +65,11 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Patient/{id}
         [HttpPut("{id}")]
-        [AuthorizeRoles(UserRole.Admin)]
-        public async Task<IActionResult> UpdatePatient(int id)
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdateUserDTO dto)
         {
-            await _patientService.UpdatePatientAsync(id);
-            return NoContent(); // 204 No Content
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            await _patientService.UpdateUserFieldsAsync(id, dto);
+            return NoContent();
         }
 
         // DELETE: api/Patient/{id}

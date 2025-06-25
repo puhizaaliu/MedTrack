@@ -1,23 +1,65 @@
-// src/pages/patient/BookAppointment.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { createAppointment } from "../../api/appointments";
+import { getAllServices } from "../../api/services";
+import { getDoctorsByService } from "../../api/doctors";
 
 export default function BookAppointment() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const [services, setServices] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [service, setService] = useState("");
-  const [doctor, setDoctor]   = useState("");
-  const [date, setDate]       = useState("");
-  const [time, setTime]       = useState("");
-  const [error, setError]     = useState(null);
+  const [doctor, setDoctor] = useState("");
+  const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
 
-  // don’t render form until user is loaded
+  useEffect(() => {
+    async function fetchServices() {
+      setLoading(true);
+      try {
+        const data = await getAllServices();
+        setServices(data);
+      } catch (err) {
+        setError("Could not load services!");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchServices();
+  }, []);
+
+  useEffect(() => {
+    if (!service) {
+      setDoctors([]);
+      setDoctor("");
+      return;
+    }
+    async function fetchDoctors() {
+      setLoadingDoctors(true);
+      try {
+        const data = await getDoctorsByService(service);
+        setDoctors(data);
+        setDoctor(""); // Reset selection if service changes
+      } catch (err) {
+        setError("Could not load doctors for this service!");
+        setDoctors([]);
+      } finally {
+        setLoadingDoctors(false);
+      }
+    }
+    fetchDoctors();
+  }, [service]);
+
   if (!user?.userId) {
     return <p className="text-center py-6">Loading user...</p>;
+  }
+  if (loading) {
+    return <p className="text-center py-6">Loading services...</p>;
   }
 
   const handleSubmit = async (e) => {
@@ -29,8 +71,7 @@ export default function BookAppointment() {
         patientId: user.userId,
         serviceId: service,
         doctorId: doctor,
-        date,
-        time
+        // mos dërgo date/time
       });
       navigate("/patient/appointments");
     } catch (err) {
@@ -54,10 +95,11 @@ export default function BookAppointment() {
             required
           >
             <option value="">Select service</option>
-            {/* TODO: replace static options with dynamic list from API */}
-            <option value="General Checkup">General Checkup</option>
-            <option value="Dermatology">Dermatology</option>
-            <option value="Cardiology">Cardiology</option>
+            {services.map((s) => (
+              <option key={s.serviceId} value={s.serviceId}>
+                {s.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -68,34 +110,18 @@ export default function BookAppointment() {
             value={doctor}
             onChange={(e) => setDoctor(e.target.value)}
             required
+            disabled={!service || loadingDoctors}
           >
             <option value="">Select doctor</option>
-            {/* TODO: replace static options with dynamic list from API */}
-            <option value="1">Dr. Smith</option>
-            <option value="2">Dr. Jane</option>
+            {doctors.map((d) => (
+              <option key={d.userId} value={d.userId}>
+                Dr. {d.name} {d.surname}
+              </option>
+            ))}
           </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Date</label>
-          <input
-            type="date"
-            className="w-full border rounded px-3 py-2"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Time</label>
-          <input
-            type="time"
-            className="w-full border rounded px-3 py-2"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+          {loadingDoctors && (
+            <p className="text-sm text-gray-500 mt-1">Loading doctors...</p>
+          )}
         </div>
 
         <button

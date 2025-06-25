@@ -31,6 +31,8 @@ builder.Services.AddScoped<ISpecializationServiceRepository, SpecializationServi
 builder.Services.AddScoped<IPatientFamilyHistoryRepository, PatientFamilyHistoryRepository>();
 builder.Services.AddScoped<IMedicalReportRepository, MedicalReportRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IChronicDiseaseRepository, ChronicDiseaseRepository>();
+builder.Services.AddScoped<IPatientChronicDiseaseRepository, PatientChronicDiseaseRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -48,7 +50,8 @@ builder.Services.AddScoped<IMedicalReportService, MedicalReportService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IChronicDiseaseService, ChronicDiseaseService>();
+builder.Services.AddScoped<IPatientChronicDiseaseService, PatientChronicDiseaseService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -137,6 +140,23 @@ builder.Services
           ValidateLifetime = true,
           ClockSkew = TimeSpan.FromSeconds(30)
       };
+
+      // ** this is for SignalR to negotiate ***
+      options.Events = new JwtBearerEvents
+      {
+          OnMessageReceived = context =>
+          {
+              // look for token in query string for hub requests
+              var accessToken = context.Request.Query["access_token"];
+              var path = context.HttpContext.Request.Path;
+              if (!string.IsNullOrEmpty(accessToken) &&
+                  path.StartsWithSegments("/hubs/notifications"))
+              {
+                  context.Token = accessToken;
+              }
+              return Task.CompletedTask;
+          }
+      };
   });
 
 builder.Services.AddAuthorization();
@@ -164,6 +184,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
 //CORS must come before anything that handles requests
 app.UseCors("AllowFrontend");
 

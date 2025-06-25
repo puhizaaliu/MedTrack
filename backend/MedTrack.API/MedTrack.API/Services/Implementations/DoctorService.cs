@@ -61,5 +61,11 @@ namespace MedTrack.API.Services.Implementations
             var doctors = await _doctorRepository.GetDoctorsBySpecializationIdAsync(specializationId);
             return _mapper.Map<IEnumerable<DoctorDTO>>(doctors);
         }
+
+        public async Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId)
+        {
+            return await _doctorRepository.GetDoctorsByServiceAsync(serviceId);
+        }
+
     }
 }
