@@ -67,11 +67,13 @@ export default function AppointmentList({ appointments, onViewDetails }) {
               <td className="px-4 py-2 align-middle">{a.serviceName}</td>
               <td className="px-4 py-2 align-middle capitalize">{STATUS_LABELS[a.status] || a.status}</td>
               <td className="px-4 py-2 align-middle text-right">
+                {a.status === "Kerkese" && (
+                  <button onClick={() => onViewDetails(a.appointmentId)} className="text-blue-600 hover:underline">
+                    Manage Request
+                  </button>
+                )}
                 {a.status === "Paguar" && (
-                  <button
-                    onClick={() => onViewDetails(a.appointmentId)}
-                    className="text-blue-600 hover:underline"
-                  >
+                  <button onClick={() => onViewDetails(a.appointmentId)} className="text-blue-600 hover:underline">
                     View
                   </button>
                 )}

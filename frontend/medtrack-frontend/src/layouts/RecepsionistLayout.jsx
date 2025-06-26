@@ -16,11 +16,13 @@ export default function ReceptionistLayout() {
             <Link to="/receptionist/calendar" className="hover:text-emerald-600">
               Calendar
             </Link>
-            <Link to="/receptionist/requests" className="hover:text-emerald-600">
-              Requests
-            </Link>
             <Link to="/receptionist/appointments" className="hover:text-emerald-600">
               Appointments
+            </Link>
+            <Link to="/receptionist/doctors" className="hover:text-emerald-600">
+              Doctors
+            </Link><Link to="/receptionist/patients" className="hover:text-emerald-600">
+              Patients
             </Link>
             <Link to="/receptionist/notifications" className="relative hover:text-emerald-600">
               Notifications

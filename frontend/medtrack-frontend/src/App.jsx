@@ -66,12 +66,12 @@ function App() {
 
       <Route path="/receptionist" element={<RequireAuth allowedRoles={['Receptionist']}> <ReceptionistLayout /> </RequireAuth>}>
         <Route path="calendar" element={<RecepsionistCalendar />} />
-        <Route path="appointmentrequests" element={<AppointmentRequests />} />
+        <Route path="appointmentrequests/:id" element={<AppointmentRequests />} />
         <Route path="appointments" element={<ReceptionistAppointments />} />
         <Route path="patients" element={<Patients />} />
         <Route path="patients/:id" element={<ReceptionistPatientDetails />} />
         <Route path="doctors" element={<Doctors />} />
-        <Route path="doctors/:if" element={<DoctorDetails />} />
+        <Route path="doctors/:id" element={<DoctorDetails />} />
         <Route path="notifications" element={<NotificationsPage />} />
       </Route>
 

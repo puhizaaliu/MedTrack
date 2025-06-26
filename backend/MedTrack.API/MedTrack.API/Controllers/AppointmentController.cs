@@ -24,7 +24,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment
         [HttpGet]
-        [AuthorizeRoles(UserRole.Patient)]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Receptionist)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetAll()
         {
             var list = await _appointmentService.GetAllAppointmentsAsync();
@@ -83,7 +83,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/doctor/3
         [HttpGet("doctor/{doctorId}")]
-        [AuthorizeRoles(UserRole.Doctor)]
+        [AuthorizeRoles(UserRole.Doctor, UserRole.Receptionist)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByDoctor(int doctorId)
         {
             var list = await _appointmentService.GetAppointmentsByDoctorIdAsync(doctorId);

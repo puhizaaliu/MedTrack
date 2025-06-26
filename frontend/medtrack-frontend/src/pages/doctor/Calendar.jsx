@@ -18,7 +18,7 @@ export default function DoctorCalendar() {
       .then(data => {
         //console.log(data); - me vertetu qe po vijne appointments
         // 2) Filtron vetëm të konfirmuarat
-        const confirmed = data.filter(app => app.status === 'Confirmed');
+        const confirmed = data.filter(app => app.status === 'Konfirmuar');
 
         // 3) Map-on në formatin që Calendar pret
         setEvents(confirmed.map(a => ({
