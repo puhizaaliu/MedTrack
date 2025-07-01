@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using BCrypt.Net;
+using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
+using MedTrack.API.Repositories.Implementations;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BCrypt.Net;
-using MedTrack.API.DTOs.User;
 
 
 namespace MedTrack.API.Services.Implementations
@@ -13,12 +14,17 @@ namespace MedTrack.API.Services.Implementations
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IDoctorRepository doctorRepository, IPatientRepository patientRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _doctorRepository = doctorRepository;
+            _patientRepository = patientRepository;
             _mapper = mapper;
+
         }
 
         public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
@@ -59,9 +65,23 @@ namespace MedTrack.API.Services.Implementations
             await _userRepository.UpdateUserAsync(existingUser);
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(int id)
         {
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null) return false;
+
+            if (user.Role == UserRole.Doctor)
+            {
+                await _doctorRepository.DeleteDoctorByUserIdAsync(id);
+            }
+            if (user.Role == UserRole.Patient)
+            {
+                await _patientRepository.DeletePatientByUserIdAsync(id);
+            }
+
             await _userRepository.DeleteUserAsync(id);
+            return true;
         }
+
     }
 }

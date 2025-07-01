@@ -9,5 +9,7 @@ namespace MedTrack.API.Repositories.Interfaces
         Task<IEnumerable<PatientFamilyHistory>> GetByPatientIdAsync(int patientId);
         Task AddAsync(PatientFamilyHistory patientFamilyHistory);
         Task RemoveAsync(int patientId, int historyId);
+        Task DeleteAllByPatientIdAsync(int patientId);
+
     }
 }

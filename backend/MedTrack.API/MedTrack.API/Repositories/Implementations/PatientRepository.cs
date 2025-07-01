@@ -162,5 +162,14 @@ namespace MedTrack.API.Repositories.Implementations
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task DeletePatientByUserIdAsync(int userId)
+        {
+            var patient = await _context.Patients.SingleOrDefaultAsync(p => p.UserId == userId);
+            if (patient != null)
+            {
+                _context.Patients.Remove(patient);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

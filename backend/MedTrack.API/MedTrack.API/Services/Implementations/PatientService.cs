@@ -1,4 +1,5 @@
-﻿using MedTrack.API.DTOs.ChronicDisease;
+﻿using MedTrack.API.Data;
+using MedTrack.API.DTOs.ChronicDisease;
 using MedTrack.API.DTOs.FamilyHistory;
 using MedTrack.API.DTOs.MedicalInfo;
 using MedTrack.API.DTOs.Patient;
@@ -7,6 +8,8 @@ using MedTrack.API.DTOs.User;
 using MedTrack.API.Models;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.EntityFrameworkCore; 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,10 +19,27 @@ namespace MedTrack.API.Services.Implementations
     public class PatientService : IPatientService
     {
         private readonly IPatientRepository _patientRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMedicalInfoRepository _medicalInfoRepository;
+        private readonly IPatientFamilyHistoryRepository _patientFamilyHistoryRepository;
+        private readonly IPatientChronicDiseaseRepository _patientChronicDiseaseRepository;
+        private readonly AppDbContext _dbContext;
 
-        public PatientService(IPatientRepository patientRepository)
+        public PatientService(
+            IPatientRepository patientRepository,
+            IUserRepository userRepository,
+            IMedicalInfoRepository medicalInfoRepository,
+            IPatientFamilyHistoryRepository patientFamilyHistoryRepository,
+            IPatientChronicDiseaseRepository patientChronicDiseaseRepository,
+            AppDbContext dbContext // pass your actual context
+        )
         {
             _patientRepository = patientRepository;
+            _userRepository = userRepository;
+            _medicalInfoRepository = medicalInfoRepository;
+            _patientFamilyHistoryRepository = patientFamilyHistoryRepository;
+            _patientChronicDiseaseRepository = patientChronicDiseaseRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<IEnumerable<PatientDTO>> GetAllPatientsAsync()
@@ -57,7 +77,7 @@ namespace MedTrack.API.Services.Implementations
                             HistoryId = fh.History.HistoryId,
                             ConditionName = fh.History.ConditionName
                         })
-                        .ToList() 
+                        .ToList()
                         ?? new List<FamilyHistoryDTO>(),
                     ChronicDiseases = p.ChronicDiseases?
                         .Where(cd => cd.Disease != null)
@@ -115,7 +135,7 @@ namespace MedTrack.API.Services.Implementations
                         HistoryId = fh.History.HistoryId,
                         ConditionName = fh.History.ConditionName
                     })
-                    .ToList() 
+                    .ToList()
                     ?? new List<FamilyHistoryDTO>(),
                 ChronicDiseases = patient.ChronicDiseases?
                     .Where(cd => cd.Disease != null)
@@ -137,25 +157,167 @@ namespace MedTrack.API.Services.Implementations
             return patientDto;
         }
 
-        // Pacienti zakonisht krijohet si User, pastaj lidhet me tabelën Patient
-        public async Task AddPatientAsync(int userId)
+        public async Task AddPatientAsync(CreatePatientDTO dto)
         {
-            var patient = new Patient
+            // Start a transaction for atomicity
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
             {
-                UserId = userId
-            };
-            await _patientRepository.AddPatientAsync(patient);
+                // 1. Create User
+                var user = new User
+                {
+                    Name = dto.Name,
+                    Surname = dto.Surname,
+                    ParentName = dto.ParentName,
+                    Email = dto.Email,
+                    Phone = dto.Phone,
+                    Address = dto.Address,
+                    DateOfBirth = dto.DateOfBirth,
+                    Gender = dto.Gender,
+                    PersonalNumber = dto.PersonalNumber,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                    Role = UserRole.Patient
+                };
+                await _userRepository.AddUserAsync(user);
+
+                // 2. Create Patient
+                var patient = new Patient
+                {
+                    UserId = user.UserId // Will be set by EF after AddUserAsync
+                };
+                await _patientRepository.AddPatientAsync(patient);
+                Console.WriteLine($"UserId being used for medical info: {user.UserId}");
+                // 3. Add Medical Info
+                var med = dto.MedicalInfo;
+                var medicalInfo = new MedicalInfo
+                {
+                    UserId = user.UserId,
+                    Allergies = med.Allergies,
+                    Medications = med.Medications,
+                    Smoking = med.Smoking,
+                    Alcohol = med.Alcohol,
+                    PhysicalActivity = med.PhysicalActivity
+                };
+                await _medicalInfoRepository.AddMedicalInfoAsync(medicalInfo);
+
+                // 4. Add Family History (replace all)
+                foreach (var fh in dto.FamilyHistory)
+                {
+                    var entry = new PatientFamilyHistory
+                    {
+                        PatientId = user.UserId,
+                        HistoryId = fh.HistoryId,
+                        OtherText = fh.OtherText
+                    };
+                    await _patientFamilyHistoryRepository.AddAsync(entry);
+                }
+
+                // 5. Add Chronic Diseases (replace all)
+                foreach (var cd in dto.ChronicDiseases)
+                {
+                    var entry = new PatientChronicDisease
+                    {
+                        PatientId = user.UserId,
+                        DiseaseId = cd.DiseaseId,
+                        OtherText = cd.OtherText
+                    };
+                    await _patientChronicDiseaseRepository.AddAsync(entry);
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
-        // Pacienti shpesh nuk ka fusha të shumta për update në vetë tabelën Patient, 
-        // më shpesh ndryshohen të dhënat në User, kështu që ky mund të mbetet i zbrazët
-        public async Task UpdatePatientAsync(int id)
+        public async Task UpdatePatientAsync(int patientId, UpdatePatientDTO dto)
         {
-            return;
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                // 1. Update User fields
+                var user = await _userRepository.GetUserByIdAsync(patientId);
+                if (user == null)
+                    throw new Exception("User not found");
+
+                user.Name = dto.Name;
+                user.Surname = dto.Surname;
+                user.ParentName = dto.ParentName;
+                user.Email = dto.Email;
+                user.Phone = dto.Phone;
+                user.Address = dto.Address;
+                user.DateOfBirth = dto.DateOfBirth;
+                user.Gender = dto.Gender;
+                user.PersonalNumber = dto.PersonalNumber;
+                await _userRepository.UpdateUserAsync(user);
+
+                // 2. Update or Replace Medical Info
+                var med = await _medicalInfoRepository.GetMedicalInfoByPatientIdAsync(patientId);
+                if (med != null && dto.MedicalInfo != null)
+                {
+                    med.Allergies = dto.MedicalInfo.Allergies;
+                    med.Medications = dto.MedicalInfo.Medications;
+                    med.Smoking = dto.MedicalInfo.Smoking;
+                    med.Alcohol = dto.MedicalInfo.Alcohol;
+                    med.PhysicalActivity = dto.MedicalInfo.PhysicalActivity;
+                    await _medicalInfoRepository.UpdateMedicalInfoAsync(med);
+                }
+                else if (dto.MedicalInfo != null)
+                {
+                    // If not exists, create new
+                    var newMed = new MedicalInfo
+                    {
+                        UserId = patientId,
+                        Allergies = dto.MedicalInfo.Allergies,
+                        Medications = dto.MedicalInfo.Medications,
+                        Smoking = dto.MedicalInfo.Smoking,
+                        Alcohol = dto.MedicalInfo.Alcohol,
+                        PhysicalActivity = dto.MedicalInfo.PhysicalActivity
+                    };
+                    await _medicalInfoRepository.AddMedicalInfoAsync(newMed);
+                }
+
+                // 3. Replace Family History
+                await _patientFamilyHistoryRepository.DeleteAllByPatientIdAsync(patientId);
+                foreach (var fh in dto.FamilyHistory)
+                {
+                    var entry = new PatientFamilyHistory
+                    {
+                        PatientId = patientId,
+                        HistoryId = fh.HistoryId,
+                        OtherText = fh.OtherText
+                    };
+                    await _patientFamilyHistoryRepository.AddAsync(entry);
+                }
+
+                // 4. Replace Chronic Diseases
+                await _patientChronicDiseaseRepository.DeleteAllByPatientIdAsync(patientId);
+                foreach (var cd in dto.ChronicDiseases)
+                {
+                    var entry = new PatientChronicDisease
+                    {
+                        PatientId = patientId,
+                        DiseaseId = cd.DiseaseId,
+                        OtherText = cd.OtherText
+                    };
+                    await _patientChronicDiseaseRepository.AddAsync(entry);
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
         public async Task UpdateUserFieldsAsync(int patientId, UpdateUserDTO dto)
         {
-            // Build a minimal Patient that carries only the User update:
             var updated = new Patient
             {
                 UserId = patientId,
@@ -172,10 +334,8 @@ namespace MedTrack.API.Services.Implementations
                 }
             };
 
-            // Let the repository load the existing Patient+User, patch only those fields, and Save:
             await _patientRepository.UpdatePatientAsync(updated);
         }
-
 
         public async Task DeletePatientAsync(int id)
         {

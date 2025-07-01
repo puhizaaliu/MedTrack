@@ -5,10 +5,7 @@ namespace MedTrack.API.Models
 {
     public class MedicalInfo
     {
-        [Key]
-        public int MedicalInfoId { get; set; }
-
-        [ForeignKey("Patient")]
+        [Key, ForeignKey("Patient")]
         public int UserId { get; set; }
 
         public string Allergies { get; set; }

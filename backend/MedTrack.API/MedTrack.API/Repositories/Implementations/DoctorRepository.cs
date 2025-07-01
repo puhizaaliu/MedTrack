@@ -56,7 +56,15 @@ namespace MedTrack.API.Repositories.Implementations
                 await _context.SaveChangesAsync();
             }
         }
-
+        public async Task DeleteDoctorByUserIdAsync(int userId)
+        {
+            var doctor = await _context.Doctors.SingleOrDefaultAsync(d => d.UserId == userId);
+            if (doctor != null)
+            {
+                _context.Doctors.Remove(doctor);
+                await _context.SaveChangesAsync();
+            }
+        }
         public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationIdAsync(int specializationId)
         {
             return await _context.Doctors

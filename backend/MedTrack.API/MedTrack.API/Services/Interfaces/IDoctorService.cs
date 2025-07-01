@@ -8,8 +8,8 @@ namespace MedTrack.API.Services.Interfaces
     {
         Task<IEnumerable<DoctorDTO>> GetAllDoctorsAsync();
         Task<DoctorDTO?> GetDoctorByIdAsync(int id);
-        Task AddDoctorAsync(int userId, int specializationId); // doktori lidhet me user ekzistues
-        Task UpdateDoctorAsync(int id, UpdateDoctorDTO doctorDto);
+        Task AddDoctorAsync(CreateDoctorDTO dto); 
+        Task UpdateDoctorAsync(int userId, UpdateDoctorDTO dto);
         Task DeleteDoctorAsync(int id);
         Task<IEnumerable<DoctorDTO>> GetDoctorsBySpecializationIdAsync(int specializationId);
         Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId);

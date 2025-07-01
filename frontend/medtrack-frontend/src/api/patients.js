@@ -12,14 +12,13 @@ export function getPatientById(id) {
 
 // Create a new patient
 export function createPatient(payload) {
-  return api.post('api/Patient', payload).then(res => res.data);
+  return api.post('/api/Patient', payload).then(res => res.data);
 }
 
 // Update an existing patient
 export function updatePatient(id, payload) {
   return api.put(`api/Patient/${id}`, payload).then(res => res.data);
 }
-
 // Delete a patient
 export function deletePatient(id) {
   return api.delete(`api/Patient/${id}`).then(res => res.data);

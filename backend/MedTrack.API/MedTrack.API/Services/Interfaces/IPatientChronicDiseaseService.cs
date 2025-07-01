@@ -7,7 +7,7 @@ namespace MedTrack.API.Services.Interfaces
     {
         Task<IEnumerable<PatientChronicDiseaseDTO>> GetByPatientIdAsync(int patientId);
         Task AddAsync(CreatePatientChronicDiseaseDTO dto);
-        Task UpdateAsync(int patientId, int diseaseId, UpdatePatientChronicDiseaseDTO dto);
+        //Task UpdateAsync(int patientId, int diseaseId, UpdatePatientChronicDiseaseDTO dto);
         Task RemoveAsync(int patientId, int diseaseId);
     }
 }

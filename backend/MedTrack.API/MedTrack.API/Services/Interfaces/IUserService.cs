@@ -12,6 +12,6 @@ namespace MedTrack.API.Services.Interfaces
         Task<UserDTO?> GetUserByEmailAsync(string email);
         Task AddUserAsync(CreateUserDTO userDto);
         Task UpdateUserAsync(int id, UpdateUserDTO userDto);
-        Task DeleteUserAsync(int id);
+        Task<bool> DeleteUserAsync(int id);
     }
 }

@@ -12,6 +12,7 @@ namespace MedTrack.API.Repositories.Interfaces
         Task AddDoctorAsync(Doctor doctor);
         Task UpdateDoctorAsync(Doctor doctor);
         Task DeleteDoctorAsync(int id);
+        Task DeleteDoctorByUserIdAsync(int userId);
         Task<IEnumerable<Doctor>> GetDoctorsBySpecializationIdAsync(int specializationId);
         Task<List<DoctorDTO>> GetDoctorsByServiceAsync(int serviceId);
 

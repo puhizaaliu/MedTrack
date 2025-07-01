@@ -78,7 +78,8 @@ namespace MedTrack.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            await _userService.DeleteUserAsync(id);
+            var deleted = await _userService.DeleteUserAsync(id);
+            if (!deleted) return NotFound();
             return NoContent();
         }
     }

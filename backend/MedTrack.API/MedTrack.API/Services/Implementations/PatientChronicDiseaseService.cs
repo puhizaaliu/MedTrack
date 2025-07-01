@@ -31,14 +31,14 @@ namespace MedTrack.API.Services.Implementations
             await _repo.AddAsync(link);
         }
 
-        public async Task UpdateAsync(int patientId, int diseaseId, UpdatePatientChronicDiseaseDTO dto)
-        {
-            var all = await _repo.GetByPatientIdAsync(patientId);
-            var link = all.FirstOrDefault(x => x.DiseaseId == diseaseId);
-            if (link == null) throw new KeyNotFoundException();
-            _mapper.Map(dto, link);
-            await _repo.UpdateAsync(link);
-        }
+        //public async Task UpdateAsync(int patientId, int diseaseId, UpdatePatientChronicDiseaseDTO dto)
+        //{
+        //    var all = await _repo.GetByPatientIdAsync(patientId);
+        //    var link = all.FirstOrDefault(x => x.DiseaseId == diseaseId);
+        //    if (link == null) throw new KeyNotFoundException();
+        //    _mapper.Map(dto, link);
+        //    await _repo.UpdateAsync(link);
+        //}
 
         public async Task RemoveAsync(int patientId, int diseaseId) =>
             await _repo.RemoveAsync(patientId, diseaseId);

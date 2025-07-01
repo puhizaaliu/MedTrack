@@ -49,7 +49,7 @@ export function getAppointmentsByDoctor(doctorId) {
 // Ky përdor GET /api/Appointment/all
 export function getAllAppointments() {
   return api
-    .get('/api/Appointment/all')
+    .get('/api/Appointment')
     .then(res => res.data);
 }
 

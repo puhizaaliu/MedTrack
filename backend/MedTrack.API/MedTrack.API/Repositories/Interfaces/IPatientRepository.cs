@@ -11,6 +11,7 @@ namespace MedTrack.API.Repositories.Interfaces
         Task AddPatientAsync(Patient patient);
         Task UpdatePatientAsync(Patient patient);
         Task DeletePatientAsync(int id);
+        Task DeletePatientByUserIdAsync(int userId);
         Task SaveChangesAsync();
     }
 }

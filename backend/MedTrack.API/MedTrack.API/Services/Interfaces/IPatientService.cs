@@ -9,8 +9,8 @@ namespace MedTrack.API.Services.Interfaces
     {
         Task<IEnumerable<PatientDTO>> GetAllPatientsAsync();
         Task<PatientDTO?> GetPatientByIdAsync(int id);
-        Task AddPatientAsync(int userId); // pacienti lidhet me user ekzistues
-        Task UpdatePatientAsync(int id);  
+        Task AddPatientAsync(CreatePatientDTO dto);
+        Task UpdatePatientAsync(int patientId, UpdatePatientDTO dto);
         Task DeletePatientAsync(int id);
         Task UpdateUserFieldsAsync(int patientId, UpdateUserDTO dto);
     }

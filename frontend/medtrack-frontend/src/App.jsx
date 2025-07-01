@@ -44,6 +44,8 @@ import SpecializationsAndServices from './pages/admin/SpecializationsAndServices
 import AppointmentsOverview from './pages/admin/AppointmentsOverview' 
 import ReportsOverview from './pages/admin/ReportsOverview' 
 import AdminReportDetails from './pages/admin/ReportDetails'
+import CreateUser from './pages/admin/CreateUser'
+
 function App() {
   return (
     <Routes>
@@ -90,7 +92,8 @@ function App() {
       <Route path="/admin" element={<RequireAuth allowedRoles={['Admin']}>  <AdminLayout /> </RequireAuth>}>
         <Route path="dashboard" element={<AdminDashboard />} />  
         <Route path="users" element={<UserManagement />} />  
-        <Route path="users/:id" element={<UserDetails />} /> 
+        <Route path="users/:id" element={<UserDetails />} />
+        <Route path="users/new" element={<CreateUser />} /> 
         <Route path="specializationsandservices" element={<SpecializationsAndServices />} /> 
         <Route path="appointmentsoverview" element={<AppointmentsOverview />} />
         <Route path="reports" element={<ReportsOverview />} />

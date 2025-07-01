@@ -32,10 +32,15 @@ namespace MedTrack.API.Config
             CreateMap<Doctor, DoctorDTO>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.User.Surname))
+                .ForMember(dest => dest.ParentName, opt => opt.MapFrom(src => src.User.ParentName))
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.User.Phone))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
+                .ForMember(dest => dest.PersonalNumber, opt => opt.MapFrom(src => src.User.PersonalNumber))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.User.DateOfBirth))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender))
                 .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(src => src.Specialization.Name));
-            CreateMap<UpdateDoctorDTO, Doctor>();
+           // CreateMap<UpdateDoctorDTO, Doctor>();
 
             // Patient
             CreateMap<Patient, PatientDTO>()
@@ -123,7 +128,7 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.Disease,
                            opt => opt.MapFrom(src => src.Disease));
             CreateMap<CreatePatientChronicDiseaseDTO, PatientChronicDisease>();
-            CreateMap<UpdatePatientChronicDiseaseDTO, PatientChronicDisease>();
+            //CreateMap<UpdatePatientChronicDiseaseDTO, PatientChronicDisease>();
 
 
             // Notification

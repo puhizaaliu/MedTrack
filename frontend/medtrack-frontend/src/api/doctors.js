@@ -10,14 +10,13 @@ export function getDoctorById(id) {
   return api.get(`/api/Doctor/${id}`).then(res => res.data);
 }
 
-// Create a new doctor
+//Create a doctor
 export function createDoctor(payload) {
-  return api.post('/api/Doctor', payload).then(res => res.data);
+  return api.post('/api/Doctor', payload).then(res => res.data)
 }
-
-// Update an existing doctor
+// Update a doctor
 export function updateDoctor(id, payload) {
-  return api.put(`/api/Doctor/${id}`, payload).then(res => res.data);
+  return api.put(`/api/Doctor/${id}`, payload).then(res => res.data)
 }
 
 // Delete a doctor

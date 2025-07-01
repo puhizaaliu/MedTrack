@@ -8,5 +8,7 @@ namespace MedTrack.API.Repositories.Interfaces
         Task AddAsync(PatientChronicDisease link);
         Task UpdateAsync(PatientChronicDisease link);
         Task RemoveAsync(int patientId, int diseaseId);
+        Task DeleteAllByPatientIdAsync(int patientId);
+
     }
 }

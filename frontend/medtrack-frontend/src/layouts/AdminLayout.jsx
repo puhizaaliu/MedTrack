@@ -16,7 +16,7 @@ export default function AdminLayout() {
             <Link to="/admin/dashboard" className="hover:text-green-600">
               Dashboard
             </Link>
-            <Link to="/admin/users" className="hover:text-green-600">
+            {/* <Link to="/admin/users" className="hover:text-green-600">
               User Management
             </Link>
             <Link to="/admin/specializationsandservices" className="hover:text-green-600">
@@ -25,6 +25,9 @@ export default function AdminLayout() {
             <Link to="/admin/appointmentsoverview" className="hover:text-green-600">
               Appointments
             </Link>
+            <Link to="/admin/reports" className="hover:text-green-600">
+              Reports 
+            </Link> */}
             <Link to="/admin/notifications" className="relative hover:text-green-600">
               Notifications
               {unreadCount > 0 && (

@@ -57,18 +57,19 @@ namespace MedTrack.API.Controllers
         // POST: api/Patient?userId=1
         [HttpPost]
         [AuthorizeRoles(UserRole.Admin)]
-        public async Task<IActionResult> AddPatient([FromQuery] int userId)
+        public async Task<IActionResult> AddPatient([FromBody] CreatePatientDTO dto)
         {
-            await _patientService.AddPatientAsync(userId);
+            await _patientService.AddPatientAsync(dto);
             return StatusCode(201); // 201 Created
         }
 
         // PUT: api/Patient/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdateUserDTO dto)
+        [AuthorizeRoles(UserRole.Admin)]
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            await _patientService.UpdateUserFieldsAsync(id, dto);
+            await _patientService.UpdatePatientAsync(id, dto);
             return NoContent();
         }
 

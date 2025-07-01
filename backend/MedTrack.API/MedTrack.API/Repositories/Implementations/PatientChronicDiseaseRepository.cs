@@ -38,5 +38,13 @@ namespace MedTrack.API.Repositories.Implementations
                 await _ctx.SaveChangesAsync();
             }
         }
+
+        public async Task DeleteAllByPatientIdAsync(int patientId)
+        {
+            var toDelete = _ctx.PatientChronicDiseases.Where(x => x.PatientId == patientId);
+            _ctx.PatientChronicDiseases.RemoveRange(toDelete);
+            await _ctx.SaveChangesAsync();
+        }
+
     }
 }

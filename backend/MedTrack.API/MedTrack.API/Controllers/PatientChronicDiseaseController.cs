@@ -27,13 +27,13 @@ public class PatientChronicDiseaseController : ControllerBase
         return StatusCode(201);
     }
 
-    [HttpPut("{diseaseId}")]
-    [AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]
-    public async Task<IActionResult> Update(int patientId, int diseaseId, [FromBody] UpdatePatientChronicDiseaseDTO dto)
-    {
-        await _svc.UpdateAsync(patientId, diseaseId, dto);
-        return NoContent();
-    }
+    //[HttpPut("{diseaseId}")]
+    //[AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]
+    //public async Task<IActionResult> Update(int patientId, int diseaseId, [FromBody] UpdatePatientChronicDiseaseDTO dto)
+    //{
+    //    await _svc.UpdateAsync(patientId, diseaseId, dto);
+    //    return NoContent();
+    //}
 
     [HttpDelete]
     [AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]

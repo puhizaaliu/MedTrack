@@ -51,30 +51,20 @@ namespace MedTrack.API.Controllers
         }
 
         // POST: api/Doctor
-        [HttpPost]
-        [Authorize]
-        [AuthorizeRoles(UserRole.Admin)]
-        public async Task<IActionResult> AddDoctor([FromQuery] int userId, [FromQuery] int specializationId)
+      [HttpPost]
+        public async Task<IActionResult> AddDoctor([FromBody] CreateDoctorDTO dto)
         {
-            await _doctorService.AddDoctorAsync(userId, specializationId);
+            await _doctorService.AddDoctorAsync(dto);
             return StatusCode(201); // 201 Created
         }
 
         // PUT: api/Doctor/{id}
         [HttpPut("{id}")]
-        [Authorize]
         [AuthorizeRoles(UserRole.Admin)]
-        public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDTO updateDoctorDto)
+        public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDTO dto)
         {
-            try
-            {
-                await _doctorService.UpdateDoctorAsync(id, updateDoctorDto);
-                return NoContent(); // 204 No Content
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            await _doctorService.UpdateDoctorAsync(id, dto);
+            return NoContent();
         }
 
         // DELETE: api/Doctor/{id}
