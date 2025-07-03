@@ -11,7 +11,7 @@ export function getAppointments(status = null) {
     .then(res => res.data);
 }
 
-// Për admin/receptionist/doktor që sheh terminet e një pacienti specifik
+// sheh terminet e një pacienti specifik
 export function getAppointmentsForPatient(patientId, status = null) {
   const url = `/api/Appointment/patient/${patientId}`;
   return api.get(url).then(res => {
@@ -67,12 +67,6 @@ export function deleteAppointment(id) {
 export async function approveRequest(id) {
   const appointment = await api.get(`/api/Appointment/${id}`).then(r => r.data);
   appointment.status = "Confirmed";
-  return api.put(`/api/Appointment/${id}`, appointment);
-}
-
-export async function rejectRequest(id) {
-  const appointment = await api.get(`/api/Appointment/${id}`).then(r => r.data);
-  appointment.status = "Rejected";
   return api.put(`/api/Appointment/${id}`, appointment);
 }
 

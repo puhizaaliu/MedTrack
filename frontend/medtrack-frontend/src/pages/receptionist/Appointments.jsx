@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppointmentList from "../../shared/AppointmentList";
-import { getAppointmentsByStatus } from "../../api/appointments";
+import { getAppointmentsByStatus, updateAppointment } from "../../api/appointments";
 import { useAuth } from "../../hooks/useAuth";
 
 const STATUSES = [
@@ -29,14 +29,53 @@ export default function ReceptionistAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [statusFilter, setStatusFilter] = useState("Kerkese"); // must match enum
+  const [error,        setError]        = useState(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     getAppointmentsByStatus(statusFilter)
       .then(data => setAppointments(data))
-      .catch(err => console.error("Error loading appointments:", err))
+      .catch(err => {
+        setError("Error loading appointments");
+        console.error("Error loading appointments:", err);
+      })
       .finally(() => setLoading(false));
   }, [statusFilter]);
+
+  const handleMoveInProcess = async (id) => {
+    try {
+      await updateAppointment(id, { status: "NeProces" });
+      setAppointments(prev =>
+        prev.map(app => app.appointmentId === id
+          ? { ...app, status: "NeProces" }
+          : app
+        )
+      );
+    } catch (err) {
+      alert("Failed to move appointment to In-Process.");
+      console.error(err);
+    }
+  };
+
+  const handleMoveNoShow = async (id) => {
+    try {
+      await updateAppointment(id, { status: "NukKaArdhur" });
+      setAppointments(prev =>
+        prev.map(app => app.appointmentId === id
+          ? { ...app, status: "NukKaArdhur" }
+          : app
+        )
+      );
+    } catch (err) {
+      alert("Failed to mark appointment as No-Show.");
+      console.error(err);
+    }
+  };
+
+  const handleProcessPayment = (appointmentId) => {
+    navigate(`/receptionist/payments?appointment=${appointmentId}`);
+};
 
   if (!user) {
     return <p className="text-center py-6">Loading user…</p>;
@@ -66,6 +105,8 @@ export default function ReceptionistAppointments() {
       {/* Appointment table */}
       {loading ? (
         <p className="text-center py-6">Loading appointments…</p>
+      ) : error ? (
+        <p className="text-center py-6 text-red-600">{error}</p>
       ) : (
         <AppointmentList
           appointments={appointments}
@@ -74,6 +115,10 @@ export default function ReceptionistAppointments() {
               ? navigate(`/receptionist/appointmentrequests/${id}`)
               : navigate(`/receptionist/appointments/${id}`)
           }
+          role={user.role}
+          onMoveInProcess={handleMoveInProcess}
+          onMoveNoShow={handleMoveNoShow}
+          onProcessPayment={handleProcessPayment} 
         />
       )}
     </div>

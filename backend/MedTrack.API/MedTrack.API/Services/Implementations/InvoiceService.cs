@@ -32,18 +32,23 @@ namespace MedTrack.API.Services.Implementations
             return _mapper.Map<InvoiceDTO>(invoice);
         }
 
-        public async Task AddInvoiceAsync(CreateInvoiceDTO createDto)
+        public async Task<InvoiceDTO> AddInvoiceAsync(CreateInvoiceDTO createDto)
         {
+            // 1. Map DTO to entity
             var invoice = _mapper.Map<Invoice>(createDto);
+            invoice.PaymentStatus = true;
 
-            // Nëse e merrni PaymentStatus prej DTO
-            // invoice.PaymentStatus = createDto.PaymentStatus;
-
-            // Ose nëse doni ta vendosni gjithmonë si “paguar”:
-            //          invoice.PaymentStatus = true;
-
+            // 2. Save to database
             await _invoiceRepository.AddInvoiceAsync(invoice);
+
+            // 3. Fetch the full invoice with details (assumes the repository saves and sets InvoiceId)
+            var created = await _invoiceRepository.GetInvoiceByIdAsync(invoice.InvoiceId);
+
+            // 4. Map to DTO and return
+            var invoiceDto = _mapper.Map<InvoiceDTO>(created);
+            return invoiceDto;
         }
+
 
         public async Task UpdateInvoiceAsync(int id, UpdateInvoiceDTO updateDto)
         {

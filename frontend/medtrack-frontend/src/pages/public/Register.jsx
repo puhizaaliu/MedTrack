@@ -1,21 +1,43 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUser } from '../../api/users';                         // ← API helper
+import { createPatient } from '../../api/patients';
 
 export default function Register() {
   const [form, setForm] = useState({
     name: '', surname: '', parentName: '', email: '',
     phone: '', address: '', password: '',
     dateOfBirth: '', gender: 'M', role: 'Patient',
-    personalNumber: ''
+    personalNumber: '',
+    medicalInfo: {
+      allergies: '',
+      medications: '',
+      smoking: false,
+      alcohol: false,
+      physicalActivity: ''
+    },
+    familyHistory: [],
+    chronicDiseases: []
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handles changes for normal fields
   const handleChange = e => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Handles changes for medicalInfo fields
+  const handleMedicalInfoChange = e => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({
+      ...prev,
+      medicalInfo: {
+        ...prev.medicalInfo,
+        [name]: type === 'checkbox' ? checked : value
+      }
+    }));
   };
 
   const handleSubmit = async e => {
@@ -23,7 +45,9 @@ export default function Register() {
     setLoading(true);
     setError('');
     try {
-      await createUser(form);                                      // ← call our API
+      // Prepare payload: role field is not required on backend, but doesn't hurt
+      const payload = { ...form, role: undefined }; // Remove if not needed
+      await createPatient(form);
       navigate('/login', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -97,7 +121,53 @@ export default function Register() {
           className="w-full p-2 border rounded focus:outline-none focus:ring"
         />
 
-        {/* role is always Patient */}
+        {/* --- Medical Info Section --- */}
+        <h2 className="text-lg font-semibold mt-4">Medical Info</h2>
+        <input
+          name="allergies"
+          placeholder="Allergies"
+          value={form.medicalInfo.allergies}
+          onChange={handleMedicalInfoChange}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          name="medications"
+          placeholder="Medications"
+          value={form.medicalInfo.medications}
+          onChange={handleMedicalInfoChange}
+          className="w-full p-2 border rounded"
+        />
+        <div className="flex space-x-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              name="smoking"
+              checked={form.medicalInfo.smoking}
+              onChange={handleMedicalInfoChange}
+              className="mr-2"
+            />
+            Smoking
+          </label>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              name="alcohol"
+              checked={form.medicalInfo.alcohol}
+              onChange={handleMedicalInfoChange}
+              className="mr-2"
+            />
+            Alcohol
+          </label>
+        </div>
+        <input
+          name="physicalActivity"
+          placeholder="Physical Activity"
+          value={form.medicalInfo.physicalActivity}
+          onChange={handleMedicalInfoChange}
+          className="w-full p-2 border rounded"
+        />
+
+        {/* role is always Patient, hidden for future-proofing */}
         <input type="hidden" name="role" value="Patient" />
 
         <button

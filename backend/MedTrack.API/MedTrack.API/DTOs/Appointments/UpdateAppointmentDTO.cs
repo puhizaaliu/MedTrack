@@ -4,8 +4,8 @@ namespace MedTrack.API.DTOs.Appointments
 {
     public class UpdateAppointmentDTO
     {
-        public DateOnly Date { get; set; }
-        public TimeOnly Time { get; set; }
+        public string? Date { get; set; }
+        public string? Time { get; set; }
         public AppointmentStatus Status { get; set; }
     }
 }

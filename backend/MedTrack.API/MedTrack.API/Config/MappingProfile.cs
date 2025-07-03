@@ -40,7 +40,7 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.User.DateOfBirth))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender))
                 .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(src => src.Specialization.Name));
-           // CreateMap<UpdateDoctorDTO, Doctor>();
+            // CreateMap<UpdateDoctorDTO, Doctor>();
 
             // Patient
             CreateMap<Patient, PatientDTO>()
@@ -49,6 +49,7 @@ namespace MedTrack.API.Config
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.User.Phone))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
+                .ForMember(dest => dest.PersonalNumber, opt => opt.MapFrom(src => src.User.PersonalNumber))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.User.DateOfBirth))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender))
                 .ForMember(dest => dest.MedicalInfo, opt => opt.MapFrom(src => src.MedicalInfo))
@@ -59,7 +60,23 @@ namespace MedTrack.API.Config
                         {
                             HistoryId = fh.History.HistoryId,
                             ConditionName = fh.History.ConditionName
-                        })));
+                        })))
+                .ForMember(dest => dest.ChronicDiseases, opt => opt.MapFrom(src =>
+                    src.ChronicDiseases
+                        .Where(cd => cd.Disease != null)
+                        .Select(cd => new PatientChronicDiseaseDTO
+                        {
+                            PatientId = cd.PatientId,
+                            DiseaseId = cd.Disease.DiseaseId,
+                            OtherText = cd.OtherText,
+                            Disease = new ChronicDiseaseDTO
+                            {
+                                DiseaseId = cd.Disease.DiseaseId,
+                                DiseaseName = cd.Disease.DiseaseName
+                            }
+                        })
+                ));
+
 
             // MedicalInfo
             CreateMap<MedicalInfo, MedicalInfoDTO>().ReverseMap();
@@ -94,6 +111,7 @@ namespace MedTrack.API.Config
                         opt => opt.MapFrom(src => src.Appointment.Service.Name))
              .ForMember(dest => dest.ServiceId,
                         opt => opt.MapFrom(src => src.Appointment.Service.ServiceId));
+            CreateMap<CreateInvoiceDTO, Invoice>();
 
             // Service
             CreateMap<Service, ServiceDTO>().ReverseMap();

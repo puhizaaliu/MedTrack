@@ -33,7 +33,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/5
         [HttpGet("{id}")]
-        [AuthorizeRoles(UserRole.Patient)]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Receptionist)]
         public async Task<ActionResult<AppointmentDTO>> GetById(int id)
         {
             var dto = await _appointmentService.GetAppointmentByIdAsync(id);
@@ -56,7 +56,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Appointment/5
         [HttpPut("{id}")]
-        [AuthorizeRoles(UserRole.Receptionist)]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Doctor)]
         public async Task<ActionResult> Update(int id, [FromBody] UpdateAppointmentDTO updateDto)
         {
             if (!ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/patient/5
         [HttpGet("patient/{patientId}")]
-        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin)]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Admin, UserRole.Patient)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByPatient(int patientId)
         {
             var list = await _appointmentService.GetAppointmentsByPatientIdAsync(patientId);
@@ -101,7 +101,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/status/Kerkese
         [HttpGet("status/{status}")]
-        [AuthorizeRoles(UserRole.Receptionist)]
+        [AuthorizeRoles(UserRole.Receptionist, UserRole.Doctor)]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetByStatus(string status)
         {
             if (!Enum.TryParse<AppointmentStatus>(status, true, out var parsed))

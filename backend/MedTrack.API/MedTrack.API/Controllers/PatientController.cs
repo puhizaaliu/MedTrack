@@ -65,7 +65,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/Patient/{id}
         [HttpPut("{id}")]
-        [AuthorizeRoles(UserRole.Admin)]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Patient, UserRole.Doctor)]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

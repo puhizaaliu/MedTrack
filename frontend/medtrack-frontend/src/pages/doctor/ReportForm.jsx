@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { getAppointmentsByDoctor } from '../../api/appointments';
 import { getPatientById, updatePatient } from '../../api/patients';
 import { createMedicalReport } from '../../api/reports';
+import { updateAppointment } from '../../api/appointments';
 
 export default function ReportForm() {
   const { id: appointmentId } = useParams();
@@ -125,6 +126,11 @@ export default function ReportForm() {
       await createMedicalReport({
         appointmentId: +appointmentId,
         ...reportData
+      });
+
+      // 3) Update appointment status to Completed
+      await updateAppointment(+appointmentId, {
+        status: "Kryer" // or whatever the value for "Completed" is in your system
       });
 
       navigate('/doctor/reports');

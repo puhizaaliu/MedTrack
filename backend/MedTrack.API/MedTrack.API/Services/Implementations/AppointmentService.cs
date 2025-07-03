@@ -43,7 +43,15 @@ namespace MedTrack.API.Services.Implementations
             var existingAppointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
             if (existingAppointment == null) throw new Exception("Appointment not found");
 
-            _mapper.Map(appointmentDto, existingAppointment);
+            // Explicit parsing for Date and Time
+            if (!string.IsNullOrEmpty(appointmentDto.Date))
+                existingAppointment.Date = DateOnly.Parse(appointmentDto.Date);
+
+            if (!string.IsNullOrEmpty(appointmentDto.Time))
+                existingAppointment.Time = TimeOnly.Parse(appointmentDto.Time);
+
+            existingAppointment.Status = appointmentDto.Status;
+
             await _appointmentRepository.UpdateAppointmentAsync(existingAppointment);
         }
 

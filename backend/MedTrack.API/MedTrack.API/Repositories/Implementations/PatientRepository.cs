@@ -143,6 +143,7 @@ namespace MedTrack.API.Repositories.Implementations
             existing.User.Address = updatedPatient.User.Address;
             existing.User.DateOfBirth = updatedPatient.User.DateOfBirth;
             existing.User.Gender = updatedPatient.User.Gender;
+            existing.User.PersonalNumber = updatedPatient.User.PersonalNumber;
 
             // Don’t touch any collections or other tables
             await _context.SaveChangesAsync();

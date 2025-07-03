@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppointmentList from "../../shared/AppointmentList";
-import { getAppointments } from "../../api/appointments";
+import { getAppointmentsForPatient } from "../../api/appointments";
 import { useAuth } from "../../hooks/useAuth";
 
-const STATUSES = [
+const PATIENT_STATUSES = ["Kerkese", "Konfirmuar", "Paguar"];
+
+const ALL_STATUSES = [
   "Kerkese",
   "Konfirmuar",
   "NeProces",
@@ -21,27 +23,32 @@ const STATUS_LABELS = {
   Paguar: "Paid",
   NukKaArdhur: "No-Show"
 };
-
 export default function Appointments() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+
+  const statusList = user?.role === "Patient" ? PATIENT_STATUSES : ALL_STATUSES;
+  const [statusFilter, setStatusFilter] = useState(statusList[0]);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("Pending");
 
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    getAppointments(statusFilter)
-      .then((data) => setAppointments(data))
-      .finally(() => setLoading(false));
-  }, [statusFilter]);
-  // still waiting on auth
-  if (!user) {
-    return <p className="text-center py-6">Loading user...</p>;
-  }
-  if (loading) {
-    return <p className="text-center py-6">Loading appointments...</p>;
-  }
+  
+  getAppointmentsForPatient(user.userId)
+      .then((all) => {
+        // Filter appointments by status
+        const filtered = all.filter((a) => statusList.includes(a.status));
+        setAppointments(
+          statusFilter ? filtered.filter((a) => a.status === statusFilter) : filtered
+        );
+      })
+      .catch(() => setAppointments([]))
+      .finally(() => isMounted && setLoading(false));
+
+    return () => { isMounted = false }
+  }, [user?.userId, statusFilter]);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
@@ -56,25 +63,29 @@ export default function Appointments() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        {STATUSES.map((s) => (
+        {statusList.map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+            className={`px-3 py-1 rounded-lg text-sm font-semibold ${
               statusFilter === s
-                ? "bg-green-500 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-blue-50"
             }`}
           >
-            {STATUS_LABELS[s] /* Shfaq përkthimin në UI */}
+            {STATUS_LABELS[s]}
           </button>
         ))}
       </div>
-
-      <AppointmentList
-        appointments={appointments}
-        onViewDetails={(id) => navigate(`/patient/appointments/${id}`)}
-      />
+      {loading ? (
+        <p className="text-center py-8 text-gray-500">Loading appointments…</p>
+      ) : (
+        <AppointmentList
+          appointments={appointments}
+          onViewDetails={(id) => navigate(`/patient/appointments/${id}`)}
+          role={user?.role}
+        />
+      )}
     </div>
   );
 }

@@ -11,7 +11,7 @@ namespace MedTrack.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    [AuthorizeRoles(UserRole.Admin, UserRole.Doctor)]
+    [AuthorizeRoles(UserRole.Admin, UserRole.Doctor, UserRole.Patient)]
     public class FamilyHistoryController : ControllerBase
     {
         private readonly IFamilyHistoryService _familyHistoryService;
@@ -21,7 +21,6 @@ namespace MedTrack.API.Controllers
             _familyHistoryService = familyHistoryService;
         }
 
-        // GET: api/FamilyHistory
         [HttpGet]
         public async Task<IActionResult> GetAllFamilyHistories()
         {

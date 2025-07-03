@@ -16,6 +16,7 @@ namespace MedTrack.API.DTOs.Patient
         public string Address { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
         public Gender Gender { get; set; }
+        public string PersonalNumber { get; set; } = string.Empty;
 
         // Medical Info
         public MedicalInfoDTO? MedicalInfo { get; set; }

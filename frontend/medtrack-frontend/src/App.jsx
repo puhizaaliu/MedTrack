@@ -25,6 +25,7 @@ import Patients from './pages/receptionist/Patients'
 import ReceptionistPatientDetails from './pages/receptionist/PatientDetails'
 import Doctors from './pages/receptionist/Doctors'
 import DoctorDetails from './pages/receptionist/DoctorDetails'
+import Payment from './pages/receptionist/Payments';
 
 import DoctorLayout from './layouts/DoctorLayout' 
 import DoctorDashboard from './pages/doctor/Dashboard'
@@ -75,6 +76,7 @@ function App() {
         <Route path="doctors" element={<Doctors />} />
         <Route path="doctors/:id" element={<DoctorDetails />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="payments" element={<Payment />} />
       </Route>
 
       <Route path="/doctor" element={<RequireAuth allowedRoles={['Doctor']}> <DoctorLayout /> </RequireAuth>}>

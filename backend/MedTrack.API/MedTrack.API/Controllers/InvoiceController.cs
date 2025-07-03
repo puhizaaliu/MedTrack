@@ -77,9 +77,16 @@ namespace MedTrack.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _invoiceService.AddInvoiceAsync(createDto);
-            // Optionally, you could retrieve the newly created invoice DTO here and return it.
-            return StatusCode(201);
+            try
+            {
+                var invoice = await _invoiceService.AddInvoiceAsync(createDto);
+                return CreatedAtAction(nameof(GetById), new { id = invoice.InvoiceId }, invoice);
+            }
+            catch (Exception ex)
+            {
+                // Log ex.ToString() here!
+                return StatusCode(500, ex.ToString());
+            }
         }
 
         // PUT: api/Invoice/5
