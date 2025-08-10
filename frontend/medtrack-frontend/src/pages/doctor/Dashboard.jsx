@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { useNotifications } from '../../contexts/NotificationsContext';
+// import { useNotifications } from '../../contexts/NotificationsContext';
 import { getDoctorById } from '../../api/doctors';
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { notifications } = useNotifications();
+  // const { notifications } = useNotifications();
   const [profile, setProfile] = useState(null);
 
   // Load the doctor's name for the welcome message
@@ -59,7 +59,7 @@ export default function DoctorDashboard() {
         </nav>
       </div>
 
-      {/* Right Panel */}
+      {/* Right Panel
       <div className="flex-1 bg-white rounded-lg shadow p-6">
         <h3 className="text-xl font-semibold mb-4">Recent Notifications</h3>
         <ul className="space-y-3">
@@ -83,7 +83,7 @@ export default function DoctorDashboard() {
             View all notifications
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

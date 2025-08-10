@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { useNotifications } from "../contexts/NotificationsContext";
 
 export default function AdminLayout() {
-  const { unreadCount } = useNotifications();
+  // const { unreadCount } = useNotifications();
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
@@ -28,14 +28,14 @@ export default function AdminLayout() {
             <Link to="/admin/reports" className="hover:text-green-600">
               Reports 
             </Link> */}
-            <Link to="/admin/notifications" className="relative hover:text-green-600">
+            {/* <Link to="/admin/notifications" className="relative hover:text-green-600">
               Notifications
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-3 bg-red-500 text-white rounded-full px-1 text-xs">
                   {unreadCount}
                 </span>
               )}
-            </Link>
+            </Link> */}
             <Link to="/login" className="text-red-500 hover:text-red-700">
               Logout
             </Link>

@@ -55,6 +55,21 @@ export default function PatientDetails() {
             ))}
           </ul>
         </div>
+        
+      )}
+      {/* Chronic Diseases */}
+      {patient.chronicDiseases?.length > 0 && (
+        <div className="bg-white p-6 rounded shadow space-y-2">
+          <h2 className="text-xl font-semibold">Chronic Diseases</h2>
+          <ul className="list-disc list-inside">
+            {patient.chronicDiseases.map((cd, idx) => (
+              <li key={cd.diseaseId || idx}>
+                {cd.disease?.diseaseName || "Unknown Disease"}
+                {cd.otherText && <> – <span className="italic">{cd.otherText}</span></>}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

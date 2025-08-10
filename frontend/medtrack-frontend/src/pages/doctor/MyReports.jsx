@@ -14,15 +14,20 @@ export default function MyReports() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    // Server will return only the reports this doctor authored
-    getAllReports()
-      .then(data => setReports(data))
-      .catch(err => setError(err.response?.data?.message || err.message))
-      .finally(() => setLoading(false));
-  }, []);
+ useEffect(() => {
+  setLoading(true);
+  setError(null);
+  getAllReports()
+    .then(data => {
+      // Filtron raportet vetëm për doktorin e kyçur
+      const myReports = data.filter(r => r.doctorId === user.id);
+      setReports(myReports);
+    })
+    .catch(err => setError(err.response?.data?.message || err.message))
+    .finally(() => setLoading(false));
+}, [user.id]);
+
+
 
   if (loading) {
     return <p className="text-center py-6">Loading reports…</p>;

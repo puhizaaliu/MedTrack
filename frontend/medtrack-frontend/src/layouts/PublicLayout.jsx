@@ -10,7 +10,7 @@ export default function PublicLayout() {
           </Link>
           <nav className="flex space-x-6">
             <Link to="/" className="hover:text-blue-500">Home</Link>
-            <Link to="/about" className="hover:text-blue-500">About</Link>
+            {/* <Link to="/about" className="hover:text-blue-500">About</Link> */}
             <Link to="/login" className="hover:text-blue-500">Login</Link>
             <Link to="/register" className="hover:text-blue-500">Register</Link>
           </nav>
@@ -27,26 +27,4 @@ export default function PublicLayout() {
     </div>
   );
 }
-
-
-// import { Outlet, Link } from 'react-router-dom'
-
-// export default function PublicLayout() {
-//   return (
-//     <div className="min-h-screen bg-gray-100">
-//       <header className="bg-white shadow p-4">
-//         <nav className="flex gap-4 text-blue-600">
-//           <Link to="/">Home</Link>
-//           <Link to="/about">About</Link>
-//           <Link to="/login">Login</Link>
-//           <Link to="/register">Register</Link>
-//         </nav>
-//       </header>
-//       <main className="p-4">
-//         <p>Layout is rendering ✅</p>
-//         <Outlet />
-//       </main>
-//     </div>
-//   )
-// }
 

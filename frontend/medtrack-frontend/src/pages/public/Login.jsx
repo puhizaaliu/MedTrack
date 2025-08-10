@@ -27,13 +27,13 @@ export default function Login() {
           navigate('/patient/dashboard', { replace: true });
           break;
         case 'Doctor':
-          navigate('/doctor/calendar', { replace: true });
+          navigate('/doctor/dashboard', { replace: true });
           break;
         case 'Receptionist':
-          navigate('/receptionist/calendar', { replace: true });
+          navigate('/receptionist/appointments', { replace: true });
           break;
         case 'Admin':
-          navigate('/admin/users', { replace: true });
+          navigate('/admin/dashboard', { replace: true });
           break;
         default:
           navigate('/', { replace: true });

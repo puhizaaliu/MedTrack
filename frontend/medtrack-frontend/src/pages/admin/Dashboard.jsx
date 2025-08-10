@@ -45,15 +45,21 @@ export default function AdminDashboard() {
           >
             Reports
           </button>
-          <button
+          {/* <button
             onClick={() => navigate('/admin/notifications')}
             className="w-full px-4 py-2 text-left bg-red-600 text-white rounded hover:bg-red-700"
           >
             Notifications
+          </button> */}
+          <button
+            onClick={() => navigate('/admin/invoices')}
+            className="w-full px-4 py-2 text-left bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Invoice List
           </button>
         </nav>
       </div>
-      {/* Right Panel: Recent Notifications */}
+      {/* Right Panel: Recent Notifications
       <div className="md:w-1/3 bg-white rounded-lg shadow p-6 space-y-4">
         <h3 className="text-xl font-semibold">Recent Notifications</h3>
         <ul className="space-y-3">
@@ -75,7 +81,7 @@ export default function AdminDashboard() {
         >
           View all notifications
         </button>
-      </div>
+      </div> */}
     </div>
   )
 }

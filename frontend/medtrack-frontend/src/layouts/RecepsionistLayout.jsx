@@ -1,9 +1,9 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import { useNotifications } from "../contexts/NotificationsContext";
+//import { useNotifications } from "../contexts/NotificationsContext";
 
 export default function ReceptionistLayout() {
-  const { unreadCount } = useNotifications();
+  // const { unreadCount } = useNotifications();
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
@@ -13,9 +13,9 @@ export default function ReceptionistLayout() {
             MedTrack
           </Link>
           <nav className="flex space-x-6">
-            <Link to="/receptionist/calendar" className="hover:text-emerald-600">
+            {/* <Link to="/receptionist/calendar" className="hover:text-emerald-600">
               Calendar
-            </Link>
+            </Link> */}
             <Link to="/receptionist/appointments" className="hover:text-emerald-600">
               Appointments
             </Link>
@@ -24,14 +24,14 @@ export default function ReceptionistLayout() {
             </Link><Link to="/receptionist/patients" className="hover:text-emerald-600">
               Patients
             </Link>
-            <Link to="/receptionist/notifications" className="relative hover:text-emerald-600">
+            {/* <Link to="/receptionist/notifications" className="relative hover:text-emerald-600">
               Notifications
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-3 bg-red-500 text-white rounded-full px-1 text-xs">
                   {unreadCount}
                 </span>
               )}
-            </Link>
+            </Link> */}
             <Link to="/login" className="text-red-500 hover:text-red-700">
               Logout
             </Link>

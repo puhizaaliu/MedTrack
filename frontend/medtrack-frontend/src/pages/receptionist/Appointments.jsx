@@ -35,7 +35,11 @@ export default function ReceptionistAppointments() {
     setLoading(true);
     setError(null);
     getAppointmentsByStatus(statusFilter)
-      .then(data => setAppointments(data))
+      .then(data => {
+      console.log("Fetched appointments:", data);
+ // Kontrollo rezultatin
+      setAppointments(data);
+    })
       .catch(err => {
         setError("Error loading appointments");
         console.error("Error loading appointments:", err);

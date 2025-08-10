@@ -68,7 +68,9 @@ export default function ReportsOverview() {
       }
     })
   }, [reports, appointments])
-
+useEffect(() => {
+  console.log("Appointments:", appointments);
+}, [appointments]);
   // 2) Apply filters
   const filtered = useMemo(() => {
     return enriched.filter(r => {
@@ -84,7 +86,9 @@ export default function ReportsOverview() {
       return true
     })
   }, [enriched, dateFilter, doctorFilter, patientFilter])
-
+  useEffect(() => {
+    console.log("Enriched reports:", enriched);
+  }, [enriched]);
   if (loading) return <p className="text-center py-6">Loading all reports…</p>
   if (error)   return <p className="text-red-600 text-center py-6">{error}</p>
 
