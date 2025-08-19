@@ -81,7 +81,7 @@ export default function CreateUser() {
 
   const handleDoctorChange = e => {
     const { name, value } = e.target
-    setDoctorInfo(d => ({ ...d, [name]: value }))
+    setDoctorInfo(d => ({ ...d, [name]: value === '' ? '' : Number(value) }))
   }
 
   // Main: single-step patient/doctor/user creation
@@ -105,8 +105,9 @@ export default function CreateUser() {
           ...form,
           gender: form.gender,
           dateOfBirth: form.dateOfBirth ? new Date(form.dateOfBirth).toISOString() : undefined,
-          specializationId: doctorInfo.specializationId,
+          specializationId: Number(doctorInfo.specializationId),
         }
+        console.log('Doctor payload', payload)
         await createDoctor(payload)
       } else {
         // Receptionist/Admin
@@ -197,10 +198,11 @@ export default function CreateUser() {
     {form.role === 'Doctor' && (
     <div>
         <h3 className="text-xl">Doctor Details</h3>
-        <select name="specializationId" onChange={handleDoctorChange} required>
+        <select name="specializationId" value={doctorInfo.specializationId} onChange={handleDoctorChange} required>
         <option key="select" value="">--Select Specialization--</option>
         {specializationOptions.map(s => (
-            <option key={s.id} value={s.id}>{s.name}</option>
+            <option key={String(s.specializationId ?? s.id)} 
+            value={String(s.specializationId ?? s.id)}>{s.name}</option>
         ))}
         </select>
     </div>

@@ -3,6 +3,7 @@ using System;
 using MedTrack.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -17,13 +18,17 @@ namespace MedTrack.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("MedTrack.API.Models.Appointment", b =>
                 {
                     b.Property<int>("AppointmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -39,10 +44,10 @@ namespace MedTrack.API.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeOnly>("Time")
-                        .HasColumnType("time(6)");
+                        .HasColumnType("time");
 
                     b.HasKey("AppointmentId");
 
@@ -52,7 +57,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.ChronicDisease", b =>
@@ -61,13 +66,15 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiseaseId"));
+
                     b.Property<string>("DiseaseName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DiseaseId");
 
-                    b.ToTable("ChronicDiseases", (string)null);
+                    b.ToTable("ChronicDiseases");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Doctor", b =>
@@ -82,7 +89,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("Doctors", (string)null);
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.FamilyHistory", b =>
@@ -91,13 +98,15 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistoryId"));
+
                     b.Property<string>("ConditionName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HistoryId");
 
-                    b.ToTable("FamilyHistories", (string)null);
+                    b.ToTable("FamilyHistories");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Invoice", b =>
@@ -106,60 +115,55 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
+
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AppointmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Method")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PaymentStatus")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit");
 
                     b.HasKey("InvoiceId");
 
                     b.HasIndex("AppointmentId")
                         .IsUnique();
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.MedicalInfo", b =>
                 {
-                    b.Property<int>("MedicalInfoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Alcohol")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Allergies")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Medications")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PhysicalActivity")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("Smoking")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("MedicalInfoId");
+                    b.Property<bool>("Alcohol")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.Property<string>("Allergies")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("MedicalInfos", (string)null);
+                    b.Property<string>("Medications")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhysicalActivity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Smoking")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("MedicalInfos");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Patient", b =>
@@ -169,7 +173,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.PatientChronicDisease", b =>
@@ -184,7 +188,7 @@ namespace MedTrack.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("OtherText")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PatientUserId")
                         .HasColumnType("int");
@@ -197,7 +201,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("PatientUserId");
 
-                    b.ToTable("PatientChronicDiseases", (string)null);
+                    b.ToTable("PatientChronicDiseases");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.PatientFamilyHistory", b =>
@@ -212,7 +216,7 @@ namespace MedTrack.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("OtherText")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PatientUserId")
                         .HasColumnType("int");
@@ -225,7 +229,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("PatientUserId");
 
-                    b.ToTable("PatientFamilyHistories", (string)null);
+                    b.ToTable("PatientFamilyHistories");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.RefreshToken", b =>
@@ -234,18 +238,20 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Revoked")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -254,7 +260,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Service", b =>
@@ -263,13 +269,15 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ServiceId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Specialization", b =>
@@ -278,13 +286,15 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpecializationId"));
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SpecializationId");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.SpecializationService", b =>
@@ -299,7 +309,7 @@ namespace MedTrack.API.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("SpecializationServices", (string)null);
+                    b.ToTable("SpecializationServices");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.User", b =>
@@ -308,50 +318,52 @@ namespace MedTrack.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ParentName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PersonalNumber")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MedTrack.API.Models.Appointment", b =>

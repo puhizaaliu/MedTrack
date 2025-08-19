@@ -11,7 +11,6 @@ namespace MedTrack.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    [AuthorizeRoles(UserRole.Admin)]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,6 +22,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/User
         [HttpGet]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
@@ -31,6 +31,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/User/{id}
         [HttpGet("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -42,6 +43,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/User/by-email?email=example@example.com
         [HttpGet("by-email")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
             var user = await _userService.GetUserByEmailAsync(email);
@@ -61,6 +63,7 @@ namespace MedTrack.API.Controllers
 
         // PUT: api/User/{id}
         [HttpPut("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO updateUserDto)
         {
             try
@@ -76,6 +79,7 @@ namespace MedTrack.API.Controllers
 
         // DELETE: api/User/{id}
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var deleted = await _userService.DeleteUserAsync(id);

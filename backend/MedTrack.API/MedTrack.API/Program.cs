@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
 using MongoServerVersion = MongoDB.Driver.ServerVersion;
-using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -101,10 +100,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // DbContext (MySQL)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // MongoDB settings
 builder.Services.Configure<MongoDBSettings>(

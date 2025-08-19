@@ -24,9 +24,14 @@ namespace MedTrack.API.Config
         public MappingProfile()
         {
             // User
-            CreateMap<User, UserDTO>().ReverseMap();
-            CreateMap<CreateUserDTO, User>();
-            CreateMap<UpdateUserDTO, User>();
+            //CreateMap<User, UserDTO>().ReverseMap();
+            //CreateMap<CreateUserDTO, User>();
+            //CreateMap<UpdateUserDTO, User>();
+            // User
+            CreateMap<User, UserDTO>(); // one-way is safer; avoid ReverseMap unless you really need it
+            CreateMap<CreateUserDTO, User>().ForMember(d => d.PasswordHash, opt => opt.Ignore());   
+            CreateMap<UpdateUserDTO, User>().ForMember(d => d.PasswordHash, opt => opt.Ignore());
+
 
             // Doctor
             CreateMap<Doctor, DoctorDTO>()

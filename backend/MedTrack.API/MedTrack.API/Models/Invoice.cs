@@ -12,6 +12,7 @@ namespace MedTrack.API.Models
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; } = null!;
 
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
 
         public PaymentMethod Method { get; set; }

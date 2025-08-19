@@ -56,7 +56,7 @@ namespace MedTrack.API.Controllers
 
         // POST: api/Patient?userId=1
         [HttpPost]
-        [AuthorizeRoles(UserRole.Admin)]
+        //[AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> AddPatient([FromBody] CreatePatientDTO dto)
         {
             await _patientService.AddPatientAsync(dto);

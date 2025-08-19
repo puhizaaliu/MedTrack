@@ -330,7 +330,7 @@ namespace MedTrack.API.Services.Implementations
                     Email = dto.Email,
                     Address = dto.Address,
                     DateOfBirth = dto.DateOfBirth,
-                    Gender = Enum.TryParse<Gender>(dto.Gender, true, out var g) ? g : Gender.O
+                    Gender = dto.Gender
                 }
             };
 
