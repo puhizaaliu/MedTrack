@@ -21,7 +21,10 @@ export default function Dashboard() {
             const appointments = await getAppointmentsForPatient(user.userId);
             const now = new Date();
             const upcoming = appointments
-              .filter(app => new Date(app.date) > now)
+              .filter(app => 
+                // new Date(app.date) > now && 
+                (app.status === "Konfirmuar" || app.status === "Confirmed")
+              )
               .sort((a, b) => new Date(a.date) - new Date(b.date));
             setNextAppointment(upcoming[0] || null);
           }
@@ -47,7 +50,7 @@ export default function Dashboard() {
           </div>
           <div className="space-y-3 w-full">
             <button
-              onClick={() => navigate('/patient/appointments/book')}
+              onClick={() => navigate('/patient/bookappointment')}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
             >
               Book Appointment
@@ -80,8 +83,7 @@ export default function Dashboard() {
             {nextAppointment ? (
               <div>
                 <div className="text-lg">{new Date(nextAppointment.date).toLocaleString()}</div>
-                <div className="text-gray-700">{nextAppointment.doctor} ({nextAppointment.specialization})</div>
-                <div className="text-gray-500">{nextAppointment.location}</div>
+                <div className="text-gray-700">Doctor: {nextAppointment.doctorName} {nextAppointment.doctorSurname}</div>
               </div>
             ) : (
               <div className="text-gray-400">No appointments scheduled.</div>

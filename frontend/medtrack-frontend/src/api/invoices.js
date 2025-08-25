@@ -22,3 +22,6 @@ export function updateInvoice(id, payload) {
 export function deleteInvoice(id) {
   return api.delete(`/api/Invoice/${id}`).then(res => res.data);
 }
+export function getInvoicesByPatient(patientId) {
+  return api.get(`/api/Invoice/patient/${patientId}`).then(res => res.data);
+}

@@ -4,9 +4,13 @@ namespace MedTrack.API.DTOs.MedicalReport
 {
     public class MedicalReportDTO
     {
-        public string Id { get; set; } = null!;             
+        public string Id { get; set; } = null!;
 
-        public int AppointmentId { get; set; }              
+        public int AppointmentId { get; set; }
+        public string? PatientName { get; set; }
+        public string? PatientSurname { get; set; }
+        public string? DoctorName { get; set; }
+        public string? DoctorSurname { get; set; }
 
         public string Symptoms { get; set; } = null!;
 

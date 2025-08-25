@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 
 /**
  * Komponent për të listuar appointments
@@ -55,7 +56,7 @@ export default function AppointmentList({
   if (!appointments || appointments.length === 0) {
     return <p className="text-gray-600">No appointments found.</p>;
   }
-
+const navigate = useNavigate();
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white shadow rounded-lg">
@@ -134,7 +135,15 @@ export default function AppointmentList({
                   >
                     Process Payment
                   </button>
-                )}        
+                )}
+                 {role === "Patient" && a.status === "Paguar" && (
+                  <button
+                    onClick={() => navigate(`/patient/invoice?appointment=${a.appointmentId}`)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                  >
+                    View Invoice
+                  </button>
+                )}       
               </td>
             </tr>
           ))}

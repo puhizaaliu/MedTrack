@@ -20,7 +20,12 @@ export default function MyReports() {
   getAllReports()
     .then(data => {
       // Filtron raportet vetëm për doktorin e kyçur
-      const myReports = data.filter(r => r.doctorId === user.id);
+      const myReports = data
+      .filter(r => r.doctorId === user.id)
+      .map(r => ({
+        ...r,
+        displayName: `${r.patientName} ${r.patientSurname ?? ''}`.trim() // Fallback if you separate name/surname
+      }));
       setReports(myReports);
     })
     .catch(err => setError(err.response?.data?.message || err.message))

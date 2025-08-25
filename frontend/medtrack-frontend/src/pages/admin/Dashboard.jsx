@@ -57,6 +57,12 @@ export default function AdminDashboard() {
           >
             Invoice List
           </button>
+          <button
+            onClick={() => navigate('/admin/medicalconditions')}
+            className="w-full px-4 py-2 text-left bg-red-600 text-white rounded hover:bg-red-700"
+          >
+           Family History & Chronic Diseases
+          </button>
         </nav>
       </div>
       {/* Right Panel: Recent Notifications

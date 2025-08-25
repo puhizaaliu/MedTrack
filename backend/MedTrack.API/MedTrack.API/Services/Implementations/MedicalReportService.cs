@@ -34,10 +34,42 @@ namespace MedTrack.API.Services.Implementations
             _mapper = mapper;
         }
 
+
         public async Task<IEnumerable<MedicalReportDTO>> GetAllAsync()
         {
-            var entities = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<MedicalReportDTO>>(entities);
+            var reports = await _repository.GetAllAsync();
+            var appointmentIds = reports.Select(r => r.AppointmentId).ToList();
+
+            // Get appointments and include patient -> user
+            var appointments = await _sql.Appointments
+                .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                .Where(a => appointmentIds.Contains(a.AppointmentId))
+                .ToListAsync();
+
+            // Create lookup to avoid N+1
+            var appointmentLookup = appointments.ToDictionary(a => a.AppointmentId);
+
+            var dtos = new List<MedicalReportDTO>();
+
+            foreach (var report in reports)
+            {
+                var dto = _mapper.Map<MedicalReportDTO>(report);
+
+                if (appointmentLookup.TryGetValue(report.AppointmentId, out var appt))
+                {
+                    dto.PatientName = appt.Patient?.User?.Name;
+                    dto.PatientSurname = appt.Patient?.User?.Surname;
+                    dto.DoctorName = appt.Doctor?.User?.Name;
+                    dto.DoctorSurname = appt.Doctor?.User?.Surname;
+                }
+
+                dtos.Add(dto);
+            }
+
+            return dtos;
         }
 
         public async Task<MedicalReportDetailDTO?> GetByIdAsync(string id)

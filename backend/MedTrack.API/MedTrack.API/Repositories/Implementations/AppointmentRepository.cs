@@ -108,6 +108,16 @@ namespace MedTrack.API.Repositories.Implementations
                 .Where(a => a.Status == status)
                 .ToListAsync();
         }
+        public async Task<bool> AppointmentExistsAsync(int doctorId, DateOnly date, TimeOnly time, int excludeAppointmentId)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+                a.DoctorId == doctorId &&
+                a.Date == date &&
+                a.Time == time &&
+                a.Status == AppointmentStatus.Konfirmuar &&
+                a.AppointmentId != excludeAppointmentId
+            );
+        }
 
     }
 }

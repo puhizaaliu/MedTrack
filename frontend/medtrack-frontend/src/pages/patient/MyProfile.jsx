@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { getPatientById, updatePatient } from '../../api/patients';
-import { getAllChronicDiseases } from '../../api/patientChronicDisease';
-import { getAllFamilyHistories } from '../../api/patientFamilyHistory';
+import { listChronicDiseases } from '../../api/chronicDisease';
+import { listFamilyHistories } from '../../api/familyHistory';
 
 export default function MyProfile() {
   const { user } = useAuth();
@@ -23,10 +23,9 @@ export default function MyProfile() {
 
     Promise.all([
       getPatientById(user.userId),
-      getAllChronicDiseases(),
-      getAllFamilyHistories()
-    ])
-      .then(([data, chronicOpts, familyOpts]) => {
+      listChronicDiseases(),
+      listFamilyHistories()
+    ]).then(([data, chronicOpts, familyOpts]) => {
         setProfile(data);
         setChronicDiseaseOptions(chronicOpts);
         setFamilyHistoryOptions(familyOpts);
@@ -48,8 +47,8 @@ export default function MyProfile() {
             alcohol: data.medicalInfo?.alcohol || false,
             physicalActivity: data.medicalInfo?.physicalActivity || "",
           },
-          familyHistory: (data.familyHistories || []).map(fh => ({
-            historyId: String(fh.historyId || fh.id || ""),
+          familyHistory: (data.familyHistory || []).map(fh => ({
+            historyId: String(fh.historyId || ""),
             otherText: fh.otherText || "",
           })),
           chronicDiseases: (data.chronicDiseases || []).map(cd => ({
@@ -127,14 +126,18 @@ export default function MyProfile() {
       const payload = {
         ...form,
         medicalInfo: { ...form.medicalInfo },
-        familyHistory: form.familyHistory.map(fh => ({
-          historyId: fh.historyId ? Number(fh.historyId) : undefined,
-          otherText: fh.otherText || "",
-        })),
-        chronicDiseases: form.chronicDiseases.map(cd => ({
-          diseaseId: cd.diseaseId ? Number(cd.diseaseId) : undefined,
-          otherText: cd.otherText || "",
-        })),
+        familyHistory: (form.familyHistory || [])
+          .filter(fh => fh.historyId)
+          .map(fh => ({
+            historyId: Number(fh.historyId),
+            otherText: fh.otherText || "",
+          })),
+        chronicDiseases: (form.chronicDiseases || [])
+          .filter(cd => cd.diseaseId) // keep only valid selections
+          .map(cd => ({
+            diseaseId: Number(cd.diseaseId),
+            otherText: cd.otherText || "",
+          })),
       };
       await updatePatient(user.userId, payload);
       setEditMode(false);
@@ -154,9 +157,9 @@ export default function MyProfile() {
 
   // Helper to map IDs to names for display
   const getDiseaseName = id =>
-    chronicDiseaseOptions.find(opt => String(opt.id || opt.diseaseId) === String(id))?.diseaseName || "";
+    chronicDiseaseOptions.find(opt => String(opt.diseaseId) === String(id))?.diseaseName || "";
   const getConditionName = id =>
-    familyHistoryOptions.find(opt => String(opt.id || opt.historyId) === String(id))?.conditionName || "";
+    familyHistoryOptions.find(opt => String(opt.historyId) === String(id))?.conditionName || "";
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded shadow space-y-6">
@@ -243,7 +246,7 @@ export default function MyProfile() {
                   >
                     <option value="">Select disease</option>
                     {chronicDiseaseOptions.map(opt => (
-                      <option key={opt.id || opt.diseaseId} value={opt.id || opt.diseaseId}>
+                      <option key={opt.diseaseId} value={opt.diseaseId}>
                         {opt.diseaseName || opt.name}
                       </option>
                     ))}
@@ -297,7 +300,7 @@ export default function MyProfile() {
                   >
                     <option value="">Select condition</option>
                     {familyHistoryOptions.map(opt => (
-                      <option key={opt.id || opt.historyId} value={opt.id || opt.historyId}>
+                       <option key={opt.historyId} value={opt.historyId}>
                         {opt.conditionName || opt.name}
                       </option>
                     ))}

@@ -15,5 +15,6 @@ namespace MedTrack.API.Repositories.Interfaces
         Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId);
         Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId);
         Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status);
+        Task<bool> AppointmentExistsAsync(int doctorId, DateOnly date, TimeOnly time, int excludeAppointmentId);
     }
 }

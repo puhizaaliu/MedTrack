@@ -33,7 +33,7 @@ namespace MedTrack.API.Controllers
 
         // GET: api/Appointment/5
         [HttpGet("{id}")]
-        [AuthorizeRoles(UserRole.Patient, UserRole.Receptionist)]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Receptionist, UserRole.Doctor)]
         public async Task<ActionResult<AppointmentDTO>> GetById(int id)
         {
             var dto = await _appointmentService.GetAppointmentByIdAsync(id);

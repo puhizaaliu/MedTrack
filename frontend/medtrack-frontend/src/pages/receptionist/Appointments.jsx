@@ -87,7 +87,11 @@ export default function ReceptionistAppointments() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-gray-800">All Appointments</h1>
+
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-800">All Appointments</h1>
+        <button  onClick={() => navigate('/receptionist/calendar')} className="bg-blue-500 text-white px-4 py-2 rounded">Calendar</button>
+      </div>
 
       {/* Status filter tabs */}
       <div className="flex flex-wrap gap-3">

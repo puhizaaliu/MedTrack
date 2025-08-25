@@ -16,9 +16,10 @@ import BookAppointment from './pages/patient/BookAppointment'
 import Reports from './pages/patient/Reports'
 import ReportDetails from './pages/patient/ReportDetails' 
 import MyProfile from './pages/patient/MyProfile'
+import PatientInvoicePage from "./pages/patient/Invoice";
 
 import ReceptionistLayout from './layouts/RecepsionistLayout'
-//import RecepsionistCalendar from './pages/receptionist/Calendar'  
+import RecepsionistCalendar from './pages/receptionist/Calendar'  
 import AppointmentRequests from './pages/receptionist/AppointmentRequests'  
 import ReceptionistAppointments from './pages/receptionist/Appointments'
 import Patients from './pages/receptionist/Patients'
@@ -29,7 +30,7 @@ import Payment from './pages/receptionist/Payments';
 
 import DoctorLayout from './layouts/DoctorLayout' 
 import DoctorDashboard from './pages/doctor/Dashboard'
-//import DoctorCalendar from './pages/doctor/Calendar'
+import DoctorCalendar from './pages/doctor/Calendar'
 import AppointmentInProgress from './pages/doctor/AppointmentInProgress'  
 import ReportForm from './pages/doctor/ReportForm' 
 import DoctorReportDetails from './pages/doctor/ReportDetails' 
@@ -47,6 +48,7 @@ import ReportsOverview from './pages/admin/ReportsOverview'
 import AdminReportDetails from './pages/admin/ReportDetails'
 import CreateUser from './pages/admin/CreateUser'
 import AllInvoices from './pages/admin/AllInvoices';
+import MedicalConditions from './pages/admin/MedicalConditions';
 
 function App() {
   return (
@@ -66,10 +68,11 @@ function App() {
         <Route path="reports/:id" element={<ReportDetails />} />
         <Route path="profile" element={<MyProfile />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="invoice" element={<PatientInvoicePage />} />
       </Route>
 
       <Route path="/receptionist" element={<RequireAuth allowedRoles={['Receptionist']}> <ReceptionistLayout /> </RequireAuth>}>
-        {/* <Route path="calendar" element={<RecepsionistCalendar />} /> */}
+        <Route path="calendar" element={<RecepsionistCalendar />} />
         <Route path="appointmentrequests/:id" element={<AppointmentRequests />} />
         <Route path="appointments" element={<ReceptionistAppointments />} />
         <Route path="patients" element={<Patients />} />
@@ -82,7 +85,7 @@ function App() {
 
       <Route path="/doctor" element={<RequireAuth allowedRoles={['Doctor']}> <DoctorLayout /> </RequireAuth>}>
         <Route path="dashboard" element={<DoctorDashboard />} />
-        {/* <Route path="calendar" element={<DoctorCalendar />} /> */}
+        <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointmentinprogress" element={<AppointmentInProgress />} />
         <Route path="reports" element={<MyReports />} />
         <Route path="newreport/:id" element={<ReportForm />} />
@@ -102,7 +105,9 @@ function App() {
         <Route path="reports" element={<ReportsOverview />} />
         <Route path="reports/:id" element={<AdminReportDetails />} />
         <Route path="notifications" element={<NotificationsPage />} />
-         <Route path="invoices" element={<AllInvoices />} />
+        <Route path="invoices" element={<AllInvoices />} />
+        <Route path="medicalconditions" element={<MedicalConditions />} />
+
       </Route>
 
        {/* catch-all: redirect unknown paths to home or 404 */}

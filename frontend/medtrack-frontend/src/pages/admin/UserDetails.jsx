@@ -4,8 +4,8 @@ import { useAuth } from '../../hooks/useAuth'
 import { getUserById, updateUser, deleteUser } from '../../api/users'
 import { getPatientById, updatePatient } from '../../api/patients'
 import { getDoctorById, updateDoctor } from '../../api/doctors'
-import { getAllFamilyHistories } from '../../api/patientFamilyHistory'
-import { getAllChronicDiseases } from '../../api/patientChronicDisease'
+import { listFamilyHistories } from '../../api/familyHistory'
+import { listChronicDiseases } from '../../api/chronicDisease'
 import { getSpecializations } from '../../api/specializations'
 
 const GENDERS = [
@@ -43,8 +43,8 @@ export default function UserDetails() {
 
   useEffect(() => {
     Promise.all([
-      getAllFamilyHistories(),
-      getAllChronicDiseases(),
+      listFamilyHistories(),
+      listChronicDiseases(),
       getSpecializations(),
       getUserById(id)
     ])
@@ -228,7 +228,7 @@ console.log('specializationOptions:', specializationOptions);
               <p><strong>Family History:</strong> {' '}
                 {familyHistory.length > 0
                   ? familyHistory.map(fh => {
-                    const name = familyHistoryOptions.find(opt => (opt.id || opt.historyId) === (fh.historyId))?.conditionName || ''
+                     const name = familyHistoryOptions.find(opt => String(opt.historyId) === String(fh.historyId))?.conditionName || ''
                     return name
                       ? `${name}${fh.otherText ? ` (${fh.otherText})` : ''}`
                       : fh.otherText
@@ -345,8 +345,8 @@ console.log('specializationOptions:', specializationOptions);
                   >
                     <option key="fh-0" value="">Select condition</option>
                     {familyHistoryOptions.map(opt => (
-                      <option key={String(opt.id || opt.historyId)} value={String(opt.id || opt.historyId)}>
-                        {opt.conditionName || opt.name}
+                      <option key={opt.historyId} value={opt.historyId}>
+                        {opt.conditionName}
                       </option>
                     ))}
                   </select>
@@ -375,11 +375,8 @@ console.log('specializationOptions:', specializationOptions);
                   >
                     <option key="cd-0" value="">Select disease</option>
                     {chronicDiseaseOptions.map(opt => (
-                      <option
-                        key={String(opt.id || opt.diseaseId)}
-                        value={String(opt.id || opt.diseaseId)}
-                      >
-                        {opt.diseaseName || opt.name}
+                      <option key={opt.diseaseId} value={opt.diseaseId}>
+                        {opt.diseaseName}
                       </option>
                     ))}
                   </select>

@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { createUser } from '../../api/users'
 import { createPatient } from '../../api/patients'
 import { createDoctor } from '../../api/doctors'
-import { getAllFamilyHistories } from '../../api/patientFamilyHistory'
-import { getAllChronicDiseases } from '../../api/patientChronicDisease'
+import { listFamilyHistories } from '../../api/familyHistory'
+import { listChronicDiseases } from '../../api/chronicDisease'
 import { getSpecializations } from '../../api/specializations'
 
 const ROLES = ['Patient', 'Doctor', 'Receptionist', 'Admin']
@@ -39,8 +39,8 @@ export default function CreateUser() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getAllFamilyHistories().then(setFamilyHistoryOptions).catch(console.error)
-    getAllChronicDiseases().then(setChronicDiseaseOptions).catch(console.error)
+    listFamilyHistories().then(setFamilyHistoryOptions).catch(console.error)
+    listChronicDiseases().then(setChronicDiseaseOptions).catch(console.error)
     getSpecializations().then(setSpecializationOptions).catch(console.error)
   }, [])
 
@@ -96,8 +96,10 @@ export default function CreateUser() {
           gender: form.gender,
           dateOfBirth: form.dateOfBirth ? new Date(form.dateOfBirth).toISOString() : undefined,
           medicalInfo,
-          familyHistory: familyHistory.filter(h => h.historyId),
-          chronicDiseases: chronicDiseases.filter(d => d.diseaseId),
+          familyHistory: familyHistory.filter(h => h.historyId)
+            .map(h => ({ historyId: Number(h.historyId), otherText: h.otherText || '' })),
+          chronicDiseases: chronicDiseases.filter(d => d.diseaseId)
+            .map(d => ({ diseaseId: Number(d.diseaseId), otherText: d.otherText || '' })),
         }
         await createPatient(payload)
       } else if (form.role === 'Doctor') {
@@ -167,8 +169,8 @@ export default function CreateUser() {
                 <select name="historyId" onChange={e => handleFamilyHistoryChange(i, e)}>
                 <option key="select" value="">--Select--</option>
                 {familyHistoryOptions.map(opt => (
-                    <option key={opt.id || opt.historyId} value={opt.id || opt.historyId}>
-                    {opt.conditionName || opt.name}
+                    <option key={opt.historyId} value={opt.historyId}>
+                    {opt.conditionName}
                     </option>
                 ))}
                 </select>
@@ -183,8 +185,8 @@ export default function CreateUser() {
                 <select name="diseaseId" onChange={e => handleDiseaseChange(i, e)}>
                 <option key="select" value="">--Select--</option>
                 {chronicDiseaseOptions.map(opt => (
-                    <option key={opt.id || opt.diseaseId} value={opt.id || opt.diseaseId}>
-                    {opt.diseaseName || opt.name}
+                    <option key={opt.diseaseId} value={opt.diseaseId}>
+                    {opt.diseaseName}
                     </option>
                 ))}
                 </select>

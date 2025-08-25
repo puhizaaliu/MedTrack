@@ -43,16 +43,23 @@ export default function AppointmentRequests() {
       .then(found => getAppointmentsByDoctor(found.doctorId))
       .then(all => {
         const confirmed = all.filter(a => a.status === 'Konfirmuar');
+        console.log("Confirmed appointments:", confirmed);
+
         const today = new Date();
         const weekLater = new Date();
         weekLater.setDate(today.getDate() + 7);
 
-        setSchedule(
-          confirmed.filter(a => {
-            const d = new Date(a.date);
-            return d >= today && d <= weekLater;
-          })
-        );
+        const filtered = confirmed.filter(a => {
+          const appointmentDate = a.date.split('T')[0]; // "2025-08-19"
+          const todayStr = new Date().toISOString().split('T')[0];
+          const weekLaterStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+          return appointmentDate >= todayStr && appointmentDate <= weekLaterStr;
+        });
+
+          console.log("Filtered (next 7 days):", filtered);
+          setSchedule(filtered);
+
       })
       .catch(err => setError(err.message || 'Failed loading request'))
       .finally(() => setLoading(false));
@@ -61,35 +68,53 @@ export default function AppointmentRequests() {
   // Double-booking validation
   useEffect(() => {
     if (!newDate || !newTime) return setIsBusy(false);
-    setIsBusy(
-      schedule.some(slot => slot.date === newDate && slot.time === newTime)
-    );
+
+    const conflict = schedule.some(slot => {
+      const slotDate = slot.date.split('T')[0];
+      return (
+        slotDate === newDate &&
+        slot.time === newTime &&
+        slot.appointmentId !== appt?.appointmentId
+      );
+    });
+
+    setIsBusy(conflict);
+    if (!conflict) setError(null); // ✅ Clear error when resolved
   }, [newDate, newTime, schedule]);
+
 
   const handleApprove = async e => {
     e.preventDefault();
     setError(null);
+
     if (isBusy) {
       setError('Selected slot is already booked. Please choose another time.');
       return;
     }
+
     try {
-      // await updateAppointment(appt.appointmentId, {
-      //   date: newDate, // YYYY-MM-DD
-      //   time: newTime, // HH:mm
-      //   status: 'Konfirmuar'
-      // });
-      // navigate('/receptionist/appointments');
       const payload = {
-      date: newDate,
-      time: newTime,
-      status: 'Konfirmuar'
-    };
-    console.log('Payload to send:', payload); // 👈 LOG IT HERE
-    await updateAppointment(appt.appointmentId, payload);
-    navigate('/receptionist/appointments');
+        date: newDate,
+        time: newTime,
+        status: 'Konfirmuar'
+      };
+
+      console.log('Payload to send:', payload);
+      await updateAppointment(appt.appointmentId, payload);
+      navigate('/receptionist/appointments');
+
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      let backendError =
+        err.response?.data?.message ||
+        (typeof err.response?.data === 'string' ? err.response.data : null) ||
+        err.message;
+
+      // Show custom message for 404 errors
+      if (err.response?.status === 404) {
+        backendError = 'The selected date and time is not available.';
+      }
+
+      setError(backendError || 'Something went wrong');
     }
   };
 
@@ -107,7 +132,6 @@ export default function AppointmentRequests() {
   })();
 
   if (loading) return <p className="text-center py-6">Loading request…</p>;
-  if (error) return <p className="text-red-600 text-center py-6">{error}</p>;
   if (!appt) return <p className="text-center py-6">No such request.</p>;
 
   
@@ -125,6 +149,9 @@ export default function AppointmentRequests() {
       </section>
 
       <form onSubmit={handleApprove} className="space-y-4">
+        {error && (
+          <p className="text-red-600 font-semibold">{error}</p>
+        )}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium">Date</label>
@@ -139,15 +166,29 @@ export default function AppointmentRequests() {
           </div>
           <div>
             <label className="block text-sm font-medium">Time (8:00 - 20:00)</label>
-            <input
-              type="time"
+            <select
               value={newTime}
-              min="08:00"
-              max="20:00"
               onChange={e => setNewTime(e.target.value)}
               required
               className="mt-1 block w-full border rounded p-2"
-            />
+            >
+              <option value="">Select time</option>
+              {generateTimeOptions().map(time => {
+                const busy = schedule.some(slot => { 
+                  const slotDate = slot.date.split('T')[0];
+                 return (
+                  slotDate === newDate &&
+                  slot.time === time &&
+                  slot.appointmentId !== appt?.appointmentId 
+                );
+                });
+                return (
+                  <option key={time} value={time} disabled={busy} className={busy ? 'text-gray-400' : ''}>
+                    {time} {busy ? '(Busy)' : ''}
+                  </option>
+                );
+              })}
+            </select>
           </div>
         </div>
 
@@ -155,10 +196,10 @@ export default function AppointmentRequests() {
           <h3 className="text-lg font-medium mb-2">Doctor’s Busy Slots (next 7 days)</h3>
           {schedule.length > 0 ? (
             <>
-              <ul className="list-disc list-inside text-gray-700">
+              <ul className="list-disc list-inside text-red-700">
                 {schedule.map(slot => (
                   <li key={slot.appointmentId}>
-                    {new Date(slot.date).toLocaleDateString()} @ {slot.time === "00:00:00" ? "-" : slot.time}
+                    {new Date(slot.date).toLocaleDateString()} at {slot.time === "00:00:00" ? "-" : slot.time}
                   </li>
                 ))}
               </ul>
@@ -195,4 +236,17 @@ export default function AppointmentRequests() {
       </form>
     </div>
   );
+
+   function generateTimeOptions() {
+    const times = [];
+    for (let hour = 8; hour < 20; hour++) {
+      for (let minute of [0, 20, 40]) {
+        const h = hour.toString().padStart(2, '0');
+        const m = minute.toString().padStart(2, '0');
+        times.push(`${h}:${m}`);
+      }
+    }
+    return times;
+  }
+
 }

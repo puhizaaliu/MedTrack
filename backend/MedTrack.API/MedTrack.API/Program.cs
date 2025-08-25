@@ -16,6 +16,10 @@ using MedTrack.API.Hubs;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Stripe
+Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"] ?? Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -193,5 +197,6 @@ app.MapControllers();
 
 // Map SignalR hub
 app.MapHub<NotificationHub>("/hubs/notifications");
+
 
 app.Run();

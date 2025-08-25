@@ -18,19 +18,22 @@ export default function ReportList({ reports, onViewReport }) {
           <tr className="bg-gray-100 text-left">
             <th className="px-4 py-2">Report Date</th>
             <th className="px-4 py-2">Appointment ID</th>
-            <th className="px-4 py-2">Diagnosis</th>
+            <th className="px-4 py-2">Patient</th>
+            <th className="px-4 py-2">Doctor</th>
             <th className="px-4 py-2" />
           </tr>
         </thead>
         <tbody>
           {reports.map((r) => {
+            console.log("Report Row:", r);
             const date = new Date(r.createdAt).toLocaleString();
             const brief = r.diagnosis.length > 30 ? r.diagnosis.slice(0, 30) + '...' : r.diagnosis;
             return (
               <tr key={r.id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2 align-middle">{date}</td>
                 <td className="px-4 py-2 align-middle">{r.appointmentId}</td>
-                <td className="px-4 py-2 align-middle">{brief}</td>
+                <td>{r.displayName || r.patientName} {r.displaySurname || r.patientSurname}</td>
+                <td>{r.displayName || r.doctorName} {r.displaySurname || r.doctorSurname}</td>
                 <td className="px-4 py-2 align-middle text-right">
                   <button
                     onClick={() => onViewReport(r.id)}

@@ -9,3 +9,5 @@ obj/
 
 # Others
 .env
+
+appsettings.Development.json

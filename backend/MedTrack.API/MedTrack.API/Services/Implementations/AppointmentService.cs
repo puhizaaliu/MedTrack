@@ -43,17 +43,30 @@ namespace MedTrack.API.Services.Implementations
             var existingAppointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
             if (existingAppointment == null) throw new Exception("Appointment not found");
 
-            // Explicit parsing for Date and Time
+            // Parse Date and Time
             if (!string.IsNullOrEmpty(appointmentDto.Date))
                 existingAppointment.Date = DateOnly.Parse(appointmentDto.Date);
 
             if (!string.IsNullOrEmpty(appointmentDto.Time))
                 existingAppointment.Time = TimeOnly.Parse(appointmentDto.Time);
 
+            // Prevent double booking if confirming
+            if (appointmentDto.Status == AppointmentStatus.Konfirmuar)
+            {
+                var doctorId = existingAppointment.DoctorId;
+                var date = existingAppointment.Date;
+                var time = existingAppointment.Time;
+
+                var conflict = await _appointmentRepository.AppointmentExistsAsync(doctorId, date, time, id);
+                if (conflict)
+                    throw new Exception("Doctor is already booked at that date and time.");
+            }
+
             existingAppointment.Status = appointmentDto.Status;
 
             await _appointmentRepository.UpdateAppointmentAsync(existingAppointment);
         }
+
 
         public async Task DeleteAppointmentAsync(int id)
         {
