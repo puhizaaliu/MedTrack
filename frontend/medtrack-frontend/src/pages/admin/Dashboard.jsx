@@ -3,7 +3,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { useNotifications } from '../../contexts/NotificationsContext'
+import { useNotifications } from "../../hooks/useNotifications";
+
 
 export default function AdminDashboard() {
   const { user } = useAuth()

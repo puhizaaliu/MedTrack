@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import { useNotifications } from "../contexts/NotificationsContext";
+import { useNotifications } from "../hooks/useNotifications";
 
 export default function AdminLayout() {
   // const { unreadCount } = useNotifications();

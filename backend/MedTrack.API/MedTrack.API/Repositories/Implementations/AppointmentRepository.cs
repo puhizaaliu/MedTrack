@@ -21,10 +21,10 @@ namespace MedTrack.API.Repositories.Implementations
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
-                    .ThenInclude(p => p.User)      // Që Patient.User.Name/Surname të mos jenë null
+                    .ThenInclude(p => p.User)      
                 .Include(a => a.Doctor)
-                    .ThenInclude(d => d.User)      // Që Doctor.User.Name/Surname të mos jenë null
-                .Include(a => a.Service)            // Që Service.Name të mos jetë null
+                    .ThenInclude(d => d.User)    
+                .Include(a => a.Service)           
                 .ToListAsync();
         }
 

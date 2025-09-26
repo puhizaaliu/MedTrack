@@ -12,7 +12,8 @@ namespace MedTrack.API.MongoModels
         PaymentPending,       
         NewMedicalReport,      
         AppointmentMissed,      
-        General                 
+        General,
+        AppointmentInProcess
     }
 
     [BsonIgnoreExtraElements]
@@ -37,7 +38,7 @@ namespace MedTrack.API.MongoModels
         public int? AppointmentId { get; set; }
     
         [BsonElement("MedicalReportId")]
-        [BsonRepresentation(BsonType.ObjectId)]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public string? MedicalReportId { get; set; }
 
         // Statusi i leximit dhe kohet

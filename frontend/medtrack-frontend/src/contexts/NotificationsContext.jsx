@@ -3,20 +3,22 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { useAuth } from '../hooks/useAuth';
 import { getNotifications, updateNotification } from '../api/notifications';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 
-const NotificationsContext = createContext();
+export const NotificationsContext = createContext(null);
 
-export function NotificationsProvider({ children }) {
+export const NotificationsProvider = ({ children }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const seenNotificationIds = useRef(new Set());
 
-  // Ky është URL i API që përmban "/api"
-  const apiUrl = import.meta.env.VITE_API_URL; // p.sh. "http://localhost:5130/api"
-  // Hiqim segmentin "/api" për t'u përdorur me SignalR
-  const signalRUrl = apiUrl.replace(/\/api\/?$/, ''); // => "http://localhost:5130"
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const signalRUrl = apiUrl.replace(/\/api\/?$/, '');
 
-  // Funksioni për të shënuar si të lexuar
   const markAsRead = useCallback(async (id) => {
     try {
       await updateNotification(id, { isRead: true });
@@ -31,7 +33,7 @@ export function NotificationsProvider({ children }) {
 
   useEffect(() => {
     if (!user) return;
-    // Ndërto lidhjen SignalR me base URL-në pa "/api"
+
     const hub = new HubConnectionBuilder()
       .withUrl(`${signalRUrl}/hubs/notifications`, {
         accessTokenFactory: () => localStorage.getItem('accessToken'),
@@ -41,33 +43,66 @@ export function NotificationsProvider({ children }) {
 
     let isCurrent = true;
 
-    // 1) Ngarkojmë fillimisht nga API
     getNotifications(user.userId)
       .then(list => {
         if (!isCurrent) return;
         setNotifications(list);
         setUnreadCount(list.filter(n => !n.isRead).length);
+        // Add fetched IDs to seenNotificationIds so they don't trigger toasts
+        list.forEach(n => seenNotificationIds.current.add(n.id));
       })
       .catch(err => console.error('Error fetching notifications', err));
 
-    // 2) Regjistrojmë listener-in për notifikatat në kohë reale
     hub.on('ReceiveNotification', notif => {
+      // Ignore if already seen
+      if (seenNotificationIds.current.has(notif.id)) return;
+
+      seenNotificationIds.current.add(notif.id); // mark as seen
       setNotifications(prev => [notif, ...prev]);
       setUnreadCount(prev => prev + 1);
+
+      const role = user?.role?.toLowerCase();
+      let url = null;
+
+      switch (notif.type) {
+        case "AppointmentRequested":
+          if (role === "receptionist") url = "/receptionist/appointments";
+          break;
+        case "AppointmentConfirmed":
+          if (role === "patient") url = "/patient/appointments";
+          break;
+        case "AppointmentInProcess":
+          if (role === "doctor") url = "/doctor/appointmentinprogress";
+          break;
+        case "NewMedicalReport":
+          if (notif.medicalReportId) url = `/${role}/reports/${notif.medicalReportId}`;
+          break;
+        default:
+          if (notif.appointmentId) {
+            url = `/${role}/appointments/${notif.appointmentId}`;
+          }
+          break;
+      }
+
+      toast(({ closeToast }) => (
+        <div
+          onClick={() => {
+            if (url) navigate(url);
+            closeToast();
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <strong>Njoftim i ri:</strong><br />
+          {notif.message}
+        </div>
+      ), {
+        type: 'info',
+        pauseOnHover: true,
+      });
     });
 
-    // (Opsionale) Log për reconnection / close
-    hub.onreconnecting(err => console.warn('SignalR reconnecting...', err));
-    hub.onreconnected(id => console.log('SignalR reconnected', id));
-    hub.onclose(err => {
-      if (err) console.error('SignalR closed with error:', err);
-      else console.log('SignalR closed gracefully.');
-    });
-
-    // Nis lidhjen
     hub.start().catch(err => console.error('SignalR connection failed:', err));
 
-    // Cleanup: heq listener dhe mbyll lidhjen
     return () => {
       isCurrent = false;
       hub.off('ReceiveNotification');
@@ -80,8 +115,4 @@ export function NotificationsProvider({ children }) {
       {children}
     </NotificationsContext.Provider>
   );
-}
-
-export function useNotifications() {
-  return useContext(NotificationsContext);
-}
+};

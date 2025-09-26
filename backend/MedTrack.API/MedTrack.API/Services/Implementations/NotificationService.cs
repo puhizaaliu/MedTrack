@@ -17,15 +17,14 @@ namespace MedTrack.API.Services.Implementations
         private readonly INotificationRepository _repository;
         private readonly IMapper _mapper;
         private readonly IHubContext<NotificationHub, INotificationClient> _hubContext;  // ← HubContext field
+        private readonly ILogger<NotificationService> _logger;
 
-        public NotificationService(
-            INotificationRepository repository,
-            IMapper mapper,
-            IHubContext<NotificationHub, INotificationClient> hubContext)           // ← Inject here
+        public NotificationService( INotificationRepository repository, IMapper mapper, IHubContext<NotificationHub, INotificationClient> hubContext, ILogger<NotificationService> logger)           // ← Inject here
         {
             _repository = repository;
             _mapper = mapper;
             _hubContext = hubContext;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<NotificationDTO>> GetAllAsync()
@@ -50,6 +49,10 @@ namespace MedTrack.API.Services.Implementations
 
         public async Task<string> CreateAsync(CreateNotificationDTO dto)
         {
+            // Fix invalid ObjectId issue
+            if (string.IsNullOrWhiteSpace(dto.MedicalReportId))
+                dto.MedicalReportId = null;
+
             // Map & persist
             var entity = _mapper.Map<NotificationDocument>(dto);
             entity.CreatedAt = DateTime.UtcNow;
@@ -68,12 +71,16 @@ namespace MedTrack.API.Services.Implementations
 
         public async Task UpdateAsync(string id, UpdateNotificationDTO dto)
         {
+            _logger.LogInformation("Updating Notification {Id}", id);
+            _logger.LogInformation("Incoming DTO → IsRead: {IsRead}, Message: {Message}", dto.IsRead, dto.Message);
+
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
                 throw new KeyNotFoundException($"Notification me Id = {id} nuk u gjet.");
 
             // Apply updates
             _mapper.Map(dto, existing);
+          
             if (dto.IsRead == true && existing.ReadAt == null)
             {
                 existing.ReadAt = DateTime.UtcNow;

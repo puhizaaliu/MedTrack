@@ -8,11 +8,8 @@ import React from 'react';
  *  - onViewNotification: (id) => void
  *  - onMarkAsRead?: (id) => void
  */
-export default function NotificationList({
-  notifications,
-  onViewNotification,
-  onMarkAsRead
-}) {
+export default function NotificationList({notifications,onViewNotification,onMarkAsRead})
+{
   if (!notifications || notifications.length === 0) {
     return <p className="text-gray-600">No notifications.</p>;
   }
@@ -22,6 +19,7 @@ export default function NotificationList({
       {notifications.map(n => {
         const date = new Date(n.createdAt).toLocaleString();
         const isNew = !n.isRead;
+        console.log('notif:', n);
         return (
           <li
             key={n.id}
@@ -30,7 +28,7 @@ export default function NotificationList({
             } flex justify-between items-start`}
           >
             <div
-              onClick={() => onViewNotification(n.id)}
+              onClick={() => onViewNotification(n)}
               className="flex-1 cursor-pointer"
             >
               <p className={`font-medium ${isNew ? 'text-gray-800' : 'text-gray-600'}`}>
@@ -40,7 +38,7 @@ export default function NotificationList({
             </div>
             {onMarkAsRead && isNew && (
               <button
-                onClick={() => onMarkAsRead(n.id)}
+                onClick={() => onMarkAsRead(n)}
                 className="ml-4 text-sm text-blue-600 hover:underline"
               >
                 Mark read

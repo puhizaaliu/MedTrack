@@ -1,19 +1,20 @@
 using MedTrack.API.Config;
 using MedTrack.API.Data;
+using MedTrack.API.Hubs;
 using MedTrack.API.Repositories.Implementations;
 using MedTrack.API.Repositories.Interfaces;
 using MedTrack.API.Services.Implementations;
 using MedTrack.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using System.Text;
 using System.Text.Json.Serialization;
 using MongoServerVersion = MongoDB.Driver.ServerVersion;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using MedTrack.API.Hubs;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -163,6 +164,7 @@ builder.Services.AddAuthorization();
 
 // SignalR for notifications
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 // CORS policy to allow your Vite dev server and SignalR
 builder.Services.AddCors(options =>

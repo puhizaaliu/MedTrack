@@ -50,4 +50,11 @@ public class UserRepository : IUserRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<IEnumerable<User>> GetByRoleAsync(UserRole role)
+    {
+        return await _context.Users
+            .Where(u => u.Role == role)
+            .ToListAsync();
+    }
 }
