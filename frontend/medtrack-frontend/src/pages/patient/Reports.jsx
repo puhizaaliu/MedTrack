@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { getReports } from "../../api/reports";
+import { getReportsByPatient } from "../../api/reports";
 import ReportList from "../../shared/ReportList";
 
 export default function Reports() {
@@ -17,7 +17,7 @@ export default function Reports() {
     if (!user?.userId) return;
 
     setLoading(true);
-    getReports(user.userId)
+    getReportsByPatient(user.userId)
       .then(data => setReports(data))
       .catch(err => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false));

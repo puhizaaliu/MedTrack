@@ -43,7 +43,7 @@ export default function AppointmentRequests() {
       .then(found => getAppointmentsByDoctor(found.doctorId))
       .then(all => {
         const confirmed = all.filter(a => a.status === 'Konfirmuar');
-        console.log("Confirmed appointments:", confirmed);
+        //console.log("Confirmed appointments:", confirmed);
 
         const today = new Date();
         const weekLater = new Date();
@@ -99,7 +99,7 @@ export default function AppointmentRequests() {
         status: 'Konfirmuar'
       };
 
-      console.log('Payload to send:', payload);
+      //console.log('Payload to send:', payload);
       await updateAppointment(appt.appointmentId, payload);
       navigate('/receptionist/appointments');
 
@@ -145,6 +145,7 @@ export default function AppointmentRequests() {
 
       <section className="bg-gray-50 p-4 rounded shadow">
         <p><strong>Patient:</strong> {appt.patientName}</p>
+        <p><strong>Doctor:</strong> {appt.doctorName} {appt.doctorSurname}</p>
         <p><strong>Service:</strong> {appt.serviceName}</p>
       </section>
 

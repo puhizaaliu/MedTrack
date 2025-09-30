@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { getAllReports } from '../../api/reports';
+import { getReportsByDoctor } from '../../api/reports';
 import ReportList from '../../shared/ReportList';
 
 export default function MyReports() {
@@ -14,24 +14,23 @@ export default function MyReports() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
- useEffect(() => {
+useEffect(() => {
+  if (!user?.userId) return;
+
   setLoading(true);
   setError(null);
-  getAllReports()
+
+  getReportsByDoctor(user.userId)
     .then(data => {
-      // Filtron raportet vetëm për doktorin e kyçur
-      const myReports = data
-      .filter(r => r.doctorId === user.id)
-      .map(r => ({
+      const myReports = data.map(r => ({
         ...r,
-        displayName: `${r.patientName} ${r.patientSurname ?? ''}`.trim() // Fallback if you separate name/surname
+        displayName: `${r.patientName} ${r.patientSurname ?? ''}`.trim()
       }));
       setReports(myReports);
     })
     .catch(err => setError(err.response?.data?.message || err.message))
     .finally(() => setLoading(false));
-}, [user.id]);
-
+}, [user?.userId]);
 
 
   if (loading) {

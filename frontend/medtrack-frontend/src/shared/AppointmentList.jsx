@@ -83,7 +83,7 @@ const navigate = useNavigate();
               <td className="px-4 py-2 align-middle">{a.serviceName}</td>
               <td className="px-4 py-2 align-middle capitalize">{STATUS_LABELS[a.status] || a.status}</td>
               <td className="px-4 py-2 align-middle text-right">
-                {role !== "Patient" && a.status === "Kerkese" && (
+                {role == "Receptionist" && a.status === "Kerkese" && (
                   <button
                     onClick={() => onViewDetails(a.appointmentId)}
                     className="text-blue-600 hover:underline"
@@ -112,7 +112,7 @@ const navigate = useNavigate();
                     {onMoveInProcess && (
                       <button
                         onClick={() => onMoveInProcess(a.appointmentId)}
-                        className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 mr-2"
+                         className=" text-white px-3 py-1 rounded mb-1"
                       >
                         In-Process
                       </button>
@@ -120,7 +120,7 @@ const navigate = useNavigate();
                     {onMoveNoShow && (
                       <button
                         onClick={() => onMoveNoShow(a.appointmentId)}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        className="text-white px-3 py-1 rounded"
                       >
                         No-Show
                       </button>

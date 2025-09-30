@@ -92,6 +92,15 @@ namespace MedTrack.API.Config
             CreateMap<FamilyHistory, FamilyHistoryDTO>().ReverseMap();
             CreateMap<CreateFamilyHistoryDTO, FamilyHistory>();
             CreateMap<UpdateFamilyHistoryDTO, FamilyHistory>();
+           
+            CreateMap<CreatePatientFamilyHistoryDTO, PatientFamilyHistory>();
+
+            CreateMap<PatientFamilyHistory, PatientFamilyHistoryDTO>()
+                .ForMember(dest => dest.ConditionName, opt => opt.MapFrom(src => src.History.ConditionName));
+
+            CreateMap<PatientFamilyHistory, FamilyHistoryDTO>()
+                .ForMember(dest => dest.HistoryId, opt => opt.MapFrom(src => src.History.HistoryId))
+                .ForMember(dest => dest.ConditionName, opt => opt.MapFrom(src => src.History.ConditionName));
 
             // Appointment
             CreateMap<Appointment, AppointmentDTO>()
@@ -127,11 +136,6 @@ namespace MedTrack.API.Config
             // SpecializationService
             CreateMap<SpecializationService, SpecializationServiceDTO>()
                 .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name));
-            
-            // Patient Family History
-            CreateMap<CreatePatientFamilyHistoryDTO, PatientFamilyHistory>();
-            CreateMap<PatientFamilyHistory, PatientFamilyHistoryDTO>()
-                .ForMember(dest => dest.ConditionName, opt => opt.MapFrom(src => src.History.ConditionName));
 
             // Medical Report
             CreateMap<MedicalReport, MedicalReportDTO>();
@@ -147,10 +151,16 @@ namespace MedTrack.API.Config
             CreateMap<CreateChronicDiseaseDTO, ChronicDisease>();
             CreateMap<UpdateChronicDiseaseDTO, ChronicDisease>();
 
+            CreateMap<CreatePatientChronicDiseaseDTO, PatientChronicDisease>();
+
             CreateMap<PatientChronicDisease, PatientChronicDiseaseDTO>()
                 .ForMember(dest => dest.Disease,
-                           opt => opt.MapFrom(src => src.Disease));
-            CreateMap<CreatePatientChronicDiseaseDTO, PatientChronicDisease>();
+                           opt => opt.MapFrom(src => src.Disease))
+                .ReverseMap();
+
+            CreateMap<PatientChronicDisease, ChronicDiseaseDTO>()
+                .ForMember(dest => dest.DiseaseId, opt => opt.MapFrom(src => src.Disease.DiseaseId))
+                .ForMember(dest => dest.DiseaseName, opt => opt.MapFrom(src => src.Disease.DiseaseName));
             //CreateMap<UpdatePatientChronicDiseaseDTO, PatientChronicDisease>();
 
 

@@ -42,6 +42,19 @@ export const NotificationsProvider = ({ children }) => {
       .build();
 
     let isCurrent = true;
+    
+    // lifecycle events
+    hub.onclose(error => {
+      console.warn("🔴 SignalR connection closed.", error);
+    });
+
+    hub.onreconnecting(error => {
+      console.warn("🟠 SignalR reconnecting...", error);
+    });
+
+    hub.onreconnected(connectionId => {
+      console.info("🟢 SignalR reconnected.", connectionId);
+    });
 
     getNotifications(user.userId)
       .then(list => {

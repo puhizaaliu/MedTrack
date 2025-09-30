@@ -11,5 +11,7 @@ namespace MedTrack.API.Services.Interfaces
         Task<string> CreateAsync(CreateMedicalReportDTO dto);
         Task UpdateAsync(string id, UpdateMedicalReportDto dto);
         Task DeleteAsync(string id);
+        Task<IEnumerable<MedicalReportDTO>> GetByPatientIdAsync(int patientId);
+        Task<IEnumerable<MedicalReportDTO>> GetByDoctorIdAsync(int doctorId);
     }
 }

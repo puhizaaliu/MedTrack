@@ -22,6 +22,7 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -36,12 +37,24 @@ export default function AdminUsers() {
 
   // Apply client-side filter whenever roleFilter or allUsers changes
   useEffect(() => {
-    if (roleFilter === 'All') {
-      setFiltered(allUsers);
-    } else {
-      setFiltered(allUsers.filter(u => u.role === roleFilter));
+    let results = allUsers;
+
+    if (roleFilter !== 'All') {
+      results = results.filter(u => u.role === roleFilter);
     }
-  }, [roleFilter, allUsers]);
+    
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      results = results.filter(
+        u =>
+          u.name.toLowerCase().includes(q) ||
+          u.surname.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q)
+      );
+    }
+
+     setFiltered(results);
+  }, [roleFilter, searchQuery, allUsers]);
 
   if (!user) {
     return <p className="text-center py-6">Loading user…</p>;
@@ -78,6 +91,15 @@ export default function AdminUsers() {
             {r.label}
           </button>
         ))}
+
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="ml-auto border rounded p-2 w-64"
+        />
+
       </div>
 
       {/* User table */}

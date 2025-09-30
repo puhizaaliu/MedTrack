@@ -19,7 +19,7 @@ export default function NotificationList({notifications,onViewNotification,onMar
       {notifications.map(n => {
         const date = new Date(n.createdAt).toLocaleString();
         const isNew = !n.isRead;
-        console.log('notif:', n);
+        //console.log('notif:', n);
         return (
           <li
             key={n.id}
@@ -38,7 +38,7 @@ export default function NotificationList({notifications,onViewNotification,onMar
             </div>
             {onMarkAsRead && isNew && (
               <button
-                onClick={() => onMarkAsRead(n)}
+                onClick={() => onMarkAsRead(n.id)}
                 className="ml-4 text-sm text-blue-600 hover:underline"
               >
                 Mark read

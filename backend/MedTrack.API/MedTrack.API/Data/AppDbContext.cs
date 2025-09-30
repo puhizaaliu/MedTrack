@@ -60,13 +60,13 @@ namespace MedTrack.API.Data
 
             modelBuilder.Entity<PatientChronicDisease>()
                 .HasOne(pcd => pcd.Patient)
-                .WithMany()
+                .WithMany(p => p.ChronicDiseases)
                 .HasForeignKey(pcd => pcd.PatientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PatientChronicDisease>()
                 .HasOne(pcd => pcd.Disease)
-                .WithMany()
+                .WithMany(d => d.PatientLinks)
                 .HasForeignKey(pcd => pcd.DiseaseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -76,13 +76,13 @@ namespace MedTrack.API.Data
 
             modelBuilder.Entity<PatientFamilyHistory>()
                 .HasOne(pfh => pfh.Patient)
-                .WithMany()
+                .WithMany(p => p.FamilyHistories)
                 .HasForeignKey(pfh => pfh.PatientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PatientFamilyHistory>()
                 .HasOne(pfh => pfh.History)
-                .WithMany()
+                .WithMany(fh => fh.PatientLinks)
                 .HasForeignKey(pfh => pfh.HistoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 

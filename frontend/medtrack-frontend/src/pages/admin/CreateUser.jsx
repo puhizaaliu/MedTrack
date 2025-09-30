@@ -157,11 +157,11 @@ export default function CreateUser() {
     {form.role === 'Patient' && (
         <div className="space-y-4">
             <h3 className="text-xl">Medical Info</h3>
-            <input name="allergies" placeholder="Allergies" onChange={handleMedicalChange} />
-            <input name="medications" placeholder="Medications" onChange={handleMedicalChange} />
-            <label><input type="checkbox" name="smoking" onChange={handleMedicalChange} /> Smoking</label>
-            <label><input type="checkbox" name="alcohol" onChange={handleMedicalChange} /> Alcohol</label>
-            <input name="physicalActivity" placeholder="Physical Activity" onChange={handleMedicalChange} />
+            <input name="allergies" placeholder="Allergies" onChange={handleMedicalChange} className="border rounded px-5 py-2 mr-3" />
+            <input name="medications" placeholder="Medications" onChange={handleMedicalChange} className="border rounded px-5 py-2" />
+            <label className="mx-3"><input type="checkbox" name="smoking" onChange={handleMedicalChange} /> Smoking</label>
+            <label className="mx-3"><input type="checkbox" name="alcohol" onChange={handleMedicalChange} /> Alcohol</label>
+            <input name="physicalActivity" placeholder="Physical Activity" onChange={handleMedicalChange} className="border rounded px-5 py-2" />
 
             <h3 className="text-xl">Family History</h3>
             {familyHistory.map((fh, i) => (
@@ -174,7 +174,7 @@ export default function CreateUser() {
                     </option>
                 ))}
                 </select>
-                <input name="otherText" placeholder="Other Details" onChange={e => handleFamilyHistoryChange(i, e)} />
+                {/* <input name="otherText" placeholder="Other Details" onChange={e => handleFamilyHistoryChange(i, e)} /> */}
             </div>
             ))}
             <button type="button" onClick={addFamilyRow}>+ Add History</button>
@@ -190,7 +190,7 @@ export default function CreateUser() {
                     </option>
                 ))}
                 </select>
-                <input name="otherText" placeholder="Other Details" onChange={e => handleDiseaseChange(i, e)} />
+                {/* <input name="otherText" placeholder="Other Details" onChange={e => handleDiseaseChange(i, e)} /> */}
             </div>
             ))}
             <button type="button" onClick={addDiseaseRow}>+ Add Disease</button>

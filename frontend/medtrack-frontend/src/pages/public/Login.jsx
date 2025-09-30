@@ -39,7 +39,7 @@ export default function Login() {
           navigate('/', { replace: true });
       }
     } catch (err) {
-      setError(err.message || 'Invalid credentials');
+      setError('Email or password are not valid, try again.');
     } finally {
       setLoading(false);
     }

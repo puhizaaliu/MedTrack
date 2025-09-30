@@ -22,6 +22,8 @@ export default function ReportsOverview() {
   const [doctorFilter, setDoctorFilter] = useState('')   // userId as string
   const [patientFilter,setPatientFilter]= useState('')   // userId as string
 
+  const [searchQuery, setSearchQuery]   = useState('')
+
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState('')
 
@@ -30,14 +32,13 @@ export default function ReportsOverview() {
       setLoading(true)
       try {
         const [reps, appts, docs, pats] = await Promise.all([
-          getAllReports(),      // list of MedicalReportDTO :contentReference[oaicite:0]{index=0}
-          getAllAppointments(), // list of AppointmentDTO    :contentReference[oaicite:1]{index=1}
-          getAllDoctors(),      // list of doctors           :contentReference[oaicite:2]{index=2}
-          getAllPatients(),     // list of patients          :contentReference[oaicite:3]{index=3}
+          getAllReports(),  
+          getAllAppointments(),
+          getAllDoctors(),      
+          getAllPatients(),    
         ])
 
-        // quick debug to confirm shapes
-        console.log({ reps, appts, docs, pats })
+       //console.log({ reps, appts, docs, pats })
 
         setReports(reps)
         setAppointments(appts)
@@ -53,7 +54,6 @@ export default function ReportsOverview() {
     loadAll()
   }, [])
 
-  // 1) Merge each report with its appointment (to get doctorId & patientId)
   const enriched = useMemo(() => {
     return reports.map(r => {
       const appt = appointments.find(a => a.appointmentId === r.appointmentId) || {}
@@ -68,24 +68,38 @@ export default function ReportsOverview() {
       }
     })
   }, [reports, appointments])
+
 useEffect(() => {
   console.log("Appointments:", appointments);
 }, [appointments]);
-  // 2) Apply filters
   const filtered = useMemo(() => {
     return enriched.filter(r => {
-      // date filter: compare ISO date part (YYYY-MM-DD)
       if (dateFilter) {
         const repDate = new Date(r.createdAt).toISOString().slice(0,10)
         if (repDate !== dateFilter) return false
       }
-      // doctor filter
       if (doctorFilter && String(r.doctorId) !== doctorFilter) return false
-      // patient filter
       if (patientFilter && String(r.patientId) !== patientFilter) return false
+      
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const doctorName  = `${r.doctorName || ''} ${r.doctorSurname || ''}`.toLowerCase()
+        const patientName = `${r.patientName || ''} ${r.patientSurname || ''}`.toLowerCase()
+        const notes       = (r.notes || '').toLowerCase()
+
+        if (
+          !doctorName.includes(q) &&
+          !patientName.includes(q) &&
+          !notes.includes(q)
+        ) {
+          return false
+        }
+      }
+
       return true
     })
-  }, [enriched, dateFilter, doctorFilter, patientFilter])
+  },  [enriched, dateFilter, doctorFilter, patientFilter, searchQuery])
+
   useEffect(() => {
     console.log("Enriched reports:", enriched);
   }, [enriched]);
@@ -157,6 +171,19 @@ useEffect(() => {
               </option>
             ))}
           </select>
+        </div>
+        {/* Search bar */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Search
+          </label>
+          <input
+            type="text"
+            placeholder="Search reports..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="border rounded p-2 w-full"
+          />
         </div>
       </div>
 

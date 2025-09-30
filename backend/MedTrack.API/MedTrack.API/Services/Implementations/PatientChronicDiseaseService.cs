@@ -28,6 +28,7 @@ namespace MedTrack.API.Services.Implementations
         public async Task AddAsync(CreatePatientChronicDiseaseDTO dto)
         {
             var link = _mapper.Map<PatientChronicDisease>(dto);
+            link.PatientId = dto.PatientId;
             await _repo.AddAsync(link);
         }
 

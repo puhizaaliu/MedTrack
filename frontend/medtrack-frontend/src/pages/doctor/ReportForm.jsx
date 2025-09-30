@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { getAppointmentsByDoctor } from '../../api/appointments';
+import { getAppointmentsByDoctor, updateAppointment } from '../../api/appointments';
 import { getPatientById, updatePatient } from '../../api/patients';
 import { createMedicalReport } from '../../api/reports';
-import { updateAppointment } from '../../api/appointments';
+import { listFamilyHistories } from "../../api/familyHistory";
+import { listChronicDiseases } from "../../api/chronicDisease";
+import { listPatientFamilyHistory, addPatientFamilyHistory, removePatientFamilyHistory } from "../../api/patientFamilyHistory";
+import { listPatientChronicDiseases, addPatientChronicDisease, removePatientChronicDisease } from "../../api/patientChronicDisease";
 
 export default function ReportForm() {
   const { id: appointmentId } = useParams();
@@ -26,6 +29,12 @@ export default function ReportForm() {
   });
   const [familyHistory, setFamilyHistory]     = useState([]);
   const [chronicDiseases, setChronicDiseases] = useState([]);
+  const [allFamilyHistories, setAllFamilyHistories] = useState([]);
+  const [allChronicDiseases, setAllChronicDiseases] = useState([]);
+  const [newFamilyId, setNewFamilyId] = useState("");
+  const [newChronicId, setNewChronicId] = useState("");
+  const [otherFamilyText, setOtherFamilyText] = useState("");
+  const [otherChronicText, setOtherChronicText] = useState("");
 
   // New Medical Report form
   const [reportData, setReportData] = useState({
@@ -39,18 +48,14 @@ export default function ReportForm() {
     async function loadAll() {
       setLoading(true);
       try {
-        // 1) Fetch all this doctor's appointments...
         const list = await getAppointmentsByDoctor(user.userId);
-        // 2) ...then pick the one matching appointmentId
         const appt = list.find(a => a.appointmentId === +appointmentId);
         if (!appt) throw new Error('Appointment not found');
         setAppointment(appt);
 
-        // 3) Load the patient (with nested MedicalInfo, FamilyHistory, ChronicDiseases)
         const pat = await getPatientById(appt.patientId);
         setPatient(pat);
 
-        // 4) Prefill sub-forms
         if (pat.medicalInfo) {
           setMedInfo({
             allergies:       pat.medicalInfo.allergies,
@@ -60,8 +65,17 @@ export default function ReportForm() {
             physicalActivity:pat.medicalInfo.physicalActivity
           });
         }
-        setFamilyHistory(pat.familyHistory);
-        setChronicDiseases(pat.chronicDiseases);
+
+        const pfh = await listPatientFamilyHistory(pat.userId);
+        const pcd = await listPatientChronicDiseases(pat.userId);
+        setFamilyHistory(pfh);
+        setChronicDiseases(pcd);
+
+        const fam = await listFamilyHistories();
+        const chr = await listChronicDiseases();
+        setAllFamilyHistories(fam);
+        setAllChronicDiseases(chr);
+        
       } catch (e) {
         setError(e.message);
       } finally {
@@ -80,25 +94,43 @@ export default function ReportForm() {
     }));
   };
 
-  const onFamilyChange = (i, e) => {
-    setFamilyHistory(fh => {
-      const copy = [...fh];
-      copy[i].conditionName = e.target.value;
-      return copy;
-    });
+  // Family history actions
+  const addFamilyFromList = async () => {
+    if (!newFamilyId) return;
+    await addPatientFamilyHistory({ patientId: patient.userId, historyId: +newFamilyId });
+    const added = allFamilyHistories.find(h => h.historyId === +newFamilyId);
+    setFamilyHistory([...familyHistory, added]);
+    setNewFamilyId("");
   };
-  const addFamily    = () => setFamilyHistory(fh => [...fh, { historyId:0, conditionName:'' }]);
-  const removeFamily = i => setFamilyHistory(fh => fh.filter((_, idx) => idx!==i));
+  const addFamilyOther = async () => {
+    if (!otherFamilyText) return;
+    await addPatientFamilyHistory({ patientId: patient.userId, historyId: 0, otherText: otherFamilyText });
+    setFamilyHistory([...familyHistory, { historyId: 0, otherText: otherFamilyText }]);
+    setOtherFamilyText("");
+  };
+  const removeFamily = async (historyId) => {
+    await removePatientFamilyHistory({ patientId: patient.userId, historyId });
+    setFamilyHistory(familyHistory.filter(f => f.historyId !== historyId));
+  };
 
-  const onChronicChange = (i, e) => {
-    setChronicDiseases(cd => {
-      const copy = [...cd];
-      copy[i].otherText = e.target.value;
-      return copy;
-    });
+  // Chronic disease actions
+  const addChronicFromList = async () => {
+    if (!newChronicId) return;
+    await addPatientChronicDisease({ patientId: patient.userId, diseaseId: +newChronicId });
+    const added = allChronicDiseases.find(d => d.diseaseId === +newChronicId);
+    setChronicDiseases([...chronicDiseases, added]);
+    setNewChronicId("");
   };
-  const addChronic    = () => setChronicDiseases(cd => [...cd, { diseaseId:0, otherText:'', disease:{ diseaseId:0, diseaseName:'' } }]);
-  const removeChronic = i => setChronicDiseases(cd => cd.filter((_, idx) => idx!==i));
+  const addChronicOther = async () => {
+    if (!otherChronicText) return;
+    await addPatientChronicDisease({ patientId: patient.userId, diseaseId: 0, otherText: otherChronicText });
+    setChronicDiseases([...chronicDiseases, { diseaseId: 0, otherText: otherChronicText }]);
+    setOtherChronicText("");
+  };
+  const removeChronic = async (diseaseId) => {
+    await removePatientChronicDisease({ patientId: patient.userId, diseaseId });
+    setChronicDiseases(chronicDiseases.filter(c => c.diseaseId !== diseaseId));
+  };
 
   // Handlers for report form
   const onReportChange = e => {
@@ -114,23 +146,18 @@ export default function ReportForm() {
     setError(null);
     setSubmitting(true);
     try {
-      // 1) Persist any patient edits
       await updatePatient(patient.userId, {
         ...patient,
-        medicalInfo: medInfo,
-        familyHistory,
-        chronicDiseases
+        medicalInfo: medInfo
       });
 
-      // 2) Create the new medical report
       await createMedicalReport({
         appointmentId: +appointmentId,
         ...reportData
       });
 
-      // 3) Update appointment status to Completed
       await updateAppointment(+appointmentId, {
-        status: "Kryer" // or whatever the value for "Completed" is in your system
+        status: "Kryer"
       });
 
       navigate('/doctor/reports');
@@ -211,18 +238,25 @@ export default function ReportForm() {
           <h4 className="text-lg font-semibold">Family History</h4>
           {familyHistory.map((fh, i) => (
             <div key={i} className="flex items-center space-x-2">
-              <input value={fh.conditionName}
-                     onChange={e => onFamilyChange(i, e)}
-                     className="flex-1 border rounded p-2"/>
-              <button type="button"
-                      onClick={() => removeFamily(i)}
-                      className="text-red-600">Remove</button>
+              <span className="flex-1">{fh.conditionName || fh.otherText}</span>
+              <button type="button" onClick={() => removeFamily(fh.historyId)} className="text-red-600">Remove</button>
             </div>
           ))}
-          <button type="button" onClick={addFamily}
-                  className="text-green-600 hover:underline">
-            + Add Family History
-          </button>
+          <div className="flex space-x-2 mt-2">
+            <select value={newFamilyId} onChange={(e) => setNewFamilyId(e.target.value)} className="flex-1 border rounded p-2">
+              <option value="">Select condition…</option>
+              {allFamilyHistories
+                .filter(h => !familyHistory.some(f => f.historyId === h.historyId))
+                .map(h => (
+                  <option key={h.historyId} value={h.historyId}>{h.conditionName}</option>
+                ))}
+            </select>
+            <button type="button" onClick={addFamilyFromList} className="bg-green-600 text-white px-3 rounded">Add</button>
+          </div>
+          {/* <div className="flex space-x-2 mt-2">
+            <input type="text" placeholder="Other condition" value={otherFamilyText} onChange={(e) => setOtherFamilyText(e.target.value)} className="flex-1 border rounded p-2" />
+            <button type="button" onClick={addFamilyOther} className="bg-green-600 text-white px-3 rounded">Add Other</button>
+          </div> */}
         </section>
 
         {/* Chronic Diseases */}
@@ -230,20 +264,25 @@ export default function ReportForm() {
           <h4 className="text-lg font-semibold">Chronic Diseases</h4>
           {chronicDiseases.map((cd, i) => (
             <div key={i} className="flex items-center space-x-2">
-              <span className="flex-1">{cd.disease.diseaseName}</span>
-              <input placeholder="Notes"
-                     value={cd.otherText}
-                     onChange={e => onChronicChange(i, e)}
-                     className="flex-1 border rounded p-2"/>
-              <button type="button"
-                      onClick={() => removeChronic(i)}
-                      className="text-red-600">Remove</button>
+              <span className="flex-1">{cd.diseaseName || cd.disease?.diseaseName || cd.otherText}</span>
+              <button type="button" onClick={() => removeChronic(cd.diseaseId)} className="text-red-600">Remove</button>
             </div>
           ))}
-          <button type="button" onClick={addChronic}
-                  className="text-green-600 hover:underline">
-            + Add Chronic Disease
-          </button>
+          <div className="flex space-x-2 mt-2">
+            <select value={newChronicId} onChange={(e) => setNewChronicId(e.target.value)} className="flex-1 border rounded p-2">
+              <option value="">Select disease…</option>
+              {allChronicDiseases
+                .filter(d => !chronicDiseases.some(c => c.diseaseId === d.diseaseId))
+                .map(d => (
+                  <option key={d.diseaseId} value={d.diseaseId}>{d.diseaseName}</option>
+                ))}
+            </select>
+            <button type="button" onClick={addChronicFromList} className="bg-green-600 text-white px-3 rounded">Add</button>
+          </div>
+          {/* <div className="flex space-x-2 mt-2">
+            <input type="text" placeholder="Other disease" value={otherChronicText} onChange={(e) => setOtherChronicText(e.target.value)} className="flex-1 border rounded p-2" />
+            <button type="button" onClick={addChronicOther} className="bg-green-600 text-white px-3 rounded">Add Other</button>
+          </div> */}
         </section>
 
         {/* New Medical Report */}

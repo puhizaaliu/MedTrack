@@ -18,7 +18,14 @@ namespace MedTrack.API.Repositories.Implementations
 
         public async Task AddAsync(PatientChronicDisease link)
         {
-            await _ctx.PatientChronicDiseases.AddAsync(link);
+            var entity = new PatientChronicDisease
+            {
+                PatientId = link.PatientId,
+                DiseaseId = link.DiseaseId,
+                OtherText = link.OtherText
+            };
+
+            await _ctx.PatientChronicDiseases.AddAsync(entity);
             await _ctx.SaveChangesAsync();
         }
 

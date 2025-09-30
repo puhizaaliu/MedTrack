@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { getAllInvoices } from '../../api/invoices';
 import InvoiceList from '../../shared/InvoiceList';
 
@@ -6,7 +6,9 @@ export default function AllInvoices() {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+ 
+  const [searchQuery, setSearchQuery] = useState('');
+  
   // Ref for print/export area
   const tableRef = useRef(null);
 
@@ -20,6 +22,25 @@ export default function AllInvoices() {
       .catch(err => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false));
   }, []);
+
+   // Filter invoices by search query
+  const filteredInvoices = useMemo(() => {
+    if (!searchQuery.trim()) return invoices;
+    const q = searchQuery.toLowerCase();
+    return invoices.filter(inv => {
+      const patient = `${inv.patientName || ''} ${inv.patientSurname || ''}`.toLowerCase();
+      const doctor  = `${inv.doctorName || ''} ${inv.doctorSurname || ''}`.toLowerCase();
+      const service = (inv.serviceName || '').toLowerCase();
+      const status  = inv.paymentStatus ? 'paid' : 'unpaid';
+
+      return (
+        patient.includes(q) ||
+        doctor.includes(q) ||
+        service.includes(q) ||
+        status.includes(q)
+      );
+    });
+  }, [invoices, searchQuery]);
 
   // Export all invoices to CSV
   const handleExportCSV = () => {
@@ -99,6 +120,13 @@ export default function AllInvoices() {
     <div className="max-w-5xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">All Invoices</h1>
       <div className="flex gap-3 mb-4">
+         <input
+          type="text"
+          placeholder="Search invoices..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="border rounded p-2 flex-1"
+        />
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={handleExportCSV}
@@ -118,7 +146,7 @@ export default function AllInvoices() {
 
       {!loading && !error && (
         <div ref={tableRef}>
-          <InvoiceList invoices={invoices} />
+           <InvoiceList invoices={filteredInvoices} />
         </div>
       )}
     </div>

@@ -26,7 +26,14 @@ namespace MedTrack.API.Repositories.Implementations
 
         public async Task AddAsync(PatientFamilyHistory patientFamilyHistory)
         {
-            await _context.PatientFamilyHistories.AddAsync(patientFamilyHistory);
+            var entity = new PatientFamilyHistory
+            {
+                PatientId = patientFamilyHistory.PatientId,
+                HistoryId = patientFamilyHistory.HistoryId,
+                OtherText = patientFamilyHistory.OtherText
+            };
+
+            await _context.PatientFamilyHistories.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 

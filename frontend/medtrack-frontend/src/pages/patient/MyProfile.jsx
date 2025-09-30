@@ -60,7 +60,7 @@ export default function MyProfile() {
       .catch(err => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false));
   }, [user?.userId]);
-  console.log('PROFILE OBJECT:', profile);
+  //console.log('PROFILE OBJECT:', profile);
   const handleChange = e => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));

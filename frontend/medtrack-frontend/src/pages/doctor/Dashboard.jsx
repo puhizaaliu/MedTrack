@@ -25,9 +25,9 @@ export default function DoctorDashboard() {
   }, [user]);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen p-6 bg-gray-100 space-y-6 md:space-y-0 md:space-x-6">
+    <div className="flex flex-col md:flex-row p-6 bg-gray-100 space-y-6 md:space-y-0 md:space-x-6">
       {/* Left Panel */}
-      <div className="md:w-1/3 bg-white rounded-lg shadow p-6 space-y-8">
+      <div className="md:w-1/2 bg-white rounded-lg shadow p-6 space-y-8">
         <h2 className="text-2xl font-semibold">
           Welcome{profile ? `, Dr. ${profile.name}` : ''}!
         </h2>
@@ -50,40 +50,20 @@ export default function DoctorDashboard() {
           >
             Patients List
           </button>
+        </nav>
+      </div>
+
+      {/* Right Panel */}
+      <div className="p-6">
+        <nav className="w-full py-16 px-28 text-xl flex justify-center">
           <button
             onClick={() => navigate('/doctor/appointmentinprogress')}
-            className="w-full px-4 py-2 text-left bg-yellow-600 text-white rounded hover:bg-yellow-700"
+            className="w-72 px-4 py-2 text-center bg-yellow-600 text-white rounded hover:bg-yellow-700"
           >
             Appointments In-Progress
           </button>
         </nav>
-      </div>
-
-      {/* Right Panel
-      <div className="flex-1 bg-white rounded-lg shadow p-6">
-        <h3 className="text-xl font-semibold mb-4">Recent Notifications</h3>
-        <ul className="space-y-3">
-          {notifications.slice(0, 5).map(n => (
-            <li key={n.id} className="border-b pb-2">
-              <p className="text-gray-800">{n.message || n.content}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(n.createdAt).toLocaleString()}
-              </p>
-            </li>
-          ))}
-          {notifications.length === 0 && (
-            <li className="text-gray-600">No notifications available.</li>
-          )}
-        </ul>
-        <div className="mt-6">
-          <button
-            onClick={() => navigate('/doctor/notifications')}
-            className="text-green-600 hover:underline focus:outline-none"
-          >
-            View all notifications
-          </button>
-        </div>
-      </div> */}
+      </div> 
     </div>
   );
 }

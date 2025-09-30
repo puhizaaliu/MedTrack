@@ -18,6 +18,7 @@ export default function InvoiceView({ invoice, appointment }) {
       invoice.method,
       invoice.paymentStatus ? "Paid" : "Unpaid",
     ].join(",");
+    const csvContent = csvHeaders + csvRow;
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csvContent], {
       type: "text/csv;charset=utf-8;",

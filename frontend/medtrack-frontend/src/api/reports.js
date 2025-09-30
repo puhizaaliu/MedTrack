@@ -1,10 +1,13 @@
 import api from './client';
 
-// — For patients: all reports for that patient
-export function getReports(patientId, limit = null) {
-  return api
-    .get('api/MedicalReports', { params: { patientId, limit } })
-    .then(res => res.data);
+// Get reports for a specific patient
+export function getReportsByPatient(patientId) {
+  return api.get(`api/MedicalReports/patient/${patientId}`).then(res => res.data);
+}
+
+// Get reports for a specific doctor
+export function getReportsByDoctor(doctorId) {
+  return api.get(`api/MedicalReports/doctor/${doctorId}`).then(res => res.data);
 }
 
 // — For doctors/admins: get all reports (server-side will scope by role!)

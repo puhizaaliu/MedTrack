@@ -24,6 +24,8 @@ export default function AppointmentsOverview() {
   const [doctorFilter,  setDoctorFilter]  = useState('')  // always string
   const [patientFilter, setPatientFilter] = useState('')  // always string
 
+  const [searchQuery, setSearchQuery] = useState('')
+  
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState('')
 
@@ -60,9 +62,29 @@ export default function AppointmentsOverview() {
       if (statusFilter && a.status !== statusFilter)     return false
       if (doctorFilter && String(a.doctorId) !== doctorFilter)   return false
       if (patientFilter && String(a.patientId) !== patientFilter) return false
+      
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const doctor = doctors.find(d => d.userId === a.doctorId)
+        const patient = patients.find(p => p.userId === a.patientId)
+
+        const doctorName = doctor ? `${doctor.name} ${doctor.surname}`.toLowerCase() : ''
+        const patientName = patient ? `${patient.name} ${patient.surname}`.toLowerCase() : ''
+
+        // Search across doctor, patient, status, and maybe date
+        if (
+          !doctorName.includes(q) &&
+          !patientName.includes(q) &&
+          !a.status.toLowerCase().includes(q) &&
+          !(a.date && a.date.toLowerCase().includes(q))
+        ) {
+          return false
+        }
+      }
+
       return true
     })
-  }, [appointments, statusFilter, doctorFilter, patientFilter])
+  }, [appointments, statusFilter, doctorFilter, patientFilter, searchQuery, doctors, patients])
 
   const handleViewDetails = id => {
     console.log('view details for', id)
@@ -138,6 +160,13 @@ export default function AppointmentsOverview() {
             })}
           </select>
         </div>
+        <input
+            type="text"
+            placeholder="Search appointments..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="border rounded p-2 w-full"
+          />
 
         {/* Table */}
         {loading ? (

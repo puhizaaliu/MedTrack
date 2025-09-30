@@ -148,6 +148,69 @@ namespace MedTrack.API.Services.Implementations
                 }
             };
         }
+        public async Task<IEnumerable<MedicalReportDTO>> GetByPatientIdAsync(int patientId)
+        {
+            var reports = await _repository.GetAllAsync();
+            var appointmentIds = reports.Select(r => r.AppointmentId).ToList();
+
+            var appointments = await _sql.Appointments
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.User)
+                .Include(a => a.Doctor)
+                .ThenInclude(d => d.User)
+                .Where(a => appointmentIds.Contains(a.AppointmentId) && a.PatientId == patientId)
+                .ToListAsync();
+
+            var appointmentLookup = appointments.ToDictionary(a => a.AppointmentId);
+            var dtos = new List<MedicalReportDTO>();
+
+            foreach (var report in reports)
+            {
+                if (appointmentLookup.TryGetValue(report.AppointmentId, out var appt))
+                {
+                    var dto = _mapper.Map<MedicalReportDTO>(report);
+                    dto.PatientName = appt.Patient?.User?.Name;
+                    dto.PatientSurname = appt.Patient?.User?.Surname;
+                    dto.DoctorName = appt.Doctor?.User?.Name;
+                    dto.DoctorSurname = appt.Doctor?.User?.Surname;
+                    dtos.Add(dto);
+                }
+            }
+
+            return dtos;
+        }
+
+        public async Task<IEnumerable<MedicalReportDTO>> GetByDoctorIdAsync(int doctorId)
+        {
+            var reports = await _repository.GetAllAsync();
+            var appointmentIds = reports.Select(r => r.AppointmentId).ToList();
+
+            var appointments = await _sql.Appointments
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.User)
+                .Include(a => a.Doctor)
+                .ThenInclude(d => d.User)
+                .Where(a => appointmentIds.Contains(a.AppointmentId) && a.DoctorId == doctorId)
+                .ToListAsync();
+
+            var appointmentLookup = appointments.ToDictionary(a => a.AppointmentId);
+            var dtos = new List<MedicalReportDTO>();
+
+            foreach (var report in reports)
+            {
+                if (appointmentLookup.TryGetValue(report.AppointmentId, out var appt))
+                {
+                    var dto = _mapper.Map<MedicalReportDTO>(report);
+                    dto.PatientName = appt.Patient?.User?.Name;
+                    dto.PatientSurname = appt.Patient?.User?.Surname;
+                    dto.DoctorName = appt.Doctor?.User?.Name;
+                    dto.DoctorSurname = appt.Doctor?.User?.Surname;
+                    dtos.Add(dto);
+                }
+            }
+
+            return dtos;
+        }
 
         public async Task<string> CreateAsync(CreateMedicalReportDTO dto)
         {

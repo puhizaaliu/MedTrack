@@ -73,6 +73,40 @@ namespace MedTrack.API.Controllers
             return Ok(detailDto);
         }
 
+        // GET: /api/MedicalReports/patient/{patientId}
+        [HttpGet("patient/{patientId}")]
+        [AuthorizeRoles(UserRole.Patient, UserRole.Admin)]
+        public async Task<IActionResult> GetByPatient(int patientId)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (idClaim == null || !int.TryParse(idClaim, out var currentUserId))
+                return Unauthorized();
+
+            // Patients can only access their own reports
+            if (User.IsInRole(UserRole.Patient.ToString()) && currentUserId != patientId)
+                return Forbid();
+
+            var reports = await _service.GetByPatientIdAsync(patientId);
+            return Ok(reports);
+        }
+
+        // GET: /api/MedicalReports/doctor/{doctorId}
+        [HttpGet("doctor/{doctorId}")]
+        [AuthorizeRoles(UserRole.Doctor, UserRole.Admin)]
+        public async Task<IActionResult> GetByDoctor(int doctorId)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (idClaim == null || !int.TryParse(idClaim, out var currentUserId))
+                return Unauthorized();
+
+            // Doctors can only access their own reports
+            if (User.IsInRole(UserRole.Doctor.ToString()) && currentUserId != doctorId)
+                return Forbid();
+
+            var reports = await _service.GetByDoctorIdAsync(doctorId);
+            return Ok(reports);
+        }
+
         // POST: api/MedicalReports
         [HttpPost]
         [AuthorizeRoles(UserRole.Doctor)]

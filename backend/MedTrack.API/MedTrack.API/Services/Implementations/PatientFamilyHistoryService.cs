@@ -27,7 +27,8 @@ namespace MedTrack.API.Services.Implementations
 
         public async Task AddAsync(CreatePatientFamilyHistoryDTO dto)
         {
-            var pfh = _mapper.Map<PatientFamilyHistory>(dto);
+            var pfh = _mapper.Map<PatientFamilyHistory>(dto);    
+            pfh.PatientId = dto.PatientId;
             await _repository.AddAsync(pfh);
         }
 
